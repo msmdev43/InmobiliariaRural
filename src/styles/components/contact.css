@@ -1,0 +1,325 @@
+/* ===== CONTACT SECTION ===== */
+.contact-section {
+  padding: 4rem 0; /* Reducido de 5rem */
+  background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #006A4E, #00a87e, #006A4E);
+  opacity: 0.5;
+}
+
+@media (min-width: 768px) {
+  .contact-section {
+    padding: 5rem 0; /* Reducido de 7rem */
+  }
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+/* ===== HEADER DE SECCIÓN ===== */
+.section-header {
+  text-align: center;
+  margin-bottom: 2.5rem; /* Reducido de 3.5rem */
+}
+
+.section-tag {
+  display: inline-block;
+  color: #006A4E;
+  font-weight: 600;
+  font-size: 0.8rem; /* Reducido de 0.85rem */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.8rem; /* Reducido de 1rem */
+  background: rgba(0, 106, 78, 0.1);
+  padding: 0.3rem 1rem; /* Reducido de 0.4rem 1.2rem */
+  border-radius: 30px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; /* Reducido de 2.2rem */
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.8rem; /* Reducido de 1rem */
+}
+
+@media (min-width: 640px) {
+  .section-title {
+    font-size: 2.4rem; /* Reducido de 2.5rem */
+  }
+}
+
+@media (min-width: 768px) {
+  .section-title {
+    font-size: 2.8rem; /* Reducido de 3rem */
+  }
+}
+
+.section-description {
+  color: #6b7280;
+  font-size: 1rem; /* Reducido de 1.1rem */
+  max-width: 42rem;
+  margin: 0 auto;
+  line-height: 1.5; /* Reducido de 1.6 */
+}
+
+/* ===== GRID DE CONTACTO ===== */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem; /* Reducido de 3rem */
+}
+
+@media (min-width: 1024px) {
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem; /* Reducido de 3rem */
+  }
+}
+
+/* ===== TARJETA DE FORMULARIO ===== */
+.form-card {
+  background-color: #ffffff;
+  border-radius: 20px; /* Aumentado de 0.5rem */
+  padding: 1.5rem; /* Reducido de 2rem */
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 106, 78, 0.1);
+}
+
+@media (min-width: 768px) {
+  .form-card {
+    padding: 1.8rem; /* Reducido de 2rem */
+  }
+}
+
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; /* Reducido de 1.25rem? (era más pequeño) */
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1.2rem; /* Reducido de 1.5rem */
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Reducido de 1.25rem */
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem; /* Reducido de 1rem */
+}
+
+@media (min-width: 640px) {
+  .form-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem; /* Reducido de 1rem */
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem; /* Reducido de 0.5rem */
+}
+
+.form-label {
+  color: #1f2937;
+  font-size: 0.85rem; /* Reducido de 0.875rem */
+  font-weight: 600;
+}
+
+.form-input,
+.form-textarea {
+  background-color: #f8f9fa;
+  border: 2px solid transparent;
+  color: #1f2937;
+  padding: 0.7rem 1rem; /* Reducido de 0.8rem 1rem */
+  border-radius: 12px; /* Aumentado de 0.375rem */
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #006A4E;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(0, 106, 78, 0.1);
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+.form-textarea {
+  resize: none;
+  min-height: 100px; /* Reducido de 120px */
+  font-family: inherit;
+}
+
+.submit-button {
+  width: 100%;
+  background: linear-gradient(135deg, #006A4E, #00a87e);
+  color: white;
+  padding: 0.8rem; /* Reducido de 0.75rem? */
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem; /* Añadido separación */
+  box-shadow: 0 10px 20px -5px rgba(0, 106, 78, 0.2);
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(0, 106, 78, 0.3);
+}
+
+/* ===== INFORMACIÓN DE CONTACTO ===== */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem; /* Reducido de 1.25rem? */
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 1.2rem; /* Reducido de 1.5rem */
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem; /* Reducido de 1.5rem */
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem; /* Reducido de 1rem */
+}
+
+.info-icon-wrapper {
+  background: linear-gradient(135deg, rgba(0, 106, 78, 0.1), rgba(0, 168, 126, 0.1));
+  border-radius: 12px; /* Cambiado de 9999px */
+  padding: 0.6rem; /* Reducido de 0.75rem */
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-icon {
+  width: 1.2rem; /* Reducido de 1.25rem */
+  height: 1.2rem; /* Reducido de 1.25rem */
+  color: #006A4E;
+}
+
+.info-content {
+  flex: 1;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.2rem;
+}
+
+.info-content p {
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* ===== TARJETA CTA ===== */
+.cta-card {
+  margin-top: 2rem; /* Reducido de 2.5rem */
+  padding: 1.5rem; /* Reducido de 1.5rem (igual) */
+  background: linear-gradient(135deg, #006A4E, #00a87e);
+  border-radius: 20px; /* Aumentado de 0.5rem */
+  color: white;
+  box-shadow: 0 20px 30px -8px rgba(0, 106, 78, 0.3);
+}
+
+.cta-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem; /* Reducido de 1.125rem? */
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.cta-description {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem; /* Reducido de 0.875rem */
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.cta-button {
+  background-color: white;
+  color: #006A4E;
+  padding: 0.7rem 1.5rem; /* Reducido de 0.5rem 1rem? */
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .contact-grid {
+    gap: 1.5rem;
+  }
+  
+  .cta-card {
+    margin-top: 1.5rem;
+    padding: 1.2rem;
+  }
+}

@@ -1,0 +1,553 @@
+/* ===== FOOTER PRINCIPAL - VERDE INGLES A AZUL MARINO ===== */
+.footer-wrapper {
+  width: 100%;
+  background: linear-gradient(145deg, #1B4D3E 0%, #1B451E 50%, #0D1A0D 100%);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Linea decorativa superior - verde ingles */
+.footer-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #1B4D3E, #3A7D5C, #1B4D3E);
+  z-index: 2;
+}
+
+/* Efecto de brillo sutil */
+.footer-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 150%, rgba(59, 125, 92, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.footer-container {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 1rem;
+  z-index: 1;
+}
+
+@media (min-width: 640px) {
+  .footer-container {
+    padding: 1.75rem 1.5rem 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-container {
+    padding: 2rem 2rem 1rem;
+  }
+}
+
+/* ===== GRID PRINCIPAL ===== */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+}
+
+/* ===== SECCION DE MARCA ===== */
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-logo-wrapper {
+  margin-bottom: 0.75rem;
+}
+
+.footer-logo {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  transition: color 0.3s ease;
+}
+
+.footer-logo:hover {
+  color: #5FA37A;
+}
+
+.footer-description {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+  max-width: 280px;
+}
+
+/* ===== BADGE DE EXPERIENCIA ===== */
+.footer-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.2rem 0.6rem;
+  background: rgba(95, 163, 122, 0.2);
+  border: 1px solid rgba(95, 163, 122, 0.3);
+  border-radius: 20px;
+  color: #7BC496;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  backdrop-filter: blur(5px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== REDES SOCIALES ===== */
+.footer-social-wrapper {
+  margin-top: 0.5rem;
+}
+
+.footer-social-title {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footer-social-grid {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.footer-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-social-link:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(135deg, #1B4D3E, #2E6B4F);
+  border-color: #5FA37A;
+  color: white;
+  box-shadow: 0 6px 16px rgba(27, 77, 62, 0.4);
+}
+
+.footer-social-icon {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== TITULOS DE SECCIONES ===== */
+.footer-title-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.footer-title {
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  display: inline-block;
+}
+
+.footer-title-underline {
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 28px;
+  height: 2px;
+  background: linear-gradient(90deg, #5FA37A, #3A7D5C);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.footer-title-wrapper:hover .footer-title-underline {
+  width: 45px;
+}
+
+/* ===== ENLACES DEL FOOTER ===== */
+.footer-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-link-item {
+  margin-bottom: 0.5rem;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  display: inline-block;
+  position: relative;
+}
+
+.footer-link::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 1px;
+  background: #5FA37A;
+  transition: width 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #7BC496;
+  transform: translateX(8px);
+}
+
+.footer-link:hover::before {
+  width: 8px;
+}
+
+/* ===== TARJETA DE DESARROLLADOR ===== */
+.dev-card {
+  border-radius: 16px;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: fit-content;
+  align-self: start;
+}
+
+.dev-card:hover {
+  transform: translateY(-2px);
+  background: rgba(95, 163, 122, 0.1);
+  border-color: rgba(95, 163, 122, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.dev-card-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.dev-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  border-radius: 8px;
+}
+
+.dev-card:hover .dev-logo {
+  transform: scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(95, 163, 122, 0.3));
+}
+
+.dev-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.dev-by {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dev-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+.social-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.social-hint span {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.3s ease;
+}
+
+.instagram-icon {
+  color: rgba(255, 255, 255, 0.5);
+  width: 12px;
+  height: 12px;
+  transition: all 0.3s ease;
+}
+
+.dev-card:hover .social-hint span {
+  color: #7BC496;
+}
+
+.dev-card:hover .instagram-icon {
+  color: #7BC496;
+}
+
+/* ===== LOGO CAIR ===== */
+.cair-card {
+  border-radius: 16px;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 80%;
+  height: 60%;
+  align-self: start;
+}
+
+.img-cair {
+  width: 100%;
+  height: 100%;
+  object-fit:none;
+  transition: all 0.3s ease;
+}
+
+.cair-card:hover .img-cair {
+  transform: scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(95, 163, 122, 0.3));
+}
+
+/* ===== COPYRIGHT ===== */
+.footer-copyright-wrapper {
+  text-align: center;
+  padding-top: 1.25rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-copyright {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* ===== EFECTOS DE LUZ ===== */
+.footer-light-effect {
+  position: absolute;
+  top: -20%;
+  right: -5%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(95, 163, 122, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatSlow 20s ease-in-out infinite;
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-20px, 20px);
+  }
+}
+
+/* ===== MÓVIL PEQUEÑO (hasta 480px) ===== */
+@media (max-width: 480px) {
+  .footer-grid {
+    gap: 1.5rem;
+  }
+  
+  .footer-brand {
+    text-align: center;
+    align-items: center;
+  }
+  
+  .footer-description {
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .footer-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .footer-social-grid {
+    justify-content: center;
+  }
+  
+  .footer-title-wrapper {
+    text-align: center;
+  }
+  
+  .footer-title-underline {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .footer-links-list {
+    text-align: center;
+  }
+  
+  .footer-link::before {
+    display: none;
+  }
+  
+  .footer-link:hover {
+    transform: none;
+  }
+  
+  .dev-card,
+  .cair-card {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 200px;
+  }
+  
+  .cair-card {
+    max-width: 160px;
+  }
+}
+
+/* ===== MÓVIL MEDIANO (481px - 767px) ===== */
+@media (min-width: 481px) and (max-width: 767px) {
+  .footer-grid {
+    gap: 2rem;
+  }
+  
+  .footer-brand {
+    text-align: center;
+    align-items: center;
+  }
+  
+  .footer-description {
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+  
+  .footer-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .footer-social-grid {
+    justify-content: center;
+  }
+  
+  .footer-title-wrapper {
+    text-align: center;
+  }
+  
+  .footer-title-underline {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .footer-links-list {
+    text-align: center;
+  }
+  
+  .footer-link::before {
+    display: none;
+  }
+  
+  .footer-link:hover {
+    transform: none;
+  }
+  
+  .dev-card,
+  .cair-card {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 220px;
+  }
+  
+  /* Mostrar en dos columnas los enlaces en móvil grande */
+  .footer-grid > div:nth-child(2),
+  .footer-grid > div:nth-child(3) {
+    display: inline-block;
+    width: 45%;
+    margin: 0 2.5%;
+    vertical-align: top;
+  }
+}
+
+/* ===== RESPONSIVE HORIZONTAL (orientación landscape) ===== */
+@media (max-height: 500px) and (orientation: landscape) {
+  .footer-container {
+    padding: 1rem;
+  }
+  
+  .footer-grid {
+    gap: 1rem;
+  }
+  
+  .footer-logo {
+    font-size: 1.2rem;
+  }
+  
+  .footer-description {
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .footer-social-link {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .footer-social-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .dev-card,
+  .cair-card {
+    padding: 0.5rem;
+  }
+  
+  .dev-logo {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .img-cair {
+    max-height: 40px;
+  }
+}
