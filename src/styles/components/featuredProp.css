@@ -1,6 +1,6 @@
 /* ===== FEATURED PROPERTIES SECTION ===== */
 .featured-section {
-  padding: 4rem 0;
+  padding: clamp(3rem, 8vw, 6rem) 0;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   position: relative;
   overflow: hidden;
@@ -14,170 +14,130 @@
   right: 0;
   height: 4px;
   background: linear-gradient(90deg, #006A4E, #00a87e, #006A4E);
-  opacity: 0.5;
 }
 
-@media (min-width: 768px) {
-  .featured-section {
-    padding: 5rem 0;
-  }
-}
-
+/* ===== CONTAINER ===== */
 .container {
-  max-width: 1400px; /* Aumentado de 1280px para dar más espacio */
+  width: min(95%, 1600px);
   margin: 0 auto;
-  padding: 0 1rem;
-  position: relative;
-  z-index: 2;
-}
-
-@media (min-width: 640px) {
-  .container {
-    padding: 0 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    padding: 0 2rem;
-  }
+  padding: 0 clamp(1rem, 3vw, 3rem);
 }
 
 /* ===== HEADER DE SECCIÓN ===== */
 .section-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .section-tag {
   display: inline-block;
   color: #006A4E;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
   background: rgba(0, 106, 78, 0.1);
-  padding: 0.3rem 1rem;
+  padding: 0.5rem 1.5rem;
   border-radius: 30px;
 }
 
 .section-title {
   font-family: 'Playfair Display', serif;
-  font-size: 2rem;
+  font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 700;
   color: #1f2937;
-  margin-bottom: 0.8rem;
-}
-
-@media (min-width: 640px) {
-  .section-title {
-    font-size: 2.4rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .section-title {
-    font-size: 2.8rem;
-  }
+  margin-bottom: 1rem;
+  line-height: 1.2;
 }
 
 .section-description {
   color: #6b7280;
-  font-size: 1rem;
-  max-width: 42rem;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  max-width: 600px;
   margin: 0 auto;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
-/* ===== GRID DE PROPIEDADES - 3 COLUMNAS ===== */
+/* ===== GRID DE PROPIEDADES - OPTIMIZADO ===== */
 .properties-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: clamp(2rem, 5vw, 4rem);
 }
 
-/* Tablets - 2 columnas */
+/* Mobile: 1 columna */
+.properties-grid {
+  grid-template-columns: 1fr;
+}
+
+/* Tablet: 2 columnas */
 @media (min-width: 640px) {
   .properties-grid {
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Desktop - 3 columnas (fijo) */
+/* Desktop: 3 columnas */
 @media (min-width: 1024px) {
   .properties-grid {
-    gap: 1.8rem;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Pantallas grandes - mantenemos 3 columnas pero más grandes */
-@media (min-width: 1280px) {
+/* Pantallas muy grandes: 4 columnas (opcional, para aprovechar mejor el espacio) */
+@media (min-width: 1600px) {
   .properties-grid {
-    gap: 2rem;
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* ===== TARJETA DE PROPIEDAD - MÁS GRANDE ===== */
+/* ===== TARJETA DE PROPIEDAD - MEJORADA ===== */
 .property-card {
   overflow: hidden;
   border: 1px solid #e5e7eb;
   border-radius: 20px;
   background-color: #ffffff;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  height: 100%;
   width: 100%;
-  max-width: 380px;
-  flex: 0 0 100%;
-}
-
-/* Tablets - 2 cards por fila */
-@media (min-width: 640px) {
-  .property-card {
-    flex: 0 0 calc(50% - 0.75rem);
-    max-width: calc(50% - 0.75rem);
-  }
-}
-
-/* Desktop - 3 cards por fila */
-@media (min-width: 1024px) {
-  .property-card {
-    flex: 0 0 calc(33.333% - 1.2rem);
-    max-width: 380px;
-  }
 }
 
 .property-card:hover {
-  box-shadow: 0 20px 30px -8px rgba(0, 106, 78, 0.2);
-  transform: translateY(-6px); /* Más efecto */
-  border-color: rgba(0, 106, 78, 0.3);
+  box-shadow: 0 25px 40px -12px rgba(0, 106, 78, 0.25);
+  transform: translateY(-8px);
+  border-color: rgba(0, 106, 78, 0.2);
 }
 
-/* ===== IMAGEN - MÁS GRANDE ===== */
+/* ===== IMAGEN - MEJORADA ===== */
 .card-image-container {
   position: relative;
-  aspect-ratio: 4/3;
+  aspect-ratio: 16/9; /* Mejor proporción para desktop */
   overflow: hidden;
-  flex-shrink: 0;
   background-color: #f3f4f6;
+}
+
+@media (min-width: 1024px) {
+  .card-image-container {
+    aspect-ratio: 4/3; /* Vuelve a 4/3 en desktop */
+  }
 }
 
 .card-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .property-card:hover .card-image {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 .property-type-badge {
@@ -186,55 +146,54 @@
   left: 1rem;
   background: linear-gradient(135deg, #006A4E, #00a87e);
   color: white;
-  font-size: 0.8rem; /* Aumentado de 0.7rem */
+  font-size: clamp(0.7rem, 1.5vw, 0.85rem);
   font-weight: 600;
-  padding: 0.3rem 1rem; /* Aumentado */
+  padding: 0.4rem 1.2rem;
   border-radius: 30px;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
   z-index: 10;
-  box-shadow: 0 4px 10px rgba(0, 106, 78, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 106, 78, 0.3);
+  backdrop-filter: blur(4px);
 }
 
-/* ===== CONTENIDO DE LA CARD - MÁS GRANDE ===== */
+/* ===== CONTENIDO DE LA CARD - OPTIMIZADO ===== */
 .card-content {
-  padding: 1.2rem 1rem 1rem; /* Aumentado */
+  padding: clamp(1rem, 3vw, 1.5rem);
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-/* Título - más grande */
+/* Título */
 .property-title {
   font-family: 'Playfair Display', serif;
-  font-size: 1.2rem; /* Aumentado de 1rem */
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
   font-weight: 700;
   color: #1f2937;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 1.8rem;
 }
 
-/* Ubicación - más grande */
+/* Ubicación */
 .property-location {
   display: flex;
   align-items: flex-start;
-  gap: 0.4rem;
+  gap: 0.5rem;
   color: #6b7280;
-  font-size: 0.9rem; /* Aumentado de 0.75rem */
-  margin-bottom: 0.8rem;
-  min-height: 2.4rem;
-  line-height: 1.4;
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  margin-bottom: 1rem;
+  line-height: 1.5;
 }
 
 .location-icon {
-  width: 1rem; /* Aumentado */
-  height: 1rem; /* Aumentado */
+  width: clamp(0.9rem, 2vw, 1.1rem);
+  height: clamp(0.9rem, 2vw, 1.1rem);
   color: #006A4E;
   flex-shrink: 0;
-  margin-top: 0.1rem;
+  margin-top: 0.2rem;
 }
 
 .location-text {
@@ -246,60 +205,58 @@
   word-break: break-word;
 }
 
-/* Características - más grandes */
+/* Características - MEJORADAS */
 .property-features {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0.6rem;
-  color: #4b5563;
-  font-size: 0.9rem; /* Aumentado */
-  margin-bottom: 1rem;
-  min-height: 2rem;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
 }
 
 .feature-item {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   background: #f3f4f6;
-  padding: 0.25rem 0.8rem; /* Aumentado */
+  padding: 0.4rem 1rem;
   border-radius: 30px;
   transition: all 0.2s ease;
-  height: 2rem; /* Aumentado */
+}
+
+.feature-item:hover {
+  background: #e5e7eb;
 }
 
 .feature-icon {
-  width: 0.9rem; /* Aumentado */
-  height: 0.9rem; /* Aumentado */
+  width: clamp(0.85rem, 2vw, 1rem);
+  height: clamp(0.85rem, 2vw, 1rem);
   color: #006A4E;
   flex-shrink: 0;
 }
 
 .feature-item span {
   white-space: nowrap;
-  font-size: 0.8rem; /* Aumentado */
+  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
   font-weight: 500;
+  color: #4b5563;
 }
 
-/* Footer - más grande */
+/* Footer - MEJORADO */
 .card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 0.8rem;
+  padding-top: 1rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
-  min-height: 2.5rem;
 }
 
 .property-price {
   font-family: 'Playfair Display', serif;
-  font-size: 1.3rem; /* Aumentado */
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
   font-weight: 700;
   color: #006A4E;
-  white-space: nowrap;
   line-height: 1.2;
 }
 
@@ -307,17 +264,17 @@
   border: 2px solid #e5e7eb;
   background: none;
   color: #1f2937;
-  padding: 0.3rem 1.2rem; /* Aumentado */
+  padding: 0.5rem 1.5rem;
   border-radius: 30px;
-  font-size: 0.85rem; /* Aumentado */
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
   letter-spacing: 0.3px;
-  height: 2.2rem; /* Aumentado */
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
 .view-button:hover {
@@ -325,34 +282,59 @@
   border-color: #006A4E;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 5px 12px rgba(0, 106, 78, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 106, 78, 0.25);
 }
 
-/* ===== BOTÓN VER TODAS ===== */
+.view-button:active {
+  transform: translateY(0);
+}
+
+/* ===== BOTÓN VER TODAS - MEJORADO ===== */
 .view-all-container {
   text-align: center;
-  margin-top: 3rem; /* Aumentado */
+  margin-top: clamp(2rem, 5vw, 4rem);
 }
 
 .view-all-button {
   background: linear-gradient(135deg, #006A4E, #00a87e);
   color: white;
-  padding: 1rem 3rem; /* Aumentado */
+  padding: clamp(0.8rem, 2.5vw, 1.2rem) clamp(2rem, 5vw, 4rem);
   border-radius: 50px;
   font-weight: 600;
-  font-size: 1.1rem; /* Aumentado */
+  font-size: clamp(1rem, 2vw, 1.15rem);
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 20px rgba(0, 106, 78, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 106, 78, 0.25);
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.view-all-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.view-all-button:hover::before {
+  left: 100%;
 }
 
 .view-all-button:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 30px rgba(0, 106, 78, 0.3);
+  box-shadow: 0 20px 35px rgba(0, 106, 78, 0.35);
+}
+
+.view-all-button:active {
+  transform: translateY(-1px);
 }
 
 .button-icon {
@@ -362,48 +344,45 @@
 }
 
 .view-all-button:hover .button-icon {
-  transform: translateX(5px);
+  transform: translateX(8px);
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .property-card {
-    max-width: 100%;
-  }
-  
-  .property-price {
-    font-size: 1.2rem;
-  }
-  
-  .property-title {
-    font-size: 1.1rem;
-    min-height: 1.6rem;
-  }
-  
-  .property-location {
-    min-height: 2.2rem;
-    font-size: 0.85rem;
+/* ===== RESPONSIVE MEJORADO ===== */
+@media (max-width: 640px) {
+  .property-features {
+    gap: 0.4rem;
   }
   
   .feature-item {
-    height: 1.8rem;
+    padding: 0.3rem 0.8rem;
   }
   
-  .feature-item span {
-    font-size: 0.75rem;
+  .card-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
   }
   
-  .view-all-button {
-    padding: 0.8rem 2rem;
-    font-size: 1rem;
+  .view-button {
+    width: 100%;
   }
 }
 
-/* ===== ANIMACIONES ===== */
+@media (max-width: 480px) {
+  .property-location {
+    font-size: 0.8rem;
+  }
+  
+  .feature-item span {
+    font-size: 0.7rem;
+  }
+}
+
+/* ===== ANIMACIONES MEJORADAS ===== */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -412,7 +391,8 @@
 }
 
 .property-card {
-  animation: fadeInUp 0.5s ease forwards;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
 }
 
 .property-card:nth-child(1) { animation-delay: 0.1s; }
@@ -420,3 +400,17 @@
 .property-card:nth-child(3) { animation-delay: 0.3s; }
 .property-card:nth-child(4) { animation-delay: 0.4s; }
 .property-card:nth-child(5) { animation-delay: 0.5s; }
+.property-card:nth-child(n+6) { animation-delay: 0.6s; }
+
+/* ===== UTILIDADES ADICIONALES ===== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
