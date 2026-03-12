@@ -1,15 +1,14 @@
+// C:\xampp\htdocs\InmobiliariaRural\src\config\api.config.js
 const API_CONFIG = {
-  // URLs base
-  BASE_URL: 'https://miramarinmobiliario.com.ar',
+  // URLs base - Cambiamos a localhost para pruebas
+  BASE_URL: 'http://localhost/BackInmobiliariaRural',
   
   // Endpoints de admin
   ADMIN: {
     LOGIN: '/admin/login.php',
     LOGOUT: '/admin/logout.php',
     DASHBOARD: '/admin/dashboard.php',
-    // Puedes agregar más endpoints aquí
     PROPIEDADES: '/admin/propiedades.php',
-    USUARIOS: '/admin/usuarios.php',
     CONFIGURACION: '/admin/configuracion.php'
   },
   

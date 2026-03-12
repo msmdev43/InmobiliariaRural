@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+// C:\xampp\htdocs\InmobiliariaRural\src\pages\Admin\Login.jsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/pages/Admin/Login.css';
-import apiService from '../../services/api.service';
 
 const Login = () => {
   const currentYear = new Date().getFullYear();
@@ -12,7 +13,16 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
+  const { login, authenticated } = useAuth();
+
+  // Si ya está autenticado, redirigir al dashboard
+  useEffect(() => {
+    if (authenticated) {
+      navigate('/admin/dashboard');
+    }
+  }, [authenticated, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,26 +38,20 @@ const Login = () => {
     setLoading(true);
     setError('');
 
-    try {
-      const data = await apiService.adminLogin(formData);
-
-      if (data.success) {
-        navigate('/admin/dashboard');
-      } else {
-        setError(data.message || 'Error al iniciar sesión');
-      }
-    } catch (err) {
-      setError('Error de conexión. Intente nuevamente.');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
+    const result = await login(formData);
+    
+    if (result.success) {
+      navigate('/admin/dashboard');
+    } else {
+      setError(result.message || 'Error al iniciar sesión');
     }
+    
+    setLoading(false);
   };
 
   return (
     <div className="admin-login-container">
       <div className="admin-login-card">
-        {/* Logo */}
         <div className="admin-login-header">
           <div className="admin-login-icon">
             <img 
@@ -60,7 +64,6 @@ const Login = () => {
           <p className="admin-login-subtitle">Inicia sesión para continuar</p>
         </div>
 
-        {/* Formulario */}
         <form onSubmit={handleSubmit} className="admin-login-form">
           {error && (
             <div className="admin-login-error">
@@ -135,7 +138,6 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Footer */}
         <div className="admin-login-footer">
           <p>© {currentYear} Inmobiliaria Rural. Todos los derechos reservados.</p>
         </div>

@@ -1,3 +1,4 @@
+// C:\xampp\htdocs\InmobiliariaRural\src\services\api.service.js
 import ENDPOINTS, { ADMIN_ENDPOINTS } from '../config/endpoints';
 import API_CONFIG from '../config/api.config';
 
@@ -8,7 +9,6 @@ class ApiService {
     this.endpoints = ENDPOINTS;
   }
 
-  // Método genérico para peticiones
   async request(endpoint, options = {}) {
     try {
       const response = await fetch(endpoint, {
@@ -20,8 +20,10 @@ class ApiService {
         }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Si la respuesta es 401 (No autorizado), podríamos manejar el logout automático
+      if (response.status === 401) {
+        // Podríamos emitir un evento para logout
+        window.dispatchEvent(new Event('unauthorized'));
       }
 
       const data = await response.json();
@@ -32,7 +34,6 @@ class ApiService {
     }
   }
 
-  // Métodos específicos para admin
   async adminLogin(credentials) {
     return this.request(ADMIN_ENDPOINTS.LOGIN, {
       method: 'POST',
@@ -46,9 +47,10 @@ class ApiService {
     });
   }
 
-  // Verificar si la sesión está activa
   async checkSession() {
     try {
+      // Podrías tener un endpoint específico para verificar sesión
+      // o usar una petición simple al dashboard
       const response = await fetch(ADMIN_ENDPOINTS.DASHBOARD, {
         ...this.defaultOptions,
         method: 'GET'
@@ -60,6 +62,5 @@ class ApiService {
   }
 }
 
-// Crear una instancia única
 const apiService = new ApiService();
 export default apiService;
