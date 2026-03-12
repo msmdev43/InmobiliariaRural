@@ -1,5 +1,5 @@
-// C:\xampp\htdocs\InmobiliariaRural\src\App.jsx
-import { Routes, Route } from "react-router-dom";
+// C:\xampp\htdocs\InmobiliariaRural\src\App.jsx - CORREGIDO
+import { Routes, Route } from "react-router-dom"; // 👈 QUITAMOS BrowserRouter de aquí
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/Admin/ProtectedRoute';
 import Home from "./pages/Home";
@@ -8,7 +8,7 @@ import Dashboard from "./pages/Admin/Dashboard";
 
 function App() {
   return (
-    <AuthProvider>
+    <AuthProvider> {/* 👈 SIN BrowserRouter */}
       <Routes>
         {/* Ruta pública */}
         <Route path="/" element={<Home />} />

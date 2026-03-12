@@ -1,5 +1,6 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\context\AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import apiService from '../services/api.service';
 
 const AuthContext = createContext();
@@ -16,9 +17,23 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
+  // Escuchar eventos de no autorizado
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setAuthenticated(false);
+      setUser(null);
+      if (window.location.pathname !== '/admin/login') {
+        navigate('/admin/login');
+      }
+    };
+
+    window.addEventListener('unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('unauthorized', handleUnauthorized);
+  }, [navigate]);
 
   useEffect(() => {
-    // Verificar sesión al cargar la app
     checkSession();
   }, []);
 
@@ -27,12 +42,14 @@ export const AuthProvider = ({ children }) => {
       const isValid = await apiService.checkSession();
       setAuthenticated(isValid);
       if (isValid) {
-        // Aquí podrías cargar datos del usuario si es necesario
-        setUser({ email: 'admin@inmobiliaria.com' }); // Datos de ejemplo
+        setUser({ email: 'Administrador' });
+      } else {
+        setUser(null);
       }
     } catch (error) {
-      console.error('Error verificando sesión:', error);
+      console.debug('Error en checkSession:', error);
       setAuthenticated(false);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -42,22 +59,33 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await apiService.adminLogin(credentials);
       if (data.success) {
+        // Establecemos autenticación directamente sin esperar checkSession
         setAuthenticated(true);
         setUser({ email: credentials.email });
+        
+        // Pequeño delay para asegurar que el estado se actualice
+        setTimeout(() => {
+          navigate('/admin/dashboard');
+        }, 100);
+        
         return { success: true };
       }
-      return { success: false, message: data.message };
+      return { success: false, message: data.message || 'Error al iniciar sesión' };
     } catch (error) {
-      return { success: false, message: 'Error de conexión' };
+      console.error('Error en login:', error);
+      return { success: false, message: 'Error de conexión con el servidor' };
     }
   };
 
   const logout = async () => {
     try {
       await apiService.adminLogout();
+    } catch (error) {
+      console.error('Error en logout:', error);
     } finally {
       setAuthenticated(false);
       setUser(null);
+      navigate('/admin/login');
     }
   };
 

@@ -19,7 +19,8 @@ const ProtectedRoute = ({ children }) => {
           background: 'white',
           padding: '2rem',
           borderRadius: '16px',
-          textAlign: 'center'
+          textAlign: 'center',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
         }}>
           <div className="spinner" style={{
             width: '48px',
@@ -30,7 +31,7 @@ const ProtectedRoute = ({ children }) => {
             animation: 'spin 1s linear infinite',
             margin: '0 auto 1rem'
           }}></div>
-          <p style={{ color: 'var(--foreground)' }}>Verificando autenticación...</p>
+          <p style={{ color: 'var(--foreground)', margin: 0 }}>Verificando autenticación...</p>
         </div>
       </div>
     );
