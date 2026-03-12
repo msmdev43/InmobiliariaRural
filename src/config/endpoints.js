@@ -1,0 +1,31 @@
+import API_CONFIG from './api.config';
+
+// Función para construir URLs completas
+const buildUrl = (endpoint) => `${API_CONFIG.BASE_URL}${endpoint}`;
+
+// Endpoints de admin
+export const ADMIN_ENDPOINTS = {
+  LOGIN: buildUrl(API_CONFIG.ADMIN.LOGIN),
+  LOGOUT: buildUrl(API_CONFIG.ADMIN.LOGOUT),
+  DASHBOARD: buildUrl(API_CONFIG.ADMIN.DASHBOARD),
+  PROPIEDADES: buildUrl(API_CONFIG.ADMIN.PROPIEDADES),
+  USUARIOS: buildUrl(API_CONFIG.ADMIN.USUARIOS),
+  CONFIGURACION: buildUrl(API_CONFIG.ADMIN.CONFIGURACION)
+};
+
+// Endpoints públicos
+export const PUBLIC_ENDPOINTS = {
+  PROPIEDADES: buildUrl(API_CONFIG.PUBLIC.PROPIEDADES),
+  CATEGORIAS: buildUrl(API_CONFIG.PUBLIC.CATEGORIAS),
+  CONTACTO: buildUrl(API_CONFIG.PUBLIC.CONTACTO)
+};
+
+// Endpoints agrupados para fácil acceso
+const ENDPOINTS = {
+  ADMIN: ADMIN_ENDPOINTS,
+  PUBLIC: PUBLIC_ENDPOINTS,
+  // URL base
+  BASE_URL: API_CONFIG.BASE_URL
+};
+
+export default ENDPOINTS;
