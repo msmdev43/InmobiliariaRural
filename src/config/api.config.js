@@ -9,6 +9,7 @@ const API_CONFIG = {
     LOGOUT: '/admin/logout.php',
     DASHBOARD: '/admin/dashboard.php',
     PROPIEDADES: '/admin/propiedades.php',
+    PUBLICAR_PROPIEDAD: '/admin/publicarPropiedad.php',
     CONFIGURACION: '/admin/configuracion.php'
   },
   

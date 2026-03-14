@@ -1,16 +1,20 @@
-// C:\xampp\htdocs\InmobiliariaRural\src\App.jsx - CORREGIDO
-import { Routes, Route } from "react-router-dom"; // 👈 QUITAMOS BrowserRouter de aquí
+// C:\xampp\htdocs\InmobiliariaRural\src\App.jsx
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/Admin/ProtectedRoute';
 import Home from "./pages/Home";
 import Login from "./pages/Admin/Login";
 import Dashboard from "./pages/Admin/Dashboard";
+import PublicarPropiedad from './pages/Admin/PublicarPropiedad';
+import TiposCampos from './pages/Admin/Configuracion/TipoCampos';
+import Servicios from './pages/Admin/Configuracion/Servicios';
+import Configuracion from './pages/Admin/Configuracion/Configuracion';
 
 function App() {
   return (
-    <AuthProvider> {/* 👈 SIN BrowserRouter */}
+    <AuthProvider>
       <Routes>
-        {/* Ruta pública */}
+        {/* Rutas públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/admin/login" element={<Login />} />
         
@@ -27,9 +31,9 @@ function App() {
           </ProtectedRoute>
         } />
         
-        <Route path="/admin/propiedades/nueva" element={
+        <Route path="/admin/publicarPropiedad" element={
           <ProtectedRoute>
-            <div>Nueva Propiedad</div>
+            <PublicarPropiedad />
           </ProtectedRoute>
         } />
         
@@ -38,10 +42,33 @@ function App() {
             <div>Lista de Consultas</div>
           </ProtectedRoute>
         } />
+
+        <Route path="/admin/configuracion" element={
+            <ProtectedRoute>
+              <Configuracion />
+            </ProtectedRoute>
+          } />
         
+        {/* Rutas de Configuración */}
+        <Route path="/admin/configuracion/tipos-campos" element={
+          <ProtectedRoute>
+            <TiposCampos />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/configuracion/servicios" element={
+          <ProtectedRoute>
+            <Servicios />
+          </ProtectedRoute>
+        } />
+        
+        {/* Ruta general de configuración (opcional) */}
         <Route path="/admin/configuracion" element={
           <ProtectedRoute>
-            <div>Configuración</div>
+            <div style={{ padding: '2rem' }}>
+              <h1>Configuración</h1>
+              <p>Selecciona una opción del menú lateral</p>
+            </div>
           </ProtectedRoute>
         } />
       </Routes>

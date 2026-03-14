@@ -1,0 +1,129 @@
+/* C:\xampp\htdocs\InmobiliariaRural\src\styles\pages\Admin\Configuracion\Configuracion.css */
+.configuracion-page-unique {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: configuracion-fade-in-unique 0.5s ease;
+}
+
+@keyframes configuracion-fade-in-unique {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.configuracion-header-unique {
+  margin-bottom: 2rem;
+}
+
+.configuracion-title-unique {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.configuracion-subtitle-unique {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.configuracion-grid-unique {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.configuracion-card-unique {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.configuracion-card-unique:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-color: #006A4E;
+}
+
+.configuracion-card-icon-unique {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.configuracion-card-icon-unique svg {
+  color: #006A4E;
+}
+
+.configuracion-card-content-unique {
+  flex: 1;
+  min-width: 0;
+}
+
+.configuracion-card-title-unique {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.25rem 0;
+}
+
+.configuracion-card-description-unique {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.configuracion-card-arrow-unique {
+  color: #94a3b8;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.configuracion-card-unique:hover .configuracion-card-arrow-unique {
+  color: #006A4E;
+  transform: translateX(4px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .configuracion-page-unique {
+    padding: 1rem;
+  }
+
+  .configuracion-grid-unique {
+    grid-template-columns: 1fr;
+  }
+
+  .configuracion-card-unique {
+    padding: 1.25rem;
+  }
+
+  .configuracion-card-icon-unique {
+    width: 48px;
+    height: 48px;
+  }
+
+  .configuracion-card-icon-unique svg {
+    width: 24px;
+    height: 24px;
+  }
+}
