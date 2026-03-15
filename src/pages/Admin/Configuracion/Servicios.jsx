@@ -11,6 +11,7 @@ const Servicios = () => {
   const [editando, setEditando] = useState(null);
   const [formData, setFormData] = useState({ nombre: '' });
   const [busqueda, setBusqueda] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     cargarServicios();
@@ -19,10 +20,14 @@ const Servicios = () => {
   const cargarServicios = async () => {
     try {
       setLoading(true);
+      setError('');
       const response = await apiService.getServicios();
+      // Asegurarnos de que response.data existe y es un array
       setServicios(response.data || []);
     } catch (error) {
       console.error('Error cargando servicios:', error);
+      setError('Error al cargar los servicios. Por favor, intenta de nuevo.');
+      setServicios([]);
     } finally {
       setLoading(false);
     }
@@ -33,18 +38,27 @@ const Servicios = () => {
     if (!formData.nombre.trim()) return;
 
     try {
+      setError('');
+      let response;
+      
       if (editando) {
-        await apiService.editarServicio(editando.idservicios, formData);
+        // Usar modificarServicio en lugar de editarServicio
+        response = await apiService.modificarServicio(editando.id, { nombre: formData.nombre });
       } else {
-        await apiService.crearServicio(formData);
+        response = await apiService.crearServicio({ nombre: formData.nombre });
       }
       
-      setModalOpen(false);
-      setEditando(null);
-      setFormData({ nombre: '' });
-      cargarServicios();
+      if (response && response.success) {
+        setModalOpen(false);
+        setEditando(null);
+        setFormData({ nombre: '' });
+        cargarServicios();
+      } else {
+        setError(response?.message || 'Error al guardar el servicio');
+      }
     } catch (error) {
-      alert('Error al guardar');
+      console.error('Error al guardar:', error);
+      setError(error.message || 'Error al guardar el servicio');
     }
   };
 
@@ -52,16 +66,24 @@ const Servicios = () => {
     setEditando(servicio);
     setFormData({ nombre: servicio.nombre });
     setModalOpen(true);
+    setError('');
   };
 
   const handleEliminar = async (id) => {
     if (!confirm('¿Estás seguro de eliminar este servicio?')) return;
     
     try {
-      await apiService.eliminarServicio(id);
-      cargarServicios();
+      setError('');
+      const response = await apiService.eliminarServicio(id);
+      
+      if (response && response.success) {
+        cargarServicios();
+      } else {
+        alert(response?.message || 'Error al eliminar el servicio');
+      }
     } catch (error) {
-      alert('Error al eliminar');
+      console.error('Error al eliminar:', error);
+      alert(error.message || 'Error al eliminar el servicio');
     }
   };
 
@@ -77,7 +99,12 @@ const Servicios = () => {
           <div className="servicios-header-content-unique">
             <h1 className="servicios-title-unique">Servicios</h1>
           </div>
-          <button className="servicios-btn-nuevo-unique" onClick={() => setModalOpen(true)}>
+          <button className="servicios-btn-nuevo-unique" onClick={() => {
+            setEditando(null);
+            setFormData({ nombre: '' });
+            setError('');
+            setModalOpen(true);
+          }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="16" />
@@ -107,6 +134,21 @@ const Servicios = () => {
           )}
         </div>
 
+        {/* Mensaje de error */}
+        {error && !modalOpen && (
+          <div className="servicios-error-unique">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{error}</span>
+            <button onClick={cargarServicios} className="servicios-error-retry-unique">
+              Reintentar
+            </button>
+          </div>
+        )}
+
         {/* Contenido principal */}
         {loading ? (
           <div className="servicios-loading-unique">
@@ -133,7 +175,7 @@ const Servicios = () => {
             {serviciosFiltrados.length > 0 ? (
               <div className="servicios-grid-unique">
                 {serviciosFiltrados.map(servicio => (
-                  <div key={servicio.idservicios} className="servicios-card-unique">
+                  <div key={servicio.id} className="servicios-card-unique">
                     <div className="servicios-card-icon-unique">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="10" />
@@ -142,7 +184,7 @@ const Servicios = () => {
                     </div>
                     <div className="servicios-card-content-unique">
                       <h3 className="servicios-card-title-unique">{servicio.nombre}</h3>
-                      <span className="servicios-card-id-unique">ID: {servicio.idservicios}</span>
+                      <span className="servicios-card-id-unique">ID: {servicio.id}</span>
                     </div>
                     <div className="servicios-card-actions-unique">
                       <button 
@@ -155,7 +197,7 @@ const Servicios = () => {
                         </svg>
                       </button>
                       <button 
-                        onClick={() => handleEliminar(servicio.idservicios)}
+                        onClick={() => handleEliminar(servicio.id)}
                         className="servicios-action-btn-unique servicios-action-delete-unique"
                         title="Eliminar servicio"
                       >
@@ -197,6 +239,7 @@ const Servicios = () => {
             setModalOpen(false);
             setEditando(null);
             setFormData({ nombre: '' });
+            setError('');
           }}>
             <div className="servicios-modal-unique" onClick={e => e.stopPropagation()}>
               <div className="servicios-modal-header-unique">
@@ -209,6 +252,7 @@ const Servicios = () => {
                     setModalOpen(false);
                     setEditando(null);
                     setFormData({ nombre: '' });
+                    setError('');
                   }}
                 >
                   ×
@@ -216,6 +260,16 @@ const Servicios = () => {
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="servicios-modal-body-unique">
+                  {error && (
+                    <div className="servicios-modal-error-unique">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                      <span>{error}</span>
+                    </div>
+                  )}
                   <div className="servicios-form-group-unique">
                     <label htmlFor="servicio-nombre" className="servicios-form-label-unique">
                       Nombre del servicio
@@ -243,6 +297,7 @@ const Servicios = () => {
                       setModalOpen(false);
                       setEditando(null);
                       setFormData({ nombre: '' });
+                      setError('');
                     }}
                   >
                     Cancelar

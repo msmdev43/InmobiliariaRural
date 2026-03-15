@@ -1,6 +1,6 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\config\api.config.js
 const API_CONFIG = {
-  // URLs base - Cambiamos a localhost para pruebas
+  // URLs base
   BASE_URL: 'http://localhost/BackInmobiliariaRural',
   
   // Endpoints de admin
@@ -8,16 +8,45 @@ const API_CONFIG = {
     LOGIN: '/admin/login.php',
     LOGOUT: '/admin/logout.php',
     DASHBOARD: '/admin/dashboard.php',
-    PROPIEDADES: '/admin/propiedades.php',
-    PUBLICAR_PROPIEDAD: '/admin/publicarPropiedad.php',
-    CONFIGURACION: '/admin/configuracion.php'
+    CHECK_SESSION: '/admin/check_session.php', // Agregado
   },
   
-  // Endpoints públicos
-  PUBLIC: {
-    PROPIEDADES: '/api/propiedades.php',
-    CATEGORIAS: '/api/categorias.php',
-    CONTACTO: '/api/contacto.php'
+  // Endpoints de consultas
+  CONSULTAS: {
+    LISTAR: '/consultas/listarConsultas.php',
+    ELIMINAR: '/consultas/eliminarConsulta.php',
+  },
+  
+  // Endpoints de propiedades
+  PROPIEDADES: {
+    LISTAR: '/propiedades/listarPropiedades.php',
+    CREAR: '/propiedades/crearPropiedad.php',
+    MODIFICAR: '/propiedades/modificarPropiedad.php',
+    ELIMINAR: '/propiedades/eliminarPropiedad.php',
+    DETALLE: '/propiedades/obtenerPropiedadDetalle.php',
+    ESTADISTICAS: '/propiedades/estadisticas/obtenerEstadisticas.php',
+  },
+  
+  // Endpoints de servicios
+  SERVICIOS: {
+    LISTAR: '/servicios/listarServicios.php',
+    CREAR: '/servicios/crearServicio.php',
+    MODIFICAR: '/servicios/modificarServicio.php',
+    ELIMINAR: '/servicios/eliminarServicio.php',
+  },
+  
+  // Endpoints de tipos de campos
+  TIPOS_CAMPOS: {
+    LISTAR: '/tipo_campos/listarTipos.php',
+    CREAR: '/tipo_campos/crearTipo.php',
+    MODIFICAR: '/tipo_campos/modificarTipo.php',
+    ELIMINAR: '/tipo_campos/eliminarTipo.php',
+  },
+  
+  // Endpoints de utilidades
+  UTILS: {
+    DOLAR: '/dolar/getDollarRate.php',
+    NOTIFICACIONES: '/notificaciones/contarConsultas.php',
   },
   
   // Configuración de fetch

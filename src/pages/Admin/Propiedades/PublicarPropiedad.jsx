@@ -1,9 +1,9 @@
-// C:\xampp\htdocs\InmobiliariaRural\src\pages\Admin\PublicarPropiedad.jsx
+// C:\xampp\htdocs\InmobiliariaRural\src\pages\Admin\Propiedades\PublicarPropiedad.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Admin/Sidebar';
-import apiService from '../../services/api.service';
-import '../../styles/pages/Admin/PublicarPropiedad.css';
+import Sidebar from '../../../components/Admin/Sidebar';
+import apiService from '../../../services/api.service';
+import '../../../styles/pages/Admin/PublicarPropiedad.css';
 
 const PublicarPropiedad = () => {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const PublicarPropiedad = () => {
   const [servicios, setServicios] = useState([]);
   const [imagenesPreview, setImagenesPreview] = useState([]);
   const [imagenesFiles, setImagenesFiles] = useState([]);
+  const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
     codigo: '',
@@ -30,13 +31,14 @@ const PublicarPropiedad = () => {
     estado: 'disponible',
     fecha: new Date().toISOString().split('T')[0],
     campos_idtipocampos: '',
-    servicios: []
+    servicios: [] // Array vacío, no [null]
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setCargandoDatos(true);
+        setError('');
         
         const [tiposResponse, serviciosResponse] = await Promise.all([
           apiService.getTiposCampos(),
@@ -48,17 +50,22 @@ const PublicarPropiedad = () => {
         
       } catch (error) {
         console.error('Error cargando datos:', error);
-        setTiposCampos([
-          { idtipocampos: 1, nombre: 'Campo Agrícola' },
-          { idtipocampos: 2, nombre: 'Campo Ganadero' },
-          { idtipocampos: 3, nombre: 'Estancia' },
-          { idtipocampos: 4, nombre: 'Chacra' }
-        ]);
-        setServicios([
-          { idservicios: 1, nombre: 'Agua Corriente' },
-          { idservicios: 2, nombre: 'Energía Eléctrica' },
-          { idservicios: 3, nombre: 'Internet' }
-        ]);
+        setError('Error al cargar datos. Por favor, recarga la página.');
+        
+        // Datos de respaldo solo para desarrollo
+        if (process.env.NODE_ENV === 'development') {
+          setTiposCampos([
+            { id: 1, nombre: 'Campo Agrícola' },
+            { id: 2, nombre: 'Campo Ganadero' },
+            { id: 3, nombre: 'Estancia' },
+            { id: 4, nombre: 'Chacra' }
+          ]);
+          setServicios([
+            { id: 1, nombre: 'Agua Corriente' },
+            { id: 2, nombre: 'Energía Eléctrica' },
+            { id: 3, nombre: 'Internet' }
+          ]);
+        }
       } finally {
         setCargandoDatos(false);
       }
@@ -69,6 +76,7 @@ const PublicarPropiedad = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -76,12 +84,20 @@ const PublicarPropiedad = () => {
   };
 
   const handleServicioChange = (servicioId) => {
-    setFormData(prev => ({
-      ...prev,
-      servicios: prev.servicios.includes(servicioId)
-        ? prev.servicios.filter(id => id !== servicioId)
-        : [...prev.servicios, servicioId]
-    }));
+    setFormData(prev => {
+      // Asegurar que servicioId sea número y eliminar nulls
+      const id = Number(servicioId);
+      const serviciosActuales = prev.servicios.filter(s => s !== null);
+      
+      const nuevosServicios = serviciosActuales.includes(id)
+        ? serviciosActuales.filter(s => s !== id)
+        : [...serviciosActuales, id];
+      
+      return {
+        ...prev,
+        servicios: nuevosServicios
+      };
+    });
   };
 
   const handleImagenes = (e) => {
@@ -136,20 +152,54 @@ const PublicarPropiedad = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const validarFormulario = () => {
+    // Validar campos obligatorios
     const camposRequeridos = [
-      'titulo', 'alquilerventa', 'superficie', 'zona',
-      'precio', 'moneda', 'descripcion', 'ciudad', 'provincia',
-      'campos_idtipocampos'
+      { campo: 'titulo', mensaje: 'título' },
+      { campo: 'alquilerventa', mensaje: 'tipo de operación' },
+      { campo: 'superficie', mensaje: 'superficie' },
+      { campo: 'zona', mensaje: 'zona' },
+      { campo: 'precio', mensaje: 'precio' },
+      { campo: 'descripcion', mensaje: 'descripción' },
+      { campo: 'ciudad', mensaje: 'ciudad' },
+      { campo: 'provincia', mensaje: 'provincia' },
+      { campo: 'campos_idtipocampos', mensaje: 'tipo de campo' }
     ];
 
-    for (let campo of camposRequeridos) {
-      if (!formData[campo]) {
-        alert('Por favor completa todos los campos obligatorios');
-        return;
+    for (let item of camposRequeridos) {
+      if (!formData[item.campo]) {
+        alert(`Por favor completa el campo: ${item.mensaje}`);
+        return false;
       }
+    }
+
+    // Validar que el tipo de campo sea un número válido
+    if (isNaN(Number(formData.campos_idtipocampos))) {
+      alert('Por favor selecciona un tipo de campo válido');
+      return false;
+    }
+
+    // Validar que superficie sea positiva
+    if (Number(formData.superficie) <= 0) {
+      alert('La superficie debe ser mayor a 0');
+      return false;
+    }
+
+    // Validar que precio sea positivo
+    if (Number(formData.precio) <= 0) {
+      alert('El precio debe ser mayor a 0');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!validarFormulario()) {
+      return;
     }
 
     setLoading(true);
@@ -157,29 +207,56 @@ const PublicarPropiedad = () => {
     try {
       const formDataToSend = new FormData();
       
+      // Agregar todos los campos del formulario con el tipo correcto
       Object.keys(formData).forEach(key => {
+        let valor = formData[key];
+        
         if (key === 'servicios') {
-          formDataToSend.append('servicios', JSON.stringify(formData[key]));
-        } else {
-          formDataToSend.append(key, formData[key]);
+          // Filtrar nulls y enviar como JSON string
+          const serviciosValidos = (valor || []).filter(s => s !== null).map(Number);
+          formDataToSend.append('servicios', JSON.stringify(serviciosValidos));
+        } 
+        else if (key === 'campos_idtipocampos') {
+          // Asegurar que se envíe como número
+          formDataToSend.append(key, Number(valor));
+        }
+        else if (key === 'superficie' || key === 'precio') {
+          formDataToSend.append(key, Number(valor));
+        }
+        else if (key === 'longitud' || key === 'latitud') {
+          // Solo enviar si tienen valor
+          if (valor && valor !== '') {
+            formDataToSend.append(key, Number(valor));
+          }
+        }
+        else if (valor !== null && valor !== undefined && valor !== '') {
+          formDataToSend.append(key, valor);
         }
       });
 
+      // Agregar imágenes (como array)
       imagenesFiles.forEach((imagen, index) => {
-        formDataToSend.append('imagenes', imagen);
-        formDataToSend.append(`imagenes_orden[${index}]`, index + 1);
+        formDataToSend.append('imagenes[]', imagen);
       });
 
-      const response = await apiService.publicarPropiedad(formDataToSend);
+      // Debug: ver qué se está enviando
+      console.log('=== FORM DATA ENVIADO ===');
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+
+      const response = await apiService.crearPropiedad(formDataToSend);
       
       if (response.success) {
         alert('¡Propiedad publicada con éxito!');
         navigate('/admin/propiedades');
       } else {
-        alert(response.error || response.message || 'Error al publicar la propiedad');
+        setError(response.message || 'Error al publicar la propiedad');
+        alert(response.message || 'Error al publicar la propiedad');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error completo:', error);
+      setError(error.message || 'Error al conectar con el servidor');
       alert(error.message || 'Error al conectar con el servidor');
     } finally {
       setLoading(false);
@@ -214,6 +291,18 @@ const PublicarPropiedad = () => {
           </button>
         </div>
 
+        {/* Mensaje de error */}
+        {error && (
+          <div className="publicar-error-unique">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{error}</span>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="publicar-form-unique">
           {/* SECCIÓN 1: Información Básica */}
           <div className="publicar-seccion-unique">
@@ -230,7 +319,7 @@ const PublicarPropiedad = () => {
                   name="codigo"
                   value={formData.codigo}
                   onChange={handleChange}
-                  placeholder="CAM-2024-001"
+                  placeholder="CAM-2026-001"
                   className="publicar-input-unique"
                 />
                 <small className="publicar-ayuda-unique">Si se deja vacío, se generará automáticamente</small>
@@ -259,10 +348,15 @@ const PublicarPropiedad = () => {
 
               <div className="publicar-campo-unique">
                 <label className="publicar-label-unique">Tipo de Campo <span className="publicar-required-unique">*</span></label>
-                <select name="campos_idtipocampos" value={formData.campos_idtipocampos} onChange={handleChange} className="publicar-select-unique">
+                <select 
+                  name="campos_idtipocampos" 
+                  value={formData.campos_idtipocampos} 
+                  onChange={handleChange} 
+                  className="publicar-select-unique"
+                >
                   <option value="">Seleccionar tipo</option>
                   {tiposCampos.map(tipo => (
-                    <option key={tipo.idtipocampos} value={tipo.idtipocampos}>
+                    <option key={tipo.id} value={tipo.id}>
                       {tipo.nombre}
                     </option>
                   ))}
@@ -277,6 +371,8 @@ const PublicarPropiedad = () => {
                   value={formData.superficie}
                   onChange={handleChange}
                   placeholder="Ej: 500"
+                  min="0.01"
+                  step="0.01"
                   className="publicar-input-unique"
                 />
               </div>
@@ -309,6 +405,8 @@ const PublicarPropiedad = () => {
                   value={formData.precio}
                   onChange={handleChange}
                   placeholder="Ej: 250000"
+                  min="0.01"
+                  step="0.01"
                   className="publicar-input-unique"
                 />
               </div>
@@ -434,11 +532,11 @@ const PublicarPropiedad = () => {
             
             <div className="publicar-servicios-grid-unique">
               {servicios.map(servicio => (
-                <label key={servicio.idservicios} className="publicar-servicio-item-unique">
+                <label key={servicio.id} className="publicar-servicio-item-unique">
                   <input
                     type="checkbox"
-                    checked={formData.servicios.includes(servicio.idservicios)}
-                    onChange={() => handleServicioChange(servicio.idservicios)}
+                    checked={formData.servicios.includes(servicio.id)}
+                    onChange={() => handleServicioChange(servicio.id)}
                     className="publicar-servicio-checkbox-unique"
                   />
                   <span className="publicar-servicio-checkmark-unique"></span>

@@ -5,7 +5,7 @@ import ProtectedRoute from './components/Admin/ProtectedRoute';
 import Home from "./pages/Home";
 import Login from "./pages/Admin/Login";
 import Dashboard from "./pages/Admin/Dashboard";
-import PublicarPropiedad from './pages/Admin/PublicarPropiedad';
+import PublicarPropiedad from './pages/Admin/Propiedades/PublicarPropiedad';
 import TiposCampos from './pages/Admin/Configuracion/TipoCampos';
 import Servicios from './pages/Admin/Configuracion/Servicios';
 import Configuracion from './pages/Admin/Configuracion/Configuracion';

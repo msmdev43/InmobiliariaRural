@@ -11,6 +11,7 @@ const TiposCampos = () => {
   const [editando, setEditando] = useState(null);
   const [formData, setFormData] = useState({ nombre: '' });
   const [busqueda, setBusqueda] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     cargarTipos();
@@ -19,10 +20,13 @@ const TiposCampos = () => {
   const cargarTipos = async () => {
     try {
       setLoading(true);
+      setError('');
       const response = await apiService.getTiposCampos();
       setTipos(response.data || []);
     } catch (error) {
       console.error('Error cargando tipos:', error);
+      setError('Error al cargar los tipos de campo. Por favor, intenta de nuevo.');
+      setTipos([]);
     } finally {
       setLoading(false);
     }
@@ -33,18 +37,27 @@ const TiposCampos = () => {
     if (!formData.nombre.trim()) return;
 
     try {
+      setError('');
+      let response;
+      
       if (editando) {
-        await apiService.editarTipoCampo(editando.idtipocampos, formData);
+        // Usar modificarTipoCampo en lugar de editarTipoCampo
+        response = await apiService.modificarTipoCampo(editando.id, { nombre: formData.nombre });
       } else {
-        await apiService.crearTipoCampo(formData);
+        response = await apiService.crearTipoCampo({ nombre: formData.nombre });
       }
       
-      setModalOpen(false);
-      setEditando(null);
-      setFormData({ nombre: '' });
-      cargarTipos();
+      if (response && response.success) {
+        setModalOpen(false);
+        setEditando(null);
+        setFormData({ nombre: '' });
+        cargarTipos();
+      } else {
+        setError(response?.message || 'Error al guardar el tipo de campo');
+      }
     } catch (error) {
-      alert('Error al guardar');
+      console.error('Error al guardar:', error);
+      setError(error.message || 'Error al guardar el tipo de campo');
     }
   };
 
@@ -52,16 +65,24 @@ const TiposCampos = () => {
     setEditando(tipo);
     setFormData({ nombre: tipo.nombre });
     setModalOpen(true);
+    setError('');
   };
 
   const handleEliminar = async (id) => {
     if (!confirm('¿Estás seguro de eliminar este tipo de campo?')) return;
     
     try {
-      await apiService.eliminarTipoCampo(id);
-      cargarTipos();
+      setError('');
+      const response = await apiService.eliminarTipoCampo(id);
+      
+      if (response && response.success) {
+        cargarTipos();
+      } else {
+        alert(response?.message || 'Error al eliminar el tipo de campo');
+      }
     } catch (error) {
-      alert('Error al eliminar');
+      console.error('Error al eliminar:', error);
+      alert(error.message || 'Error al eliminar el tipo de campo');
     }
   };
 
@@ -77,7 +98,15 @@ const TiposCampos = () => {
           <div className="tiposcampos-header-content-unique">
             <h1 className="tiposcampos-title-unique">Tipos de Campos</h1>
           </div>
-          <button className="tiposcampos-btn-nuevo-unique" onClick={() => setModalOpen(true)}>
+          <button 
+            className="tiposcampos-btn-nuevo-unique" 
+            onClick={() => {
+              setEditando(null);
+              setFormData({ nombre: '' });
+              setError('');
+              setModalOpen(true);
+            }}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="16" />
@@ -107,6 +136,21 @@ const TiposCampos = () => {
           )}
         </div>
 
+        {/* Mensaje de error */}
+        {error && !modalOpen && (
+          <div className="tiposcampos-error-unique">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{error}</span>
+            <button onClick={cargarTipos} className="tiposcampos-error-retry-unique">
+              Reintentar
+            </button>
+          </div>
+        )}
+
         {/* Contenido principal */}
         {loading ? (
           <div className="tiposcampos-loading-unique">
@@ -133,7 +177,7 @@ const TiposCampos = () => {
             {tiposFiltrados.length > 0 ? (
               <div className="tiposcampos-grid-unique">
                 {tiposFiltrados.map(tipo => (
-                  <div key={tipo.idtipocampos} className="tiposcampos-card-unique">
+                  <div key={tipo.id} className="tiposcampos-card-unique">
                     <div className="tiposcampos-card-icon-unique">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -142,7 +186,7 @@ const TiposCampos = () => {
                     </div>
                     <div className="tiposcampos-card-content-unique">
                       <h3 className="tiposcampos-card-title-unique">{tipo.nombre}</h3>
-                      <span className="tiposcampos-card-id-unique">ID: {tipo.idtipocampos}</span>
+                      <span className="tiposcampos-card-id-unique">ID: {tipo.id}</span>
                     </div>
                     <div className="tiposcampos-card-actions-unique">
                       <button 
@@ -155,7 +199,7 @@ const TiposCampos = () => {
                         </svg>
                       </button>
                       <button 
-                        onClick={() => handleEliminar(tipo.idtipocampos)}
+                        onClick={() => handleEliminar(tipo.id)}
                         className="tiposcampos-action-btn-unique tiposcampos-action-delete-unique"
                         title="Eliminar tipo"
                       >
@@ -196,6 +240,7 @@ const TiposCampos = () => {
             setModalOpen(false);
             setEditando(null);
             setFormData({ nombre: '' });
+            setError('');
           }}>
             <div className="tiposcampos-modal-unique" onClick={e => e.stopPropagation()}>
               <div className="tiposcampos-modal-header-unique">
@@ -208,6 +253,7 @@ const TiposCampos = () => {
                     setModalOpen(false);
                     setEditando(null);
                     setFormData({ nombre: '' });
+                    setError('');
                   }}
                 >
                   ×
@@ -215,6 +261,16 @@ const TiposCampos = () => {
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="tiposcampos-modal-body-unique">
+                  {error && (
+                    <div className="tiposcampos-modal-error-unique">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                      </svg>
+                      <span>{error}</span>
+                    </div>
+                  )}
                   <div className="tiposcampos-form-group-unique">
                     <label htmlFor="tiposcampos-nombre" className="tiposcampos-form-label-unique">
                       Nombre del tipo de campo
@@ -242,6 +298,7 @@ const TiposCampos = () => {
                       setModalOpen(false);
                       setEditando(null);
                       setFormData({ nombre: '' });
+                      setError('');
                     }}
                   >
                     Cancelar
