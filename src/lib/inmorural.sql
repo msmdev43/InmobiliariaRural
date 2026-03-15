@@ -123,6 +123,9 @@ CREATE TABLE IF NOT EXISTS `inmorural`.`propiedades` (
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
+ALTER TABLE `inmorural`.`propiedades` 
+ADD COLUMN `destacado` TINYINT NOT NULL DEFAULT 0 AFTER `fecha`;
+
 -- -----------------------------------------------------
 -- Table `inmorural`.`propiedades_has_imagenes`
 -- -----------------------------------------------------
