@@ -25,6 +25,7 @@ const API_CONFIG = {
     ELIMINAR: '/propiedades/eliminarPropiedad.php',
     DETALLE: '/propiedades/obtenerPropiedadDetalle.php',
     ESTADISTICAS: '/propiedades/estadisticas/obtenerEstadisticas.php',
+    DESTACADAS: '/propiedades/propiedadesDestacadas.php',
   },
   
   // Endpoints de servicios

@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Admin/Login";
 import Dashboard from "./pages/Admin/Dashboard";
 import PublicarPropiedad from './pages/Admin/Propiedades/PublicarPropiedad';
+import ListaPropiedades from './pages/Admin/Propiedades/ListaPropiedades';
 import TiposCampos from './pages/Admin/Configuracion/TipoCampos';
 import Servicios from './pages/Admin/Configuracion/Servicios';
 import Configuracion from './pages/Admin/Configuracion/Configuracion';
@@ -27,7 +28,7 @@ function App() {
         
         <Route path="/admin/propiedades" element={
           <ProtectedRoute>
-            <div>Lista de Propiedades</div>
+            <ListaPropiedades />
           </ProtectedRoute>
         } />
         

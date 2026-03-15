@@ -1,74 +1,106 @@
-import { MapPin, Ruler, Bed, Bath } from "lucide-react";
+// C:\xampp\htdocs\InmobiliariaRural\src\components\FeaturedProperties.jsx
+import React, { useState, useEffect } from 'react';
+import { MapPin, Ruler, Bed, Bath, ArrowRight } from "lucide-react";
+import apiService from '../services/api.service';
 import "../styles/components/featuredProp.css";
 
-const properties = [
-  {
-    id: 1,
-    title: "Miramar",
-    location: "Paraje La Ballenera",
-    price: "390.000",
-    area: "15 ha",
-    bedrooms: 0,
-    bathrooms: 0,
-    image: "/assets/prop1.jpg",
-    type: "Paraje",
-  },
-  {
-    id: 2,
-    title: "Santa Irene",
-    location: "Paraje Mechongue",
-    price: "250.000",
-    area: "15 ha",
-    bedrooms: 0,
-    bathrooms: 0,
-    image: "/assets/prop2.jpg",
-    type: "Campo Agricola",
-  },
-  {
-    id: 3,
-    title: "Santa Irene",
-    location: "Miramar, Buenos Aires Costa Atlántica",
-    price: "300.000",
-    area: "8 ha",
-    bedrooms: 0,
-    bathrooms: 0,
-    image: "/assets/prop3.jpg",
-    type: "Paraje",
-  },
-  {
-    id: 4,
-    title: "Santa Irene",
-    location: "Miramar, Buenos Aires Costa Atlántica",
-    price: "650.000",
-    area: "32 ha",
-    bedrooms: 4,
-    bathrooms: 2,
-    image: "/assets/prop4.jpg",
-    type: "Paraje",
-  },
-  {
-    id: 5, // Nueva propiedad
-    title: "Santa Irene",
-    location: "Miramar, Buenos Aires Costa Atlántica",
-    price: "70.000",
-    area: "10 ha",
-    bedrooms: 0,
-    bathrooms: 0,
-    image: "/assets/prop5.jpg",
-    type: "Paraje",
-  },
-];
-
 export default function FeaturedProperties() {
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    cargarPropiedadesDestacadas();
+  }, []);
+
+  const cargarPropiedadesDestacadas = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await apiService.getPropiedadesDestacadas();
+      
+      if (response.success) {
+        setProperties(response.data || []);
+      } else {
+        setError(response.message || 'Error al cargar propiedades');
+      }
+    } catch (error) {
+      console.error('Error cargando propiedades destacadas:', error);
+      setError('Error al conectar con el servidor');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleViewMore = (id) => {
-    console.log("Ver propiedad:", id);
-    // Aquí iría la navegación al detalle de la propiedad
+    // Navegar al detalle de la propiedad
+    window.location.href = `/propiedad/${id}`;
   };
 
   const handleViewAll = () => {
-    console.log("Ver todas las propiedades");
-    // Aquí iría la navegación a la página de todas las propiedades
+    // Navegar a todas las propiedades
+    window.location.href = '/propiedades';
   };
+
+  if (loading) {
+    return (
+      <section id="propiedades" className="featured-section">
+        <div className="container">
+          <div className="section-header">
+            <p className="section-tag">Destacadas</p>
+            <h2 className="section-title">Propiedades seleccionadas</h2>
+            <p className="section-description">
+              Cargando nuestras mejores propiedades...
+            </p>
+          </div>
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="propiedades" className="featured-section">
+        <div className="container">
+          <div className="section-header">
+            <p className="section-tag">Destacadas</p>
+            <h2 className="section-title">Propiedades seleccionadas</h2>
+            <p className="section-description">
+              {error}
+            </p>
+          </div>
+          <div className="error-container">
+            <button 
+              className="retry-button"
+              onClick={cargarPropiedadesDestacadas}
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (properties.length === 0) {
+    return (
+      <section id="propiedades" className="featured-section">
+        <div className="container">
+          <div className="section-header">
+            <p className="section-tag">Destacadas</p>
+            <h2 className="section-title">Propiedades seleccionadas</h2>
+            <p className="section-description">
+              No hay propiedades destacadas disponibles en este momento.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="propiedades" className="featured-section">
@@ -77,7 +109,7 @@ export default function FeaturedProperties() {
           <p className="section-tag">Destacadas</p>
           <h2 className="section-title">Propiedades seleccionadas</h2>
           <p className="section-description">
-            Descubre nuestra seleccion de las mejores propiedades rurales
+            Descubre nuestra selección de las mejores propiedades rurales
             disponibles en este momento.
           </p>
         </div>
@@ -90,40 +122,48 @@ export default function FeaturedProperties() {
                   src={property.image}
                   alt={property.title}
                   className="card-image"
+                  onError={(e) => {
+                    e.target.src = 'http://localhost/BackInmobiliariaRural/uploads/propiedades/default.jpg';
+                  }}
                 />
-                <span className="property-type">{property.type}</span>
+                <span className="property-type-badge">{property.type}</span>
+                {property.total_imagenes > 1 && (
+                  <span className="image-count-badge">
+                    📷 {property.total_imagenes}
+                  </span>
+                )}
               </div>
               <div className="card-content">
                 <h3 className="property-title">{property.title}</h3>
                 <div className="property-location">
                   <MapPin className="location-icon" />
-                  <span>{property.location}</span>
+                  <span className="location-text">{property.location}</span>
                 </div>
                 <div className="property-features">
                   <div className="feature-item">
                     <Ruler className="feature-icon" />
                     <span>{property.area}</span>
                   </div>
-                  {property.bedrooms > 0 && (
-                    <div className="feature-item">
-                      <Bed className="feature-icon" />
-                      <span>{property.bedrooms}</span>
-                    </div>
-                  )}
-                  {property.bathrooms > 0 && (
-                    <div className="feature-item">
-                      <Bath className="feature-icon" />
-                      <span>{property.bathrooms}</span>
+                  {property.servicios && property.servicios.length > 0 && (
+                    <div className="servicios-preview">
+                      {property.servicios.slice(0, 2).map((servicio, idx) => (
+                        <span key={idx} className="servicio-tag">{servicio}</span>
+                      ))}
+                      {property.servicios.length > 2 && (
+                        <span className="servicio-tag">+{property.servicios.length - 2}</span>
+                      )}
                     </div>
                   )}
                 </div>
                 <div className="card-footer">
-                  <p className="property-price">USD {property.price}</p>
+                  <p className="property-price">
+                    {property.moneda} {property.price}
+                  </p>
                   <button
                     className="view-button"
                     onClick={() => handleViewMore(property.id)}
                   >
-                    Ver mas
+                    Ver más
                   </button>
                 </div>
               </div>
@@ -134,6 +174,7 @@ export default function FeaturedProperties() {
         <div className="view-all-container">
           <button className="view-all-button" onClick={handleViewAll}>
             Ver todas las propiedades
+            <ArrowRight className="button-icon" />
           </button>
         </div>
       </div>

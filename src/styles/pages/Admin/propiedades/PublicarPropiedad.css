@@ -1,4 +1,15 @@
-/* C:\xampp\htdocs\InmobiliariaRural\src\styles\pages\Admin\PublicarPropiedad.css */
+/* C:\xampp\htdocs\InmobiliariaRural\src\styles\pages\Admin\propiedades\PublicarPropiedad.css */
+
+/* ===== TEST - VERIFICAR QUE EL CSS CARGA ===== */
+.publicar-test-unique {
+  background: red;
+  color: white;
+  padding: 10px;
+  margin: 10px 0;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 4px;
+}
 
 /* ===== CONTENEDOR PRINCIPAL ===== */
 .publicar-page-unique {
@@ -191,86 +202,56 @@
   margin-top: 0.25rem;
 }
 
-/* ===== SERVICIOS GRID ===== */
+/* ===== SERVICIOS - VERSIÓN CORREGIDA ===== */
 .publicar-servicios-grid-unique {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
+  margin-top: 1rem;
 }
 
 .publicar-servicio-item-unique {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1rem 0.75rem 3rem;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
-  padding-left: 2.5rem;
+  min-height: 48px;
 }
 
 .publicar-servicio-item-unique:hover {
-  background: white;
+  background: #ffffff;
   border-color: #006A4E;
   box-shadow: 0 2px 8px rgba(0, 106, 78, 0.1);
 }
 
 .publicar-servicio-checkbox-unique {
   position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.publicar-servicio-checkmark-unique {
-  position: absolute;
-  top: 50%;
   left: 1rem;
-  transform: translateY(-50%);
-  height: 18px;
-  width: 18px;
-  background-color: white;
-  border: 2px solid #cbd5e1;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.publicar-servicio-item-unique:hover .publicar-servicio-checkbox-unique ~ .publicar-servicio-checkmark-unique {
-  border-color: #006A4E;
-}
-
-.publicar-servicio-checkbox-unique:checked ~ .publicar-servicio-checkmark-unique {
-  background-color: #006A4E;
-  border-color: #006A4E;
-}
-
-.publicar-servicio-checkmark-unique:after {
-  content: "";
-  position: absolute;
-  display: none;
-}
-
-.publicar-servicio-checkbox-unique:checked ~ .publicar-servicio-checkmark-unique:after {
-  display: block;
-}
-
-.publicar-servicio-checkmark-unique:after {
-  left: 5px;
-  top: 1px;
-  width: 5px;
-  height: 9px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 1; /* Aseguramos que sea visible */
 }
 
 .publicar-servicio-nombre-unique {
-  font-size: 0.9rem;
-  color: #1e293b;
+  font-size: 0.95rem;
+  color: #1f2937;
+  font-weight: 500;
+  margin-left: 0.5rem;
+  user-select: none;
+}
+
+/* Estilo cuando el checkbox está seleccionado */
+.publicar-servicio-checkbox-unique:checked {
+  accent-color: #006A4E; /* Color del checkbox cuando está seleccionado */
 }
 
 /* ===== SECCIÓN DE IMÁGENES ===== */
@@ -455,6 +436,35 @@
   border-color: #cbd5e1;
 }
 
+/* ===== ERRORES DE VALIDACIÓN ===== */
+.publicar-input-error-unique {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2;
+}
+
+.publicar-input-error-unique:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.publicar-error-mensaje-unique {
+  display: block;
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}
+
+/* ===== MENSAJE SIN SERVICIOS ===== */
+.publicar-sin-servicios-unique {
+  text-align: center;
+  padding: 2rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 0.95rem;
+  border: 1px dashed #e2e8f0;
+  margin-top: 1rem;
+}
+
 /* ===== SPINNERS ===== */
 .publicar-spinner-small-unique {
   width: 16px;
@@ -556,9 +566,5 @@
 
   .publicar-seccion-titulo-unique {
     flex-wrap: wrap;
-  }
-
-  .publicar-servicio-item-unique {
-    padding: 1rem 1rem 1rem 2.5rem;
   }
 }

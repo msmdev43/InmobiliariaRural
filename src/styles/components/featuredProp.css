@@ -347,6 +347,97 @@
   transform: translateX(8px);
 }
 
+/* Agregar al final de C:\xampp\htdocs\InmobiliariaRural\src\styles\components\featuredProp.css */
+
+/* ===== LOADING Y ERROR STATES ===== */
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f4f6;
+  border-top-color: #006A4E;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retry-button {
+  background: #006A4E;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #004d39;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 106, 78, 0.25);
+}
+
+/* ===== BADGES ADICIONALES ===== */
+.image-count-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+
+/* ===== SERVICIOS PREVIEW ===== */
+.servicios-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-left: 0.5rem;
+}
+
+.servicio-tag {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ===== Ajustes responsive para badges ===== */
+@media (max-width: 640px) {
+  .property-type-badge,
+  .image-count-badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.8rem;
+  }
+  
+  .servicio-tag {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem;
+  }
+}
+
 /* ===== RESPONSIVE MEJORADO ===== */
 @media (max-width: 640px) {
   .property-features {

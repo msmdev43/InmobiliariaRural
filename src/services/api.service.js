@@ -191,6 +191,12 @@ class ApiService {
     });
   }
 
+    async getPropiedadesDestacadas() {
+    return this.request(PROPIEDADES_ENDPOINTS.DESTACADAS, {
+      method: 'GET'
+    });
+  }
+
   // Consultas
   async getConsultas() {
     return this.request(CONSULTAS_ENDPOINTS.LISTAR, {
