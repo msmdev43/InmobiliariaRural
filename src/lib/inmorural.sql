@@ -123,6 +123,12 @@ CREATE TABLE IF NOT EXISTS `inmorural`.`propiedades` (
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
+ALTER TABLE `inmorural`.`propiedades` 
+ADD COLUMN `destacado` TINYINT NOT NULL DEFAULT 0 AFTER `fecha`;
+
+ALTER TABLE `inmorural`.`consultas` 
+ADD COLUMN `tipo` VARCHAR(45) NOT NULL AFTER `mensaje`;
+
 -- -----------------------------------------------------
 -- Table `inmorural`.`propiedades_has_imagenes`
 -- -----------------------------------------------------
