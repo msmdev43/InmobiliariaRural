@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../../components/Admin/Sidebar';
 import apiService from '../../../services/api.service';
 import { useToast, ToastContainer } from '../../../components/UI/Toast';
+import MapaUbicacion from '../../../components/UI/MapaUbicacion'; // Nuevo componente
 import '../../../styles/pages/Admin/propiedades/PublicarPropiedad.css';
+// Importar estilos de Leaflet
+import 'leaflet/dist/leaflet.css';
 
 const PublicarPropiedad = () => {
   const navigate = useNavigate();
@@ -16,6 +19,9 @@ const PublicarPropiedad = () => {
   const [imagenesPreview, setImagenesPreview] = useState([]);
   const [imagenesFiles, setImagenesFiles] = useState([]);
   const [erroresValidacion, setErroresValidacion] = useState({});
+
+  // Estado para servicios seleccionados (más fácil de manejar)
+  const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
 
   const [formData, setFormData] = useState({
     codigo: '',
@@ -32,8 +38,7 @@ const PublicarPropiedad = () => {
     provincia: '',
     estado: 'disponible',
     fecha: new Date().toISOString().split('T')[0],
-    campos_idtipocampos: '', // CORREGIDO: nombre exacto de la BD
-    servicios: []
+    campos_idtipocampos: '',
   });
 
   useEffect(() => {
@@ -58,12 +63,12 @@ const PublicarPropiedad = () => {
     };
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // Limpiar error del campo cuando el usuario empieza a escribir
     if (erroresValidacion[name]) {
       setErroresValidacion(prev => ({
         ...prev,
@@ -75,27 +80,6 @@ const PublicarPropiedad = () => {
       ...prev,
       [name]: value
     }));
-  };
-
-  const handleServicioChange = (servicioId) => {
-    setFormData(prev => {
-      const id = Number(servicioId);
-      // Asegurarse de que servicios sea un array y filtrar valores no válidos
-      const serviciosActuales = Array.isArray(prev.servicios) 
-        ? prev.servicios.filter(s => s !== null && !isNaN(s))
-        : [];
-      
-      const nuevosServicios = serviciosActuales.includes(id)
-        ? serviciosActuales.filter(s => s !== id)
-        : [...serviciosActuales, id];
-      
-      console.log('Servicios seleccionados:', nuevosServicios); // Debug
-      
-      return {
-        ...prev,
-        servicios: nuevosServicios
-      };
-    });
   };
 
   const handleImagenes = (e) => {
@@ -142,6 +126,24 @@ const PublicarPropiedad = () => {
     setImagenesFiles(nuevosFiles);
   };
 
+  // Manejador para cuando se actualizan las coordenadas desde el mapa
+  const handleCoordenadasChange = (lat, lng) => {
+    setFormData(prev => ({
+      ...prev,
+      latitud: lat,
+      longitud: lng
+    }));
+    
+    // Limpiar errores si los había
+    if (erroresValidacion.latitud || erroresValidacion.longitud) {
+      setErroresValidacion(prev => ({
+        ...prev,
+        latitud: null,
+        longitud: null
+      }));
+    }
+  };
+
   const generarCodigo = () => {
     const fecha = new Date();
     const año = fecha.getFullYear();
@@ -160,9 +162,9 @@ const PublicarPropiedad = () => {
   const validarFormulario = () => {
     const nuevosErrores = {};
     
-    // Validar campos obligatorios
     if (!formData.titulo?.trim()) nuevosErrores.titulo = 'El título es obligatorio';
     if (!formData.alquilerventa) nuevosErrores.alquilerventa = 'El tipo de operación es obligatorio';
+    
     if (!formData.superficie?.trim()) {
       nuevosErrores.superficie = 'La superficie es obligatoria';
     } else if (Number(formData.superficie) <= 0) {
@@ -181,25 +183,15 @@ const PublicarPropiedad = () => {
     if (!formData.ciudad?.trim()) nuevosErrores.ciudad = 'La ciudad es obligatoria';
     if (!formData.provincia?.trim()) nuevosErrores.provincia = 'La provincia es obligatoria';
     
-    if (!formData.campos_idtipocampos) { // CORREGIDO
+    if (!formData.campos_idtipocampos) {
       nuevosErrores.campos_idtipocampos = 'El tipo de campo es obligatorio';
     } else if (isNaN(Number(formData.campos_idtipocampos))) {
       nuevosErrores.campos_idtipocampos = 'Selecciona un tipo de campo válido';
     }
 
-    // Validar coordenadas (opcionales pero si se ingresan deben ser válidas)
-    if (formData.latitud && isNaN(Number(formData.latitud))) {
-      nuevosErrores.latitud = 'La latitud debe ser un número válido';
-    }
-    
-    if (formData.longitud && isNaN(Number(formData.longitud))) {
-      nuevosErrores.longitud = 'La longitud debe ser un número válido';
-    }
-
     setErroresValidacion(nuevosErrores);
     
     if (Object.keys(nuevosErrores).length > 0) {
-      // Mostrar el primer error como toast
       const primerError = Object.values(nuevosErrores)[0];
       toast.error(primerError);
       return false;
@@ -220,7 +212,6 @@ const PublicarPropiedad = () => {
     try {
       const formDataToSend = new FormData();
       
-      // Agregar campos básicos
       formDataToSend.append('codigo', formData.codigo || '');
       formDataToSend.append('titulo', formData.titulo);
       formDataToSend.append('alquilerventa', formData.alquilerventa);
@@ -233,44 +224,32 @@ const PublicarPropiedad = () => {
       formDataToSend.append('provincia', formData.provincia);
       formDataToSend.append('estado', formData.estado);
       formDataToSend.append('fecha', formData.fecha);
-      formDataToSend.append('campos_idtipocampos', formData.campos_idtipocampos); // CORREGIDO
+      formDataToSend.append('campos_idtipocampos', formData.campos_idtipocampos);
       
-      // Coordenadas (enviar 0 por defecto ya que la BD lo requiere NOT NULL)
       formDataToSend.append('latitud', formData.latitud || 0);
       formDataToSend.append('longitud', formData.longitud || 0);
       
-      // Servicios - asegurarse de que sea un array válido
-      const serviciosValidos = Array.isArray(formData.servicios) 
-        ? formData.servicios.filter(s => s !== null && !isNaN(s)).map(Number)
-        : [];
-      
+      // Enviar servicios seleccionados
+      const serviciosValidos = serviciosSeleccionados.filter(s => !isNaN(s)).map(Number);
       formDataToSend.append('servicios', JSON.stringify(serviciosValidos));
-      console.log('Enviando servicios:', serviciosValidos); // Debug
+      
+      console.log('Servicios a enviar:', serviciosValidos);
 
-      // Agregar imágenes
-      imagenesFiles.forEach((imagen, index) => {
+      imagenesFiles.forEach((imagen) => {
         formDataToSend.append('imagenes[]', imagen);
       });
-
-      // Debug completo
-      console.log('=== FORM DATA ENVIADO ===');
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0], pair[1]);
-      }
 
       const response = await apiService.crearPropiedad(formDataToSend);
       
       if (response.success) {
         toast.success('¡Propiedad publicada con éxito!');
         
-        // Pequeña pausa para que el usuario vea el toast
         setTimeout(() => {
           const publicarOtra = window.confirm(
             '✅ Propiedad publicada exitosamente\n\n¿Deseas publicar otra propiedad?'
           );
           
           if (publicarOtra) {
-            // Limpiar formulario
             setFormData({
               codigo: '',
               titulo: '',
@@ -286,9 +265,9 @@ const PublicarPropiedad = () => {
               provincia: '',
               estado: 'disponible',
               fecha: new Date().toISOString().split('T')[0],
-              campos_idtipocampos: '', // CORREGIDO
-              servicios: []
+              campos_idtipocampos: '',
             });
+            setServiciosSeleccionados([]);
             setImagenesPreview([]);
             setImagenesFiles([]);
             setErroresValidacion({});
@@ -304,7 +283,6 @@ const PublicarPropiedad = () => {
     } catch (error) {
       console.error('Error completo:', error);
       
-      // Mensaje de error más amigable
       let mensajeError = 'Error al conectar con el servidor';
       if (error.message) {
         if (error.message.includes('Failed to fetch')) {
@@ -322,7 +300,6 @@ const PublicarPropiedad = () => {
     }
   };
 
-  // Función para obtener clase de error
   const getErrorClass = (campo) => {
     return erroresValidacion[campo] ? 'publicar-input-error-unique' : '';
   };
@@ -344,7 +321,6 @@ const PublicarPropiedad = () => {
       <div className="publicar-page-unique">
         <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
         
-        {/* Header */}
         <div className="publicar-header-unique">
           <div className="publicar-header-content-unique">
             <h1 className="publicar-title-unique">Publicar Nueva Propiedad</h1>
@@ -359,7 +335,7 @@ const PublicarPropiedad = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="publicar-form-unique">
-          {/* SECCIÓN 1: Información Básica */}
+          {/* SECCIÓN 1: Información Básica (igual que antes) */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">1</span>
@@ -421,7 +397,7 @@ const PublicarPropiedad = () => {
                   Tipo de Campo <span className="publicar-required-unique">*</span>
                 </label>
                 <select 
-                  name="campos_idtipocampos" // CORREGIDO
+                  name="campos_idtipocampos"
                   value={formData.campos_idtipocampos} 
                   onChange={handleChange} 
                   className={`publicar-select-unique ${getErrorClass('campos_idtipocampos')}`}
@@ -469,7 +445,7 @@ const PublicarPropiedad = () => {
             </div>
           </div>
 
-          {/* SECCIÓN 2: Precio y Descripción */}
+          {/* SECCIÓN 2: Precio y Descripción (igual que antes) */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">2</span>
@@ -502,11 +478,12 @@ const PublicarPropiedad = () => {
                 </label>
                 <select name="moneda" value={formData.moneda} onChange={handleChange} className="publicar-select-unique">
                   <option value="USD">USD - Dólar</option>
-                  <option value="ARG">ARG - Peso Argentino</option>
+                  <option value="ARS">ARS - Pesos Argentinos</option>
+                  <option value="EUR">EUR - Euro</option>
                 </select>
               </div>
 
-              <div className="publicar-campo-unique publicar-campo-full-unique">
+              <div className="publicar-campo-full-unique">
                 <label className="publicar-label-unique">
                   Descripción <span className="publicar-required-unique">*</span>
                 </label>
@@ -525,14 +502,15 @@ const PublicarPropiedad = () => {
             </div>
           </div>
 
-          {/* SECCIÓN 3: Ubicación */}
+          {/* SECCIÓN 3: Ubicación - NUEVA DISTRIBUCIÓN */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">3</span>
               <h2 className="publicar-seccion-heading-unique">Ubicación</h2>
             </div>
             
-            <div className="publicar-grid-unique">
+            {/* Fila 1: Provincia, Localidad, Zona */}
+            <div className="publicar-grid-3columnas-unique">
               <div className="publicar-campo-unique">
                 <label className="publicar-label-unique">
                   Provincia <span className="publicar-required-unique">*</span>
@@ -575,7 +553,7 @@ const PublicarPropiedad = () => {
 
               <div className="publicar-campo-unique">
                 <label className="publicar-label-unique">
-                  Ciudad/Localidad <span className="publicar-required-unique">*</span>
+                  Localidad <span className="publicar-required-unique">*</span>
                 </label>
                 <input
                   type="text"
@@ -592,83 +570,152 @@ const PublicarPropiedad = () => {
 
               <div className="publicar-campo-unique">
                 <label className="publicar-label-unique">
-                  Zona/Paraje <span className="publicar-required-unique">*</span>
+                  Zona<span className="publicar-required-unique">*</span>
                 </label>
                 <input
                   type="text"
                   name="zona"
                   value={formData.zona}
                   onChange={handleChange}
-                  placeholder="Ej: Paraje La Ballenera"
+                  placeholder="Ej: La Ballenera"
                   className={`publicar-input-unique ${getErrorClass('zona')}`}
                 />
                 {erroresValidacion.zona && (
                   <small className="publicar-error-mensaje-unique">{erroresValidacion.zona}</small>
                 )}
               </div>
+            </div>
 
-              <div className="publicar-campo-unique">
-                <label className="publicar-label-unique">Latitud</label>
-                <input
-                  type="number"
-                  step="0.000001"
-                  name="latitud"
-                  value={formData.latitud}
-                  onChange={handleChange}
-                  placeholder="Ej: -38.258451"
-                  className={`publicar-input-unique ${getErrorClass('latitud')}`}
-                />
-                {erroresValidacion.latitud && (
-                  <small className="publicar-error-mensaje-unique">{erroresValidacion.latitud}</small>
+            {/* Fila 2: Coordenadas + Mapa */}
+            <div className="publicar-fila-mapa-unique">
+              {/* Columna izquierda: Latitud y Longitud */}
+              <div className="publicar-coordenadas-columna-unique">
+                <div className="publicar-campo-unique">
+                  <label className="publicar-label-unique">
+                    Longitud
+                    <span className="publicar-ayuda-unique">(Haz clic en el mapa)</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.000001"
+                    name="longitud"
+                    value={formData.longitud}
+                    onChange={handleChange}
+                    placeholder="Ej: -57.833279"
+                    className={`publicar-input-unique publicar-coordenada-input-unique ${getErrorClass('longitud')}`}
+                    readOnly
+                  />
+                  {erroresValidacion.longitud && (
+                    <small className="publicar-error-mensaje-unique">{erroresValidacion.longitud}</small>
+                  )}
+                </div>
+
+                <div className="publicar-campo-unique">
+                  <label className="publicar-label-unique">
+                    Latitud
+                    <span className="publicar-ayuda-unique">(Haz clic en el mapa)</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.000001"
+                    name="latitud"
+                    value={formData.latitud}
+                    onChange={handleChange}
+                    placeholder="Ej: -38.258451"
+                    className={`publicar-input-unique publicar-coordenada-input-unique ${getErrorClass('latitud')}`}
+                    readOnly
+                  />
+                  {erroresValidacion.latitud && (
+                    <small className="publicar-error-mensaje-unique">{erroresValidacion.latitud}</small>
+                  )}
+                </div>
+
+                {/* Info de coordenadas actuales */}
+                {formData.latitud && formData.longitud && (
+                  <div className="publicar-coordenadas-preview-unique">
+                    <span className="publicar-coordenadas-preview-label-unique">Ubicación seleccionada:</span>
+                    <span className="publicar-coordenadas-preview-valor-unique">
+                      {parseFloat(formData.latitud).toFixed(6)}, {parseFloat(formData.longitud).toFixed(6)}
+                    </span>
+                  </div>
                 )}
               </div>
 
-              <div className="publicar-campo-unique">
-                <label className="publicar-label-unique">Longitud</label>
-                <input
-                  type="number"
-                  step="0.000001"
-                  name="longitud"
-                  value={formData.longitud}
-                  onChange={handleChange}
-                  placeholder="Ej: -57.833279"
-                  className={`publicar-input-unique ${getErrorClass('longitud')}`}
-                />
-                {erroresValidacion.longitud && (
-                  <small className="publicar-error-mensaje-unique">{erroresValidacion.longitud}</small>
-                )}
+              {/* Columna derecha: Mapa */}
+              <div className="publicar-mapa-columna-unique">
+                <div className="publicar-mapa-container-unique">
+                  <MapaUbicacion 
+                    lat={formData.latitud ? parseFloat(formData.latitud) : -38.2743}
+                    lng={formData.longitud ? parseFloat(formData.longitud) : -57.8395}
+                    onCoordenadasChange={handleCoordenadasChange}
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* SECCIÓN 4: Servicios */}
+          {/* SECCIÓN 4: Servicios - NUEVO SELECTOR MEJORADO */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">4</span>
               <h2 className="publicar-seccion-heading-unique">Servicios Disponibles</h2>
             </div>
             
+            
+
+            {/* Grid de servicios */}
             <div className="publicar-servicios-grid-unique">
-              {servicios.map((servicio, index) => (
-                <label key={servicio.id} className="publicar-servicio-item-unique">
-                  <input
-                    type="checkbox"
-                    id={`servicio-${servicio.id}`}
-                    checked={formData.servicios?.includes(servicio.id) || false}
-                    onChange={() => handleServicioChange(servicio.id)}
-                    className="publicar-servicio-checkbox-unique"
-                  />
-                  <span className="publicar-servicio-checkmark-unique"></span>
-                  <span className="publicar-servicio-nombre-unique">{servicio.nombre}</span>
-                </label>
-              ))}
+              {servicios.map((servicio) => {
+                const seleccionado = serviciosSeleccionados.includes(servicio.id);
+                
+                return (
+                  <label key={servicio.id} className="publicar-servicio-item-unique">
+                    <input
+                      type="checkbox"
+                      checked={seleccionado}
+                      onChange={() => {
+                        if (seleccionado) {
+                          setServiciosSeleccionados(prev => 
+                            prev.filter(id => id !== servicio.id)
+                          );
+                        } else {
+                          setServiciosSeleccionados(prev => 
+                            [...prev, servicio.id]
+                          );
+                        }
+                      }}
+                      className="publicar-servicio-checkbox-unique"
+                    />
+                    <span className="publicar-servicio-checkmark-unique"></span>
+                    <span className="publicar-servicio-nombre-unique">{servicio.nombre}</span>
+                  </label>
+                );
+              })}
             </div>
+            
+            {/* Lista de servicios seleccionados */}
+            {serviciosSeleccionados.length > 0 && (
+              <div className="publicar-servicios-seleccionados-unique">
+                <span className="publicar-servicios-seleccionados-label-unique">
+                  Servicios marcados:
+                </span>
+                <div className="publicar-servicios-seleccionados-lista-unique">
+                  {servicios
+                    .filter(s => serviciosSeleccionados.includes(s.id))
+                    .map(s => (
+                      <span key={s.id} className="publicar-servicio-seleccionado-item-unique"> {s.nombre},
+                      </span>
+                    ))}
+                </div>
+              </div>
+            )}
+            
             {servicios.length === 0 && (
               <p className="publicar-sin-servicios-unique">No hay servicios disponibles</p>
             )}
           </div>
 
-          {/* SECCIÓN 5: Imágenes */}
+          {/* SECCIÓN 5: Imágenes (igual que antes) */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">5</span>
@@ -735,7 +782,6 @@ const PublicarPropiedad = () => {
             </div>
           </div>
 
-          {/* Botones de acción */}
           <div className="publicar-acciones-unique">
             <button 
               type="button" 
