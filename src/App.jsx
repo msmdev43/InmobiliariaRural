@@ -7,6 +7,8 @@ import Login from "./pages/Admin/Login";
 import Dashboard from "./pages/Admin/Dashboard";
 import PublicarPropiedad from './pages/Admin/Propiedades/PublicarPropiedad';
 import ListaPropiedades from './pages/Admin/Propiedades/ListaPropiedades';
+// Importar VerPropiedad
+import VerPropiedad from './pages/Admin/Propiedades/VerPropiedad';
 import TiposCampos from './pages/Admin/Configuracion/TipoCampos';
 import Servicios from './pages/Admin/Configuracion/Servicios';
 import Configuracion from './pages/Admin/Configuracion/Configuracion';
@@ -26,9 +28,16 @@ function App() {
           </ProtectedRoute>
         } />
         
+        {/* Rutas de Propiedades */}
         <Route path="/admin/propiedades" element={
           <ProtectedRoute>
             <ListaPropiedades />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/admin/propiedades/:id" element={
+          <ProtectedRoute>
+            <VerPropiedad />
           </ProtectedRoute>
         } />
         
@@ -38,19 +47,26 @@ function App() {
           </ProtectedRoute>
         } />
         
+        <Route path="/admin/propiedades/editar/:id" element={
+          <ProtectedRoute>
+            <PublicarPropiedad />
+          </ProtectedRoute>
+        } />
+        
+        {/* Rutas de Consultas */}
         <Route path="/admin/consultas" element={
           <ProtectedRoute>
             <div>Lista de Consultas</div>
           </ProtectedRoute>
         } />
 
-        <Route path="/admin/configuracion" element={
-            <ProtectedRoute>
-              <Configuracion />
-            </ProtectedRoute>
-          } />
-        
         {/* Rutas de Configuración */}
+        <Route path="/admin/configuracion" element={
+          <ProtectedRoute>
+            <Configuracion />
+          </ProtectedRoute>
+        } />
+        
         <Route path="/admin/configuracion/tipos-campos" element={
           <ProtectedRoute>
             <TiposCampos />
@@ -60,16 +76,6 @@ function App() {
         <Route path="/admin/configuracion/servicios" element={
           <ProtectedRoute>
             <Servicios />
-          </ProtectedRoute>
-        } />
-        
-        {/* Ruta general de configuración (opcional) */}
-        <Route path="/admin/configuracion" element={
-          <ProtectedRoute>
-            <div style={{ padding: '2rem' }}>
-              <h1>Configuración</h1>
-              <p>Selecciona una opción del menú lateral</p>
-            </div>
           </ProtectedRoute>
         } />
       </Routes>

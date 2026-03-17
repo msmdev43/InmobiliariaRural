@@ -1,0 +1,669 @@
+/* C:\xampp\htdocs\InmobiliariaRural\src\styles\pages\Admin\propiedades\VerPropiedad.css */
+.ver-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.ver-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.ver-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ver-btn-volver {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.ver-btn-volver:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.ver-titulo {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.ver-codigo {
+  color: var(--muted);
+  margin: 0.25rem 0 0 0;
+  font-size: 0.9rem;
+}
+
+.ver-header-right {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Badges */
+.ver-estado-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.ver-estado-disponible {
+  background: #d4edda;
+  color: #155724;
+}
+
+.ver-estado-vendido {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.ver-estado-alquilado {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.ver-estado-reservado {
+  background: #e2d5f3;
+  color: #6f42c1;
+}
+
+.ver-estado-eliminado {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.ver-tipo-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.ver-tipo-alquiler {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.ver-tipo-venta {
+  background: #cfe2ff;
+  color: #084298;
+}
+
+.ver-destacado-badge {
+  background: #fff3cd;
+  color: #856404;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Acciones principales */
+.ver-acciones {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.ver-btn-editar {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ver-btn-editar:hover {
+  background: var(--primary-dark);
+}
+
+.ver-btn-eliminar {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ver-btn-eliminar:hover {
+  background: #bb2d3b;
+}
+
+.ver-btn-restaurar {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ver-btn-restaurar:hover {
+  background: #218838;
+}
+
+.ver-btn-eliminar-perm {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ver-btn-eliminar-perm:hover {
+  background: #5a6268;
+}
+
+/* Grid principal */
+.ver-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+/* Columna izquierda - Imágenes */
+.ver-col-izquierda {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ver-imagen-principal {
+  width: 100%;
+  height: 400px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--secondary);
+  cursor: pointer;
+}
+
+.ver-imagen-principal img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.ver-imagen-principal:hover img {
+  transform: scale(1.05);
+}
+
+.ver-miniaturas {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.ver-miniatura {
+  aspect-ratio: 1;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.ver-miniatura.activo {
+  border-color: var(--primary);
+}
+
+.ver-miniatura img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ver-info-imagenes {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Columna derecha */
+.ver-col-derecha {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ver-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ver-card-titulo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--foreground);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Card de precio */
+.ver-card-precio {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+}
+
+.ver-precio {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.ver-precio-moneda {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.ver-precio-valor {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.ver-precio-detalle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* Características */
+.ver-caracteristicas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.ver-caracteristica {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ver-caracteristica-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.ver-caracteristica-valor {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+/* Ubicación */
+.ver-ubicacion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ver-ubicacion-detalle {
+  background: var(--secondary);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.ver-ubicacion-detalle p {
+  margin: 0.5rem 0;
+}
+
+.ver-ubicacion-detalle p:first-child {
+  margin-top: 0;
+}
+
+.ver-ubicacion-detalle p:last-child {
+  margin-bottom: 0;
+}
+
+.ver-btn-mapa {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  align-self: flex-start;
+}
+
+.ver-btn-mapa:hover {
+  background: var(--primary-dark);
+}
+
+.ver-mapa-container {
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Descripción */
+.ver-descripcion {
+  line-height: 1.6;
+  color: var(--foreground);
+}
+
+.ver-descripcion p {
+  margin: 1rem 0;
+}
+
+.ver-descripcion p:first-child {
+  margin-top: 0;
+}
+
+.ver-descripcion p:last-child {
+  margin-bottom: 0;
+}
+
+/* Servicios */
+.ver-servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.ver-servicio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: var(--secondary);
+  border-radius: 0.25rem;
+}
+
+.ver-servicio-icono {
+  font-size: 1.2rem;
+}
+
+.ver-servicio-nombre {
+  font-size: 0.9rem;
+  color: var(--foreground);
+}
+
+/* Estadísticas */
+.ver-estadisticas {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.ver-estadistica {
+  text-align: center;
+}
+
+.ver-estadistica-valor {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.ver-estadistica-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Información adicional */
+.ver-info-adicional {
+  color: var(--foreground);
+  font-size: 0.9rem;
+}
+
+.ver-info-adicional p {
+  margin: 0.5rem 0;
+}
+
+/* Loading */
+.ver-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.ver-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--secondary);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error */
+.ver-error {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.ver-error h2 {
+  color: var(--foreground);
+  margin-bottom: 1rem;
+}
+
+/* Modal */
+.ver-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.ver-modal {
+  background: white;
+  border-radius: 0.5rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ver-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.ver-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--foreground);
+}
+
+.ver-modal-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0;
+  line-height: 1;
+}
+
+.ver-modal-cerrar:hover {
+  color: var(--foreground);
+}
+
+.ver-modal-body {
+  padding: 1.5rem;
+}
+
+.ver-modal-info {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 1rem 0 0 0;
+}
+
+.ver-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.ver-modal-btn-cancelar {
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ver-modal-btn-cancelar:hover {
+  background: var(--border);
+}
+
+.ver-modal-btn-confirmar {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ver-modal-btn-confirmar:hover {
+  background: var(--primary-dark);
+}
+
+.ver-modal-btn-confirmar.eliminar-perm {
+  background: #dc3545;
+}
+
+.ver-modal-btn-confirmar.eliminar-perm:hover {
+  background: #bb2d3b;
+}
+
+/* Modal de imagen */
+.ver-modal-imagen {
+  background: white;
+  border-radius: 0.5rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  position: relative;
+}
+
+.ver-modal-imagen img {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .ver-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ver-container {
+    padding: 1rem;
+  }
+  
+  .ver-titulo {
+    font-size: 1.5rem;
+  }
+  
+  .ver-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .ver-header-right {
+    align-self: flex-start;
+  }
+  
+  .ver-acciones {
+    flex-direction: column;
+  }
+  
+  .ver-btn-editar,
+  .ver-btn-eliminar,
+  .ver-btn-restaurar,
+  .ver-btn-eliminar-perm {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .ver-caracteristicas-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ver-servicios-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ver-estadisticas {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .ver-modal {
+    margin: 1rem;
+  }
+}

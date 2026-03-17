@@ -178,16 +178,70 @@ class ApiService {
   }
 
   // Propiedades
-  async getPropiedades() {
-    return this.request(PROPIEDADES_ENDPOINTS.LISTAR, {
-      method: 'GET'
-    });
+  async getPropiedades(params = '') {
+    try {
+      const url = params 
+        ? `${PROPIEDADES_ENDPOINTS.LISTAR}?${params}`
+        : PROPIEDADES_ENDPOINTS.LISTAR;
+      
+      const response = await this.request(url, {
+        method: 'GET'
+      });
+      
+      // Asegurar estructura de respuesta
+      return {
+        success: response.success || false,
+        data: response.data || [],
+        paginacion: response.paginacion || {
+          pagina_actual: 1,
+          por_pagina: 20,
+          total_registros: 0,
+          total_paginas: 0
+        },
+        filtros_disponibles: response.filtros_disponibles || {
+          provincias: [],
+          ciudades: [],
+          tipos_operacion: ['alquiler', 'venta'],
+          estados: ['disponible', 'vendido', 'alquilado', 'reservado']
+        },
+        message: response.message || ''
+      };
+    } catch (error) {
+      console.error('Error en getPropiedades:', error);
+      return {
+        success: false,
+        data: [],
+        paginacion: {
+          pagina_actual: 1,
+          por_pagina: 20,
+          total_registros: 0,
+          total_paginas: 0
+        },
+        filtros_disponibles: {
+          provincias: [],
+          ciudades: [],
+          tipos_operacion: ['alquiler', 'venta'],
+          estados: ['disponible', 'vendido', 'alquilado', 'reservado']
+        },
+        message: error.message || 'Error al cargar propiedades'
+      };
+    }
   }
 
   async getPropiedadDetalle(id) {
-    return this.request(`${PROPIEDADES_ENDPOINTS.DETALLE}?id=${id}`, {
-      method: 'GET'
-    });
+    try {
+      const response = await this.request(`${PROPIEDADES_ENDPOINTS.DETALLE}?id=${id}`, {
+        method: 'GET'
+      });
+      
+      return response;
+    } catch (error) {
+      console.error('Error en getPropiedadDetalle:', error);
+      return {
+        success: false,
+        message: error.message || 'Error al cargar propiedad'
+      };
+    }
   }
 
   async modificarPropiedad(id, data) {
@@ -197,11 +251,24 @@ class ApiService {
     });
   }
 
-  async eliminarPropiedad(id) {
-    return this.request(PROPIEDADES_ENDPOINTS.ELIMINAR, {
-      method: 'DELETE',
-      body: JSON.stringify({ id })
-    });
+  async eliminarPropiedad(id, accion = 'eliminar') {
+    try {
+      const response = await this.request(PROPIEDADES_ENDPOINTS.ELIMINAR, {
+        method: 'POST', // Usamos POST para enviar datos en el body
+        body: JSON.stringify({ 
+          id, 
+          accion // 'eliminar', 'restaurar', 'eliminar_permanentemente'
+        })
+      });
+      
+      return response;
+    } catch (error) {
+      console.error('Error en eliminarPropiedad:', error);
+      return {
+        success: false,
+        message: error.message || 'Error al eliminar propiedad'
+      };
+    }
   }
 
   async getEstadisticasPropiedades() {
