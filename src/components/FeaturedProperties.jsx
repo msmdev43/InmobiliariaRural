@@ -1,6 +1,6 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\components\FeaturedProperties.jsx
 import React, { useState, useEffect } from 'react';
-import { MapPin, Ruler, Bed, Bath, ArrowRight } from "lucide-react";
+import { MapPin, Ruler, ArrowRight } from "lucide-react";
 import apiService from '../services/api.service';
 import "../styles/components/featuredProp.css";
 
@@ -8,6 +8,9 @@ export default function FeaturedProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // URL de la imagen por defecto (ahora como constante)
+  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/uploads/propiedades/default.png';
 
   useEffect(() => {
     cargarPropiedadesDestacadas();
@@ -19,6 +22,7 @@ export default function FeaturedProperties() {
       setError(null);
       
       const response = await apiService.getPropiedadesDestacadas();
+      console.log('Propiedades cargadas:', response); // Debug
       
       if (response.success) {
         setProperties(response.data || []);
@@ -33,13 +37,17 @@ export default function FeaturedProperties() {
     }
   };
 
+  const handleImageError = (e) => {
+    console.log('Error cargando imagen, usando default:', e.target.src);
+    e.target.src = DEFAULT_IMAGE;
+    e.target.onerror = null; // Prevenir bucle infinito
+  };
+
   const handleViewMore = (id) => {
-    // Navegar al detalle de la propiedad
     window.location.href = `/propiedad/${id}`;
   };
 
   const handleViewAll = () => {
-    // Navegar a todas las propiedades
     window.location.href = '/propiedades';
   };
 
@@ -122,9 +130,8 @@ export default function FeaturedProperties() {
                   src={property.image}
                   alt={property.title}
                   className="card-image"
-                  onError={(e) => {
-                    e.target.src = 'http://localhost/BackInmobiliariaRural/uploads/propiedades/default.jpg';
-                  }}
+                  onError={handleImageError}
+                  loading="lazy"
                 />
                 <span className="property-type-badge">{property.type}</span>
                 {property.total_imagenes > 1 && (
@@ -133,12 +140,15 @@ export default function FeaturedProperties() {
                   </span>
                 )}
               </div>
+              
               <div className="card-content">
                 <h3 className="property-title">{property.title}</h3>
+                
                 <div className="property-location">
                   <MapPin className="location-icon" />
                   <span className="location-text">{property.location}</span>
                 </div>
+                
                 <div className="property-features">
                   <div className="feature-item">
                     <Ruler className="feature-icon" />
@@ -155,6 +165,7 @@ export default function FeaturedProperties() {
                     </div>
                   )}
                 </div>
+                
                 <div className="card-footer">
                   <p className="property-price">
                     {property.moneda} {property.price}

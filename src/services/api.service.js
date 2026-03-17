@@ -29,10 +29,21 @@ class ApiService {
         }
       });
 
-      // Para peticiones que esperamos JSON
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const data = await response.json();
+      // Verificar si la respuesta tiene contenido
+      const text = await response.text();
+      console.log('Response text:', text.substring(0, 200)); // Debug: primeros 200 caracteres
+      
+      // Si la respuesta está vacía
+      if (!text || text.trim() === '') {
+        if (response.status === 401) {
+          window.dispatchEvent(new Event('unauthorized'));
+        }
+        return response.ok ? { success: true } : { success: false };
+      }
+
+      // Intentar parsear como JSON
+      try {
+        const data = JSON.parse(text);
         
         if (response.status === 401) {
           window.dispatchEvent(new Event('unauthorized'));
@@ -40,13 +51,14 @@ class ApiService {
         }
         
         return data;
+      } catch (parseError) {
+        console.error('Error parsing JSON:', text.substring(0, 200));
+        // Si no es JSON pero la petición fue exitosa, devolver éxito
+        if (response.ok) {
+          return { success: true };
+        }
+        throw new Error('Respuesta inválida del servidor');
       }
-      
-      if (response.status === 401) {
-        window.dispatchEvent(new Event('unauthorized'));
-      }
-      
-      return { success: response.ok };
     } catch (error) {
       console.error('API Request Error:', error);
       throw error;
@@ -62,7 +74,14 @@ class ApiService {
         body: formData // No incluir Content-Type, el navegador lo setea automáticamente
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      console.log('Crear propiedad response:', text.substring(0, 200));
+      
+      if (!text || text.trim() === '') {
+        throw new Error('Respuesta vacía del servidor');
+      }
+
+      const data = JSON.parse(text);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Error al crear propiedad');
@@ -191,10 +210,29 @@ class ApiService {
     });
   }
 
-    async getPropiedadesDestacadas() {
-    return this.request(PROPIEDADES_ENDPOINTS.DESTACADAS, {
-      method: 'GET'
-    });
+  async getPropiedadesDestacadas() {
+    try {
+      const response = await this.request(PROPIEDADES_ENDPOINTS.DESTACADAS, {
+        method: 'GET'
+      });
+      
+      // Asegurar que la respuesta tenga la estructura esperada
+      return {
+        success: response.success || false,
+        data: response.data || [],
+        total: response.total || 0,
+        message: response.message || ''
+      };
+    } catch (error) {
+      console.error('Error en getPropiedadesDestacadas:', error);
+      // Devolver un objeto con formato consistente en caso de error
+      return {
+        success: false,
+        data: [],
+        total: 0,
+        message: error.message || 'Error al cargar propiedades destacadas'
+      };
+    }
   }
 
   // Consultas
