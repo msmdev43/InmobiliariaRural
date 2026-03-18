@@ -45,8 +45,7 @@ export default function Categories() {
           <p className="section-tag">Explora</p>
           <h2 className="section-title">Tipos de propiedades</h2>
           <p className="section-description">
-            Encuentra el tipo de propiedad rural que mejor se adapte a tus
-            necesidades y estilo de vida.
+            Encuentre la fracción más apropiada para su proyecto.
           </p>
         </div>
 

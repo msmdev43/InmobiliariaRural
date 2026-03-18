@@ -43,8 +43,7 @@ export default function Footer() {
               </a>
             </div>
             <p className="footer-description">
-              Tu socio de confianza en la búsqueda de propiedades rurales. 
-              Más de 20 años ayudando a familias a encontrar su lugar en el campo.
+              Eficacia y transparencia en la busqueda de propiedades rurales.
             </p>
             
             {/* Badge de experiencia */}

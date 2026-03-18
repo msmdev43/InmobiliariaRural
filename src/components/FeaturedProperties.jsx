@@ -117,8 +117,7 @@ export default function FeaturedProperties() {
           <p className="section-tag">Destacadas</p>
           <h2 className="section-title">Propiedades seleccionadas</h2>
           <p className="section-description">
-            Descubre nuestra selección de las mejores propiedades rurales
-            disponibles en este momento.
+            Ingrese a las propiedades rurales disponibles en este momento.
           </p>
         </div>
 

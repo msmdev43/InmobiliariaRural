@@ -47,22 +47,14 @@ export default function About() {
             <span className="about-tag">Sobre nosotros</span>
             
             <h2 className="about-title">
-              Tu socio de confianza en el mundo rural
+              La inmobiliaria de confianza
               <div className="title-decoration"></div>
             </h2>
             
             <p className="about-description">
-              En <span className="description-highlight">Gustavo Barberini Inmobiliaria</span> nos apasiona conectar a las personas con su
-              lugar ideal en el campo. Entendemos que adquirir una propiedad
-              rural es más que una inversión: es un cambio de vida, una conexión
-              con la naturaleza y un legado para las futuras generaciones.
-            </p>
-            
-            <p className="about-description">
-              Nuestro equipo de expertos te acompañará en cada paso del camino,
-              desde la búsqueda inicial hasta la firma de las escrituras,
-              asegurando una experiencia <span className="description-highlight">transparente y satisfactoria</span>.
-            </p>
+              La tierra es el patrimonio mas confiable, en <span className="description-highlight">Gustavo Barberini Inmobiliaria</span> nuestra tarea es acercarle la propiedad rural que mas se ajuste a su proyecto. 
+              Sabemos que adquirir un inmueble rural es mas que una inversión, consitutye un cambio de vida y un legado para las futuras generaciones.
+              (punto aparte)Garantizamos un acompanamiento durante el proceso de adquisicion que va desde la busqueda inicial hasta la firma de la escritura asegurando asi: responsabilidad, confiabilidad y transparencia. </p>
 
             <ul className="features-grid">
               {features.map((feature, index) => (

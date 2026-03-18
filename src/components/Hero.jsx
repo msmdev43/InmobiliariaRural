@@ -18,21 +18,20 @@ export default function Hero() {
 
       <div className="hero-content">
         {/* Badge superior */}
-        <div className="hero-badge">
+        {/* <div className="hero-badge">
           <Award className="badge-icon" />
           <span>Dedicados a las propiedades rurales desde 2006</span>
           <Star className="badge-icon" style={{ marginLeft: '0.3rem' }} />
-        </div>
+        </div> */}
 
         {/* Título principal */}
         <h1 className="hero-title">
-          Encontrá el <span className="title-highlight">campo ideal</span> para tu proyecto
+          Encuentre el <span className="title-highlight">campo ideal</span> para su proyecto
         </h1>
 
         {/* Subtítulo */}
         <p className="hero-subtitle">
-          Más de 20 años conectando personas con la naturaleza. 
-          Terrenos, chacras, campos y estancias en las mejores ubicaciones.
+          Larga trayectoria y experiencia respaldan nuestras operaciones inmobiliarias con chacras y campos.
         </p>
       </div>
     </section>

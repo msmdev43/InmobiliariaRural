@@ -75,8 +75,7 @@ export default function Contact() {
           <p className="section-tag">Contacto</p>
           <h2 className="section-title">Hablemos de tu propiedad</h2>
           <p className="section-description">
-            Contanos que estas buscando y te ayudaremos a encontrar la
-            solución perfecta para vos.
+            Acerquenos su inquietud acerca de lo que busca u ofrece.
           </p>
         </div>
 
