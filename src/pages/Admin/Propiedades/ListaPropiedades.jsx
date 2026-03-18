@@ -6,6 +6,90 @@ import apiService from '../../../services/api.service';
 import { useToast, ToastContainer } from '../../../components/UI/Toast';
 import '../../../styles/pages/Admin/propiedades/ListaPropiedades.css';
 
+// ============================================================================
+// COMPONENTES INTERNOS
+// ============================================================================
+
+/**
+ * Badge de tipo de campo (Chacra, Campo, Estancia, etc.)
+ */
+const TipoCampoBadge = ({ tipo }) => {
+  const colores = {
+    'Chacra': { bg: '#e6f7f0', color: '#006A4E' },
+    'Campo': { bg: '#fff4e6', color: '#b85e00' },
+    'Estancia': { bg: '#e6e9ff', color: '#3b4ba0' },
+    'Quinta': { bg: '#ffe6f0', color: '#b3005e' },
+    'default': { bg: '#f1f5f9', color: '#475569' }
+  };
+
+  const estilo = colores[tipo] || colores.default;
+
+  return (
+    <span 
+      className="tipo-campo-badge"
+      style={{
+        backgroundColor: estilo.bg,
+        color: estilo.color,
+        padding: '4px 12px',
+        borderRadius: '16px',
+        fontSize: '0.75rem',
+        fontWeight: '600',
+        whiteSpace: 'nowrap',
+        display: 'inline-block'
+      }}
+    >
+      {tipo}
+    </span>
+  );
+};
+
+/**
+ * Indicador de estado (punto verde para disponible)
+ */
+const EstadoIndicador = ({ disponible }) => {
+  if (!disponible) return null;
+  
+  return (
+    <span className="estado-indicador" title="Disponible">
+      <span className="estado-punto"></span>
+      <span className="estado-texto">Disponible</span>
+    </span>
+  );
+};
+
+/**
+ * Formato de precio mejorado
+ */
+const PrecioFormateado = ({ precio, moneda }) => {
+  const formatoMoneda = new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: moneda === 'USD' ? 'USD' : 'ARS',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
+  return (
+    <span className="precio-formateado">
+      {formatoMoneda.format(precio)}
+    </span>
+  );
+};
+
+/**
+ * Celda de Ubicación formateada
+ */
+const UbicacionFormateada = ({ ciudad, provincia, zona }) => (
+  <div className="ubicacion-formateada">
+    <span className="ubicacion-linea1">{ciudad}</span>
+    <span className="ubicacion-linea2">{provincia}</span>
+    <span className="ubicacion-linea3">{zona}</span>
+  </div>
+);
+
+// ============================================================================
+// COMPONENTE PRINCIPAL
+// ============================================================================
+
 const ListaPropiedades = () => {
   const navigate = useNavigate();
   const toast = useToast();
@@ -154,31 +238,6 @@ const ListaPropiedades = () => {
       console.error('Error:', error);
       toast.error('Error al conectar con el servidor');
     }
-  };
-
-  const getEstadoBadge = (propiedad) => {
-    if (propiedad.deleted_at) {
-      return <span className="estado-badge estado-eliminado">Eliminada</span>;
-    }
-    
-    switch (propiedad.estado) {
-      case 'disponible':
-        return <span className="estado-badge estado-disponible">Disponible</span>;
-      case 'vendido':
-        return <span className="estado-badge estado-vendido">Vendido</span>;
-      case 'alquilado':
-        return <span className="estado-badge estado-alquilado">Alquilado</span>;
-      case 'reservado':
-        return <span className="estado-badge estado-reservado">Reservado</span>;
-      default:
-        return <span className="estado-badge">{propiedad.estado}</span>;
-    }
-  };
-
-  const getTipoOperacionBadge = (tipo) => {
-    return tipo === 'alquiler' 
-      ? <span className="tipo-badge tipo-alquiler">Alquiler</span>
-      : <span className="tipo-badge tipo-venta">Venta</span>;
   };
 
   if (loading && propiedades.length === 0) {
@@ -368,107 +427,118 @@ const ListaPropiedades = () => {
           </div>
         )}
 
-        {/* Tabla de propiedades */}
+        {/* Tabla de propiedades - VERSIÓN MEJORADA */}
         {propiedades.length > 0 ? (
           <div className="lista-tabla-container-unique">
             <table className="lista-tabla-unique">
               <thead>
                 <tr>
-                  <th>Código / Título</th>
+                  <th>Código</th>
                   <th>Tipo</th>
                   <th>Ubicación</th>
                   <th>Superficie</th>
                   <th>Precio</th>
                   <th>Estado</th>
-                  <th>Estadísticas</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {propiedades.map(prop => (
                   <tr key={prop.id} className={prop.deleted_at ? 'fila-eliminada' : ''}>
-                    <td>
-                      <div className="lista-titulo-cell-unique">
-                        <span className="lista-codigo-unique">{prop.codigo}</span>
-                        <strong className="lista-titulo-unique">{prop.titulo_corto}</strong>
-                        {prop.destacado && (
-                          <span className="lista-destacado-badge-unique">★ Destacado</span>
-                        )}
-                      </div>
-                    </td>
-                    <td>{getTipoOperacionBadge(prop.tipo_operacion)}</td>
-                    <td>
-                      <div className="lista-ubicacion-cell-unique">
-                        <span className="lista-ciudad-unique">{prop.ciudad}</span>
-                        <span className="lista-provincia-unique">{prop.provincia}</span>
-                        <small className="lista-zona-unique">{prop.zona}</small>
-                      </div>
-                    </td>
-                    <td className="lista-superficie-unique">{prop.superficie} ha</td>
-                    <td className="lista-precio-unique">
-                      <span className="lista-monto-unique">{prop.precio_formateado}</span>
-                      <span className="lista-moneda-unique">{prop.moneda}</span>
-                    </td>
-                    <td>
-                      {getEstadoBadge(prop)}
-                      <div className="lista-tipo-campo-unique">{prop.tipo_campo}</div>
-                    </td>
-                    <td className="lista-estadisticas-unique">
-                      <div className="lista-estadistica-item-unique" title="Vistas">
-                        👁️ {prop.vistas}
-                      </div>
-                      <div className="lista-estadistica-item-unique" title="Consultas">
-                        💬 {prop.consultas}
-                      </div>
-                      <div className="lista-estadistica-item-unique" title="Imágenes">
-                        📷 {prop.total_imagenes}
-                      </div>
-                    </td>
-                    <td className="lista-acciones-unique">
-                      <button
-                        onClick={() => handleVerPropiedad(prop.id)}
-                        className="lista-accion-btn-unique lista-accion-ver-unique"
-                        title="Ver detalles"
-                      >
-                        👁️
-                      </button>
-                      
-                      {prop.puede_editar && (
-                        <button
-                          onClick={() => handleEditarPropiedad(prop.id)}
-                          className="lista-accion-btn-unique lista-accion-editar-unique"
-                          title="Editar"
-                        >
-                          ✏️
-                        </button>
+                    {/* Código */}
+                    <td className="columna-codigo">
+                      <span className="codigo-texto">{prop.codigo}</span>
+                      {prop.destacado && (
+                        <span className="destacado-estrella" title="Destacado">★</span>
                       )}
-                      
-                      {prop.deleted_at ? (
-                        <>
+                    </td>
+
+                    {/* Tipo (ahora muestra tipo_campo) */}
+                    <td className="columna-tipo">
+                      <TipoCampoBadge tipo={prop.tipo_campo} />
+                    </td>
+
+                    {/* Ubicación formateada */}
+                    <td className="columna-ubicacion">
+                      <UbicacionFormateada 
+                        ciudad={prop.ciudad}
+                        provincia={prop.provincia}
+                        zona={prop.zona}
+                      />
+                    </td>
+
+                    {/* Superficie */}
+                    <td className="columna-superficie">
+                      <span className="superficie-valor">{prop.superficie}</span>
+                      <span className="superficie-unidad">ha</span>
+                    </td>
+
+                    {/* Precio formateado */}
+                    <td className="columna-precio">
+                      <PrecioFormateado 
+                        precio={prop.precio} 
+                        moneda={prop.moneda} 
+                      />
+                    </td>
+
+                    {/* Estado (punto verde) y estadísticas */}
+                    <td className="columna-estado">
+                      <EstadoIndicador disponible={prop.estado === 'disponible' && !prop.deleted_at} />
+                      <div className="estadisticas-mini">
+                        <span className="stat-icon" title="Vistas">👁️ {prop.vistas}</span>
+                        <span className="stat-icon" title="Consultas">💬 {prop.consultas}</span>
+                        <span className="stat-icon" title="Imágenes">📷 {prop.total_imagenes}</span>
+                      </div>
+                    </td>
+
+                    {/* Acciones en fila */}
+                    <td className="columna-acciones">
+                      <div className="acciones-fila">
+                        <button
+                          onClick={() => handleVerPropiedad(prop.id)}
+                          className="accion-btn accion-ver"
+                          title="Ver detalles"
+                        >
+                          👁️
+                        </button>
+                        
+                        {prop.puede_editar && !prop.deleted_at && (
                           <button
-                            onClick={() => handleEliminarClick(prop, 'restaurar')}
-                            className="lista-accion-btn-unique lista-accion-restaurar-unique"
-                            title="Restaurar"
+                            onClick={() => handleEditarPropiedad(prop.id)}
+                            className="accion-btn accion-editar"
+                            title="Editar"
                           >
-                            🔄
+                            ✏️
                           </button>
+                        )}
+                        
+                        {prop.deleted_at ? (
+                          <>
+                            <button
+                              onClick={() => handleEliminarClick(prop, 'restaurar')}
+                              className="accion-btn accion-restaurar"
+                              title="Restaurar"
+                            >
+                              🔄
+                            </button>
+                            <button
+                              onClick={() => handleEliminarClick(prop, 'eliminar_permanentemente')}
+                              className="accion-btn accion-eliminar-perm"
+                              title="Eliminar permanentemente"
+                            >
+                              🗑️
+                            </button>
+                          </>
+                        ) : (
                           <button
-                            onClick={() => handleEliminarClick(prop, 'eliminar_permanentemente')}
-                            className="lista-accion-btn-unique lista-accion-eliminar-perm-unique"
-                            title="Eliminar permanentemente"
+                            onClick={() => handleEliminarClick(prop, 'eliminar')}
+                            className="accion-btn accion-eliminar"
+                            title="Dar de baja"
                           >
                             🗑️
                           </button>
-                        </>
-                      ) : (
-                        <button
-                          onClick={() => handleEliminarClick(prop, 'eliminar')}
-                          className="lista-accion-btn-unique lista-accion-eliminar-unique"
-                          title="Eliminar"
-                        >
-                          🗑️
-                        </button>
-                      )}
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

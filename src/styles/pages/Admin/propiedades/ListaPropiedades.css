@@ -10,8 +10,8 @@
  * 4. BARRA DE BÚSQUEDA
  * 5. FILTROS AVANZADOS
  * 6. TABLA - ESTRUCTURA GENERAL
- * 7. TABLA - CELDAS Y CONTENIDO
- * 8. BADGES (ESTADOS Y TIPOS)
+ * 7. COLUMNAS ESPECÍFICAS
+ * 8. BADGES Y COMPONENTES
  * 9. BOTONES DE ACCIÓN
  * 10. ESTADO VACÍO
  * 11. PAGINACIÓN
@@ -116,6 +116,16 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@keyframes destacado-brillar {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+@keyframes punto-parpadeo {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 /* ==========================================================================
@@ -419,193 +429,226 @@
   border: 1px solid var(--border-color);
   overflow-x: auto;
   margin-bottom: var(--spacing-2xl);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .lista-tabla-unique {
   width: 100%;
   border-collapse: collapse;
-  min-width: 1200px;
+  border-spacing: 0;
+  font-size: 0.9rem;
 }
 
 /* Encabezados */
-.lista-tabla-unique th {
-  text-align: left;
-  padding: var(--spacing-lg);
-  background: var(--bg-light);
-  color: var(--text-medium);
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.lista-tabla-unique thead tr {
+  background: linear-gradient(to bottom, #f9fafc, #f1f5f9);
   border-bottom: 2px solid var(--border-color);
-  white-space: nowrap;
 }
 
-/* Celdas */
-.lista-tabla-unique td {
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-dark);
-  vertical-align: middle;
+.lista-tabla-unique th {
+  padding: 1rem 1rem;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  position: relative;
+}
+
+.lista-tabla-unique th:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);
 }
 
 /* Filas */
 .lista-tabla-unique tbody tr {
-  transition: background var(--transition-fast);
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid #edf2f7;
 }
 
 .lista-tabla-unique tbody tr:hover {
-  background: var(--bg-light);
+  background-color: #f8fafc;
 }
 
-/* Fila eliminada */
-.lista-tabla-unique tbody tr.fila-eliminada {
-  background: var(--danger-bg);
-  opacity: 0.9;
+.lista-tabla-unique tbody tr:last-child {
+  border-bottom: none;
 }
 
-.lista-tabla-unique tbody tr.fila-eliminada:hover {
-  background: #fee2e2;
+/* Celdas */
+.lista-tabla-unique td {
+  padding: 1rem 1rem;
+  vertical-align: middle;
+  line-height: 1.4;
 }
 
 /* ==========================================================================
-   7. TABLA - CELDAS Y CONTENIDO
+   7. COLUMNAS ESPECÍFICAS
    ========================================================================== */
 
-/* Columna Código/Título */
-.lista-titulo-cell-unique {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  max-width: 250px;
-}
-
-.lista-codigo-unique {
-  font-size: 0.8rem;
-  color: var(--text-light);
+/* Columna Código */
+.columna-codigo {
   font-family: 'Consolas', 'Monaco', monospace;
-  background: var(--bg-light);
-  padding: 0.2rem 0.5rem;
-  border-radius: var(--radius-sm);
-  width: fit-content;
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 100px;
 }
 
-.lista-titulo-unique {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-dark);
-  line-height: 1.4;
-  word-break: break-word;
-}
-
-.lista-destacado-badge-unique {
+.codigo-texto {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  background: var(--warning-bg);
-  color: var(--warning-text);
-  font-size: 0.7rem;
+  margin-right: 0.5rem;
+}
+
+.destacado-estrella {
+  color: #fbbf24;
+  font-size: 1rem;
+  display: inline-block;
+  animation: destacado-brillar 2s infinite;
+}
+
+/* Columna Tipo (Tipo de Campo) */
+.columna-tipo {
+  min-width: 90px;
+}
+
+.tipo-campo-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
   font-weight: 600;
-  border-radius: var(--radius-full);
-  width: fit-content;
-  margin-top: var(--spacing-xs);
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 /* Columna Ubicación */
-.lista-ubicacion-cell-unique {
+.columna-ubicacion {
+  min-width: 180px;
+}
+
+.ubicacion-formateada {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
-  min-width: 150px;
+  line-height: 1.5;
 }
 
-.lista-ciudad-unique {
-  font-weight: 500;
-  color: var(--text-dark);
+.ubicacion-linea1 {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.95rem;
 }
 
-.lista-provincia-unique {
+.ubicacion-linea2 {
   font-size: 0.85rem;
-  color: var(--text-light);
+  color: #475569;
 }
 
-.lista-zona-unique {
+.ubicacion-linea3 {
   font-size: 0.75rem;
-  color: var(--text-extra-light);
+  color: #64748b;
+  font-style: italic;
 }
 
 /* Columna Superficie */
-.lista-superficie-unique {
-  font-weight: 500;
+.columna-superficie {
+  min-width: 80px;
   white-space: nowrap;
-  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.superficie-valor {
+  font-weight: 600;
+  margin-right: 0.2rem;
+}
+
+.superficie-unidad {
+  font-size: 0.7rem;
+  color: #64748b;
 }
 
 /* Columna Precio */
-.lista-precio-unique {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+.columna-precio {
+  min-width: 110px;
   white-space: nowrap;
-  min-width: 100px;
 }
 
-.lista-monto-unique {
-  font-weight: 600;
-  color: var(--primary);
-  font-size: 1rem;
-}
-
-.lista-moneda-unique {
-  font-size: 0.7rem;
-  color: var(--text-light);
-  text-transform: uppercase;
+.precio-formateado {
+  color: #006A4E;
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 /* Columna Estado */
-.lista-estado-columna-unique {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  min-width: 100px;
+.columna-estado {
+  min-width: 120px;
 }
 
-.lista-tipo-campo-unique {
-  font-size: 0.7rem;
-  color: var(--text-light);
-  margin-top: var(--spacing-xs);
-  background: var(--bg-light);
-  padding: 0.2rem 0.5rem;
-  border-radius: var(--radius-sm);
-  width: fit-content;
-}
-
-/* Columna Estadísticas */
-.lista-estadisticas-unique {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  font-size: 0.85rem;
-  min-width: 70px;
-}
-
-.lista-estadistica-item-unique {
-  display: flex;
+.estado-indicador {
+  display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  color: var(--text-medium);
-  white-space: nowrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  background: #f0fdf4;
+  border-radius: 20px;
+  border: 1px solid #86efac;
 }
 
-.lista-estadistica-item-unique span {
-  min-width: 20px;
+.estado-punto {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: inline-block;
+  animation: punto-parpadeo 2s infinite;
+}
+
+.estado-texto {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #166534;
+  text-transform: uppercase;
+}
+
+.estadisticas-mini {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.stat-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+/* Columna Acciones */
+.columna-acciones {
+  min-width: 130px;
+}
+
+.acciones-fila {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 /* ==========================================================================
-   8. BADGES (ESTADOS Y TIPOS)
+   8. BADGES Y COMPONENTES
    ========================================================================== */
 
-/* Badge de estado */
+/* Badge de estado (para eliminados) */
 .estado-badge {
   display: inline-block;
   padding: 0.35rem 0.75rem;
@@ -639,107 +682,68 @@
   color: var(--deleted-text);
 }
 
-/* Badge de tipo de operación */
-.tipo-badge {
-  display: inline-block;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  width: fit-content;
-}
-
-.tipo-alquiler {
-  background: var(--info-bg);
-  color: var(--info-text);
-}
-
-.tipo-venta {
-  background: var(--success-bg);
-  color: var(--success-text);
-}
-
 /* ==========================================================================
    9. BOTONES DE ACCIÓN
    ========================================================================== */
 
-.lista-acciones-unique {
-  display: flex;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
-  min-width: 120px;
-  justify-content: flex-end;
-}
-
-.lista-accion-btn-unique {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background: var(--bg-white);
-  color: var(--text-medium);
+.accion-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #475569;
   font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-base);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   padding: 0;
 }
 
-.lista-accion-btn-unique:hover {
+.accion-btn:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* Botón Ver */
-.lista-accion-ver-unique:hover {
-  background: var(--view-color);
-  border-color: var(--view-color);
+.accion-ver:hover {
+  background: #006A4E;
+  border-color: #006A4E;
   color: white;
 }
 
-/* Botón Editar */
-.lista-accion-editar-unique:hover {
-  background: var(--edit-color);
-  border-color: var(--edit-color);
+.accion-editar:hover {
+  background: #3b82f6;
+  border-color: #3b82f6;
   color: white;
 }
 
-/* Botón Eliminar (soft delete) */
-.lista-accion-eliminar-unique:hover {
-  background: var(--delete-color);
-  border-color: var(--delete-color);
+.accion-eliminar:hover {
+  background: #ef4444;
+  border-color: #ef4444;
   color: white;
 }
 
-/* Botón Restaurar */
-.lista-accion-restaurar-unique:hover {
-  background: var(--restore-color);
-  border-color: var(--restore-color);
+.accion-restaurar:hover {
+  background: #f59e0b;
+  border-color: #f59e0b;
   color: white;
 }
 
-/* Botón Eliminar Permanentemente */
-.lista-accion-eliminar-perm-unique:hover {
-  background: var(--perm-delete-color);
-  border-color: var(--perm-delete-color);
+.accion-eliminar-perm:hover {
+  background: #7f1d1d;
+  border-color: #7f1d1d;
   color: white;
 }
 
 /* Tooltip personalizado */
-.lista-accion-btn-unique {
+.accion-btn {
   position: relative;
 }
 
-.lista-accion-btn-unique[title] {
-  position: relative;
-}
-
-.lista-accion-btn-unique[title]:hover::after {
+.accion-btn[title]:hover::after {
   content: attr(title);
   position: absolute;
   bottom: 100%;
@@ -754,6 +758,23 @@
   pointer-events: none;
   z-index: 10;
   margin-bottom: 5px;
+}
+
+/* Fila eliminada */
+.lista-tabla-unique tbody tr.fila-eliminada {
+  background: #fef2f2;
+  opacity: 0.9;
+}
+
+.lista-tabla-unique tbody tr.fila-eliminada:hover {
+  background: #fee2e2;
+}
+
+.lista-tabla-unique tbody tr.fila-eliminada .codigo-texto,
+.lista-tabla-unique tbody tr.fila-eliminada .ubicacion-linea1,
+.lista-tabla-unique tbody tr.fila-eliminada .ubicacion-linea2,
+.lista-tabla-unique tbody tr.fila-eliminada .ubicacion-linea3 {
+  opacity: 0.7;
 }
 
 /* ==========================================================================
@@ -1033,14 +1054,48 @@
    14. MEDIA QUERIES
    ========================================================================== */
 
-/* Pantallas medianas (tablets) */
-@media (max-width: 1024px) {
-  .lista-page-unique {
-    padding: var(--spacing-xl);
+/* Pantallas grandes (escritorio) */
+@media (min-width: 1200px) {
+  .lista-tabla-unique {
+    table-layout: fixed;
   }
   
+  .lista-tabla-unique th:nth-child(1) { width: 12%; }  /* Código */
+  .lista-tabla-unique th:nth-child(2) { width: 10%; }  /* Tipo */
+  .lista-tabla-unique th:nth-child(3) { width: 20%; }  /* Ubicación */
+  .lista-tabla-unique th:nth-child(4) { width: 10%; }  /* Superficie */
+  .lista-tabla-unique th:nth-child(5) { width: 15%; }  /* Precio */
+  .lista-tabla-unique th:nth-child(6) { width: 15%; }  /* Estado */
+  .lista-tabla-unique th:nth-child(7) { width: 18%; }  /* Acciones */
+}
+
+/* Pantallas medianas (tablets landscape) */
+@media (max-width: 1199px) and (min-width: 769px) {
   .lista-tabla-unique {
-    min-width: 1000px;
+    font-size: 0.9rem;
+  }
+  
+  .lista-tabla-unique th,
+  .lista-tabla-unique td {
+    padding: var(--spacing-md);
+  }
+  
+  .columna-codigo {
+    min-width: 90px;
+  }
+  
+  .columna-ubicacion {
+    min-width: 150px;
+  }
+  
+  .columna-acciones {
+    min-width: 120px;
+  }
+  
+  .accion-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
   }
 }
 
@@ -1086,6 +1141,46 @@
   .lista-filtros-aplicar-unique {
     width: 100%;
   }
+  
+  .lista-tabla-container-unique {
+    margin: 0 -1rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
+  .lista-tabla-unique {
+    min-width: 700px;
+  }
+  
+  .lista-tabla-unique th,
+  .lista-tabla-unique td {
+    padding: var(--spacing-md);
+    font-size: 0.85rem;
+  }
+  
+  .columna-codigo {
+    min-width: 80px;
+  }
+  
+  .columna-ubicacion {
+    min-width: 140px;
+  }
+  
+  .columna-acciones {
+    min-width: 110px;
+  }
+  
+  .accion-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+  
+  .estadisticas-mini {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
 
   .lista-paginacion-unique {
     flex-direction: column;
@@ -1126,15 +1221,27 @@
   .lista-title-unique {
     font-size: 1.5rem;
   }
-
-  .lista-acciones-unique {
-    flex-direction: row;
-    justify-content: flex-start;
+  
+  .lista-tabla-unique {
+    min-width: 600px;
+  }
+  
+  .lista-tabla-unique th,
+  .lista-tabla-unique td {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .columna-acciones {
+    min-width: 100px;
+  }
+  
+  .acciones-fila {
+    gap: 0.25rem;
   }
 
-  .lista-accion-btn-unique {
-    width: 40px;
-    height: 40px;
+  .accion-btn {
+    width: 32px;
+    height: 32px;
   }
   
   .lista-empty-unique {
@@ -1153,11 +1260,21 @@
 
 /* Ajustes para pantallas muy pequeñas */
 @media (max-width: 360px) {
-  .lista-acciones-unique {
-    flex-wrap: wrap;
+  .lista-tabla-unique {
+    min-width: 550px;
   }
   
-  .lista-accion-btn-unique {
+  .columna-acciones {
+    min-width: 90px;
+  }
+  
+  .acciones-fila {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  .accion-btn {
     flex: 1;
+    max-width: 36px;
   }
 }
