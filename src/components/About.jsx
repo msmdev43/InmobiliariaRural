@@ -52,9 +52,12 @@ export default function About() {
             </h2>
             
             <p className="about-description">
-              La tierra es el patrimonio mas confiable, en <span className="description-highlight">Gustavo Barberini Inmobiliaria</span> nuestra tarea es acercarle la propiedad rural que mas se ajuste a su proyecto. 
-              Sabemos que adquirir un inmueble rural es mas que una inversión, consitutye un cambio de vida y un legado para las futuras generaciones.
-              (punto aparte)Garantizamos un acompanamiento durante el proceso de adquisicion que va desde la busqueda inicial hasta la firma de la escritura asegurando asi: responsabilidad, confiabilidad y transparencia. </p>
+              La tierra es el patrimonio más confiable, en <span className="description-highlight">Gustavo Barberini Inmobiliaria</span> nuestra tarea es acercarle la propiedad rural que más se ajuste a su proyecto. 
+              Sabemos que adquirir un inmueble rural es más que una inversión, constituye un cambio de vida y un legado para las futuras generaciones.
+            </p>
+            <p className="about-description">
+              Garantizamos un acompañamiento durante el proceso de adquisición que va desde la búsqueda inicial hasta la firma de la escritura asegurando así: responsabilidad, confiabilidad y transparencia.
+            </p>
 
             <ul className="features-grid">
               {features.map((feature, index) => (

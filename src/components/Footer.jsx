@@ -43,7 +43,7 @@ export default function Footer() {
               </a>
             </div>
             <p className="footer-description">
-              Eficacia y transparencia en la busqueda de propiedades rurales.
+              Eficacia y transparencia en la búsqueda de propiedades rurales
             </p>
             
             {/* Badge de experiencia */}
