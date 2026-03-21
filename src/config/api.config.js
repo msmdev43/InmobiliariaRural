@@ -8,18 +8,20 @@ const API_CONFIG = {
     LOGIN: '/admin/login.php',
     LOGOUT: '/admin/logout.php',
     DASHBOARD: '/admin/dashboard.php',
-    CHECK_SESSION: '/admin/check_session.php', // Agregado
+    CHECK_SESSION: '/admin/check_session.php',
   },
   
   // Endpoints de consultas
   CONSULTAS: {
+    CREAR: '/consultas/crearConsulta.php',
     LISTAR: '/consultas/listarConsultas.php',
     ELIMINAR: '/consultas/eliminarConsulta.php',
   },
   
   // Endpoints de propiedades
   PROPIEDADES: {
-    LISTAR: '/propiedades/listarPropiedades.php',
+    LISTAR: '/propiedades/listarPropiedades.php', // Admin
+    LISTAR_PUBLIC: '/propiedades/listarPropiedadesPublic.php', // Público
     CREAR: '/propiedades/crearPropiedad.php',
     MODIFICAR: '/propiedades/modificarPropiedad.php',
     ELIMINAR: '/propiedades/eliminarPropiedad.php',

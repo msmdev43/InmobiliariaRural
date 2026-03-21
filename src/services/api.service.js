@@ -302,6 +302,114 @@ class ApiService {
     }
   }
 
+  async getPropiedadesPublic(filtros = {}) {
+    try {
+      // Construir query string
+      const params = new URLSearchParams();
+      
+      if (filtros.pagina) params.append('pagina', filtros.pagina);
+      if (filtros.por_pagina) params.append('por_pagina', filtros.por_pagina);
+      if (filtros.buscar) params.append('buscar', filtros.buscar);
+      if (filtros.tipo_operacion) params.append('tipo_operacion', filtros.tipo_operacion);
+      if (filtros.tipo_campo) params.append('tipo_campo', filtros.tipo_campo);
+      if (filtros.provincia) params.append('provincia', filtros.provincia);
+      if (filtros.ciudad) params.append('ciudad', filtros.ciudad);
+      if (filtros.precio_min) params.append('precio_min', filtros.precio_min);
+      if (filtros.precio_max) params.append('precio_max', filtros.precio_max);
+      if (filtros.superficie_min) params.append('superficie_min', filtros.superficie_min);
+      if (filtros.superficie_max) params.append('superficie_max', filtros.superficie_max);
+      if (filtros.servicios && filtros.servicios.length) params.append('servicios', filtros.servicios.join(','));
+      if (filtros.ordenar_por) params.append('ordenar_por', filtros.ordenar_por);
+      
+      const url = `${PROPIEDADES_ENDPOINTS.LISTAR_PUBLIC}${params.toString() ? '?' + params.toString() : ''}`;
+      
+      console.log('Fetching properties from:', url); // Debug
+      
+      const response = await this.request(url, {
+        method: 'GET'
+      });
+      
+      // Asegurar estructura de respuesta
+      return {
+        success: response.success || false,
+        data: response.data || [],
+        paginacion: response.paginacion || {
+          pagina_actual: 1,
+          por_pagina: 12,
+          total_registros: 0,
+          total_paginas: 0,
+          tiene_siguiente: false,
+          tiene_anterior: false
+        },
+        filtros_disponibles: response.filtros_disponibles || {
+          provincias: [],
+          ciudades: [],
+          tipos_campos: [],
+          tipos_operacion: ['alquiler', 'venta']
+        },
+        filtros_aplicados: response.filtros_aplicados || {},
+        message: response.message || ''
+      };
+    } catch (error) {
+      console.error('Error en getPropiedadesPublic:', error);
+      return {
+        success: false,
+        data: [],
+        paginacion: {
+          pagina_actual: 1,
+          por_pagina: 12,
+          total_registros: 0,
+          total_paginas: 0,
+          tiene_siguiente: false,
+          tiene_anterior: false
+        },
+        filtros_disponibles: {
+          provincias: [],
+          ciudades: [],
+          tipos_campos: [],
+          tipos_operacion: ['alquiler', 'venta']
+        },
+        message: error.message || 'Error al cargar propiedades'
+      };
+    }
+  }
+
+  async enviarConsulta(datos) {
+    try {
+      // Transformar datos para el formato que espera crearConsulta.php
+      const payload = {
+        nombrecompleto: datos.name,
+        telefono: datos.phone,
+        email: datos.email,
+        mensaje: datos.message,
+        tipo: 'contacto' // Tipo de consulta para el header
+      };
+      
+      console.log('Enviando consulta:', payload);
+      
+      const response = await fetch(CONSULTAS_ENDPOINTS.CREAR, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      const text = await response.text();
+      console.log('Respuesta crearConsulta:', text);
+      
+      if (!text || text.trim() === '') {
+        throw new Error('Respuesta vacía del servidor');
+      }
+      
+      const data = JSON.parse(text);
+      return data;
+    } catch (error) {
+      console.error('Error enviando consulta:', error);
+      throw error;
+    }
+  }
+
   // Consultas
   async getConsultas() {
     return this.request(CONSULTAS_ENDPOINTS.LISTAR, {

@@ -8,7 +8,8 @@ import Dashboard from "./pages/Admin/Dashboard";
 import PublicarPropiedad from './pages/Admin/Propiedades/PublicarPropiedad';
 import ListaPropiedades from './pages/Admin/Propiedades/ListaPropiedades';
 import VerPropiedad from './pages/Admin/Propiedades/VerPropiedad';
-import VerFicha from './pages/propiedades/VerFicha'; // <-- Importar la ficha pública
+import VerFicha from './pages/propiedades/VerFicha';
+import PropertiesPage from './pages/PropertiesPage'; // <-- Importar la nueva página
 import TiposCampos from './pages/Admin/Configuracion/TipoCampos';
 import Servicios from './pages/Admin/Configuracion/Servicios';
 import Configuracion from './pages/Admin/Configuracion/Configuracion';
@@ -19,8 +20,9 @@ function App() {
       <Routes>
         {/* Rutas públicas */}
         <Route path="/" element={<Home />} />
+        <Route path="/propiedades" element={<PropertiesPage />} /> {/* <-- Nueva ruta */}
+        <Route path="/propiedad/:id" element={<VerFicha />} />
         <Route path="/admin/login" element={<Login />} />
-        <Route path="/propiedad/:id" element={<VerFicha />} /> {/* <-- Nueva ruta pública */}
         
         {/* Rutas protegidas */}
         <Route path="/admin/dashboard" element={
