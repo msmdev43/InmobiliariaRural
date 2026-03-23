@@ -1,14 +1,42 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\components\Admin\Sidebar.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import apiService from '../../services/api.service';
 import '../../styles/components/Admin/Sidebar.css';
 
 const Sidebar = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
+  const [totalConsultas, setTotalConsultas] = useState(0);
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+
+  // Cargar total de consultas al montar el componente
+  useEffect(() => {
+    // Función interna para cargar consultas
+    const cargarTotalConsultas = async () => {
+      try {
+        const response = await apiService.contarConsultasNoLeidas();
+        if (response && response.success) {
+          setTotalConsultas(response.total || 0);
+        }
+      } catch (error) {
+        console.error('Error al cargar total de consultas:', error);
+      }
+    };
+
+    // Ejecutar la carga inicial
+    cargarTotalConsultas();
+    
+    // Actualizar cada 30 segundos para mantener el badge actualizado
+    const interval = setInterval(() => {
+      cargarTotalConsultas();
+    }, 30000);
+    
+    // Limpiar al desmontar
+    return () => clearInterval(interval);
+  }, []); // Dependencia vacía - solo se ejecuta al montar
 
   const handleLogout = async () => {
     await logout();
@@ -57,7 +85,7 @@ const Sidebar = ({ children }) => {
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       ),
-      badge: 3
+      badge: totalConsultas
     },
     {
       name: 'Configuración',
@@ -131,13 +159,15 @@ const Sidebar = ({ children }) => {
         {!collapsed && (
           <>
             <span className="sidebar-menu-text-unique">{item.name}</span>
-            {item.badge && (
+            {item.badge > 0 && (
               <span className="sidebar-menu-badge-unique">{item.badge}</span>
             )}
           </>
         )}
-        {collapsed && item.badge && (
-          <span className="sidebar-menu-badge-unique sidebar-menu-badge-collapsed-unique">{item.badge}</span>
+        {collapsed && item.badge > 0 && (
+          <span className="sidebar-menu-badge-unique sidebar-menu-badge-collapsed-unique">
+            {item.badge > 99 ? '99+' : item.badge}
+          </span>
         )}
       </NavLink>
     );

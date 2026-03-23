@@ -1,17 +1,15 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\components\Header.jsx
 import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
-import ContactModal from "./ContactModal";
 import "../styles/components/header.css";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const navLinks = [
     { href: "#propiedades", label: "Propiedades" },
-    { href: "#servicios", label: "Servicios" },
     { href: "#nosotros", label: "Nosotros" },
+    { href: "#servicios", label: "Servicios" },
     { href: "#contacto", label: "Contacto" },
   ];
 
@@ -19,8 +17,20 @@ export default function Header() {
     setIsMenuOpen(false);
   };
 
-  const openContactModal = () => {
-    setIsContactModalOpen(true);
+  // Función para manejar el scroll suave al hacer clic en un enlace
+  const handleSmoothScroll = (e, href) => {
+    e.preventDefault();
+    const targetId = href.replace('#', '');
+    const targetElement = document.getElementById(targetId);
+    
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    
+    // Cerrar menú móvil si está abierto
     setIsMenuOpen(false);
   };
 
@@ -48,7 +58,12 @@ export default function Header() {
             {/* Navegación desktop */}
             <nav className="nav-desktop">
               {navLinks.map((link) => (
-                <a key={link.href} href={link.href} className="nav-link">
+                <a 
+                  key={link.href} 
+                  href={link.href} 
+                  className="nav-link"
+                  onClick={(e) => handleSmoothScroll(e, link.href)}
+                >
                   {link.label}
                 </a>
               ))}
@@ -60,9 +75,13 @@ export default function Header() {
                 <Phone className="phone-icon" />
                 <span>(2291) 510-406</span>
               </a>
-              <button className="contact-button" onClick={openContactModal}>
+              <a 
+                href="#contacto" 
+                className="contact-button"
+                onClick={(e) => handleSmoothScroll(e, '#contacto')}
+              >
                 Contactar
-              </button>
+              </a>
             </div>
 
             {/* Botón menú móvil */}
@@ -89,7 +108,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   className="mobile-nav-link"
-                  onClick={handleNavClick}
+                  onClick={(e) => handleSmoothScroll(e, link.href)}
                 >
                   {link.label}
                 </a>
@@ -103,19 +122,17 @@ export default function Header() {
                 <Phone size={16} color="#006A4E" />
                 (2291) 510-406
               </a>
-              <button className="mobile-contact-button" onClick={openContactModal}>
+              <a 
+                href="#contacto" 
+                className="mobile-contact-button"
+                onClick={(e) => handleSmoothScroll(e, '#contacto')}
+              >
                 Contactar
-              </button>
+              </a>
             </nav>
           </div>
         )}
       </header>
-
-      {/* Modal de contacto */}
-      <ContactModal 
-        isOpen={isContactModalOpen} 
-        onClose={() => setIsContactModalOpen(false)} 
-      />
     </>
   );
 }

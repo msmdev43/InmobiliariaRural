@@ -71,7 +71,7 @@ export default function About() {
             </ul>
 
             {/* Estadísticas */}
-            <div className="ab-stats-container">
+            {/* <div className="ab-stats-container">
               <div className="ab-stat-item">
                 <div className="ab-stat-number">250+</div>
                 <div className="ab-stat-label">Propiedades vendidas</div>
@@ -84,7 +84,7 @@ export default function About() {
                 <div className="ab-stat-number">20 Años</div>
                 <div className="ab-stat-label">De trayectoria</div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

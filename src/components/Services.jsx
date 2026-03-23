@@ -1,3 +1,4 @@
+// C:\xampp\htdocs\InmobiliariaRural\src\components\Services.jsx
 import { useState } from "react";
 import { 
   Home, 
@@ -11,11 +12,13 @@ import {
   Phone,
   MessageSquare 
 } from "lucide-react";
+import apiService from "../services/api.service";
+import { useToast, ToastContainer } from "../components/UI/Toast";
 import "../styles/components/services.css";
 
 const servicesData = [
   {
-    id: "tasaciones",
+    id: "tasacion",
     icon: Home,
     title: "Tasaciones",
     description: "Evaluación profesional de propiedades rurales con metodologías actualizadas y precios de mercado.",
@@ -28,7 +31,7 @@ const servicesData = [
     color: "#006A4E"
   },
   {
-    id: "ventas",
+    id: "venta",
     icon: LandPlot,
     title: "Ventas",
     description: "Asesoramiento integral para la compra-venta de campos, estancias y propiedades rurales.",
@@ -41,7 +44,7 @@ const servicesData = [
     color: "#006A4E"
   },
   {
-    id: "arrendamientos",
+    id: "arrendamiento",
     icon: Building2,
     title: "Arrendamientos",
     description: "Administración de alquileres rurales para campos agrícolas, ganaderos y mixtos.",
@@ -60,16 +63,17 @@ export default function Services() {
   const [selectedService, setSelectedService] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
+    nombrecompleto: "",
     email: "",
-    phone: "",
-    message: ""
+    telefono: "",
+    mensaje: ""
   });
+  const toast = useToast();
 
   const openModal = (service) => {
     setSelectedService(service);
-    const message = `Consulta sobre: ${service.title}\n\nMe interesa recibir información detallada sobre el servicio de ${service.title.toLowerCase()}. Por favor, contactarme a la brevedad.`;
-    setFormData(prev => ({ ...prev, message }));
+    const mensaje = `Consulta sobre: ${service.title}\n\nMe interesa recibir información detallada sobre el servicio de ${service.title.toLowerCase()}. Por favor, contactarme a la brevedad.`;
+    setFormData(prev => ({ ...prev, mensaje }));
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
   };
@@ -78,10 +82,10 @@ export default function Services() {
     setIsModalOpen(false);
     setSelectedService(null);
     setFormData({
-      name: "",
+      nombrecompleto: "",
       email: "",
-      phone: "",
-      message: ""
+      telefono: "",
+      mensaje: ""
     });
     document.body.style.overflow = 'unset';
   };
@@ -95,21 +99,62 @@ export default function Services() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Validaciones básicas antes de enviar
+    if (!formData.nombrecompleto.trim()) {
+      toast.error("Por favor, ingresa tu nombre completo");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.email.trim() && !formData.telefono.trim()) {
+      toast.error("Debes proporcionar al menos un email o un teléfono");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("Por favor, ingresa un email válido");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.mensaje.trim()) {
+      toast.error("Por favor, escribe tu consulta");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      // Aquí iría la lógica de envío a tu backend
-      console.log("Formulario enviado:", {
-        ...formData,
-        serviceType: selectedService?.title
-      });
+      // Mapear el título del servicio al tipo correcto que espera el backend
+      const tipoMapping = {
+        'Tasaciones': 'tasacion',
+        'Ventas': 'venta',
+        'Arrendamientos': 'arrendamiento'
+      };
 
-      // Simular envío
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const tipo = tipoMapping[selectedService?.title] || 'soporte';
 
-      alert(`¡Gracias por tu consulta! Te contactaremos a la brevedad sobre ${selectedService?.title}.`);
-      closeModal();
+      const data = {
+        nombrecompleto: formData.nombrecompleto.trim(),
+        email: formData.email.trim() || null,
+        telefono: formData.telefono.trim() || null,
+        mensaje: formData.mensaje.trim(),
+        tipo: tipo
+      };
+
+      console.log("Enviando consulta:", data);
+
+      const response = await apiService.crearConsulta(data);
+      
+      if (response.success) {
+        toast.success(`✅ ¡Gracias por tu consulta!\n\nTu consulta sobre ${selectedService?.title} ha sido enviada correctamente. Te contactaremos a la brevedad.`);
+        closeModal();
+      } else {
+        toast.error(response.message || "Error al enviar la consulta. Por favor, intenta nuevamente.");
+      }
     } catch (error) {
       console.error("Error:", error);
-      alert("Hubo un error al enviar tu consulta. Por favor, intenta nuevamente.");
+      toast.error("Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -117,6 +162,8 @@ export default function Services() {
 
   return (
     <>
+      <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
+      
       <section id="servicios" className="services-section">
         <div className="services-container">
           <div className="services-header">
@@ -177,16 +224,17 @@ export default function Services() {
                 <div className="form-group">
                   <label className="form-label">
                     <User className="label-icon" />
-                    Nombre completo
+                    Nombre completo <span className="required">*</span>
                   </label>
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
+                    name="nombrecompleto"
+                    value={formData.nombrecompleto}
                     onChange={handleChange}
                     required
-                    placeholder="Ingresá tu nombre"
+                    placeholder="Ingresá tu nombre completo"
                     className="form-input"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -200,10 +248,11 @@ export default function Services() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    required
                     placeholder="Ingresá tu email"
                     className="form-input"
+                    disabled={isSubmitting}
                   />
+                  <small className="form-hint">Obligatorio si no ingresas teléfono</small>
                 </div>
 
                 <div className="form-group">
@@ -213,30 +262,32 @@ export default function Services() {
                   </label>
                   <input
                     type="tel"
-                    name="phone"
-                    value={formData.phone}
+                    name="telefono"
+                    value={formData.telefono}
                     onChange={handleChange}
-                    required
                     placeholder="Ingresá tu teléfono"
                     className="form-input"
+                    disabled={isSubmitting}
                   />
+                  <small className="form-hint">Obligatorio si no ingresas email</small>
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">
                     <MessageSquare className="label-icon" />
-                    Consulta
+                    Consulta <span className="required">*</span>
                   </label>
                   <span className="service-type-badge">
                     {selectedService.title}
                   </span>
                   <textarea
-                    name="message"
-                    value={formData.message}
+                    name="mensaje"
+                    value={formData.mensaje}
                     onChange={handleChange}
                     required
                     rows={5}
                     className="form-textarea"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -247,7 +298,10 @@ export default function Services() {
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
-                      "Enviando..."
+                      <>
+                        <span className="spinner"></span>
+                        Enviando...
+                      </>
                     ) : (
                       <>
                         Enviar consulta

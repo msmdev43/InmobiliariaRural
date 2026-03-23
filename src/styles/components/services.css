@@ -389,7 +389,7 @@
 .form-actions {
   display: flex;
   gap: 0.8rem; /* Reducido de 1rem */
-  margin-top: 0.8rem; /* Reducido de 1rem */
+  margin-top: 0; /* Reducido de 1rem */
 }
 
 .submit-button {

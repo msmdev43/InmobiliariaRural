@@ -1,40 +1,77 @@
+// C:\xampp\htdocs\InmobiliariaRural\src\components\Contact.jsx
 import { useState } from "react";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import apiService from "../services/api.service";
+import { useToast, ToastContainer } from "../components/UI/Toast";
 import "../styles/components/contact.css";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
-    name: "",
+    nombrecompleto: "",
     email: "",
-    phone: "",
-    message: "",
+    telefono: "",
+    mensaje: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
+    // Validaciones
+    if (!formData.nombrecompleto.trim()) {
+      toast.error("Por favor, ingresa tu nombre completo");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.email.trim() && !formData.telefono.trim()) {
+      toast.error("Debes proporcionar al menos un email o un teléfono");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("Por favor, ingresa un email válido");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.mensaje.trim()) {
+      toast.error("Por favor, escribe tu mensaje");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      // Aquí conectarás con tu backend PHP
-      console.log("Form submitted:", formData);
+      // Preparar datos para el backend
+      const data = {
+        nombrecompleto: formData.nombrecompleto.trim(),
+        email: formData.email.trim() || null,
+        telefono: formData.telefono.trim() || null,
+        mensaje: formData.mensaje.trim(),
+        tipo: "soporte" // Tipo soporte para consultas generales
+      };
+
+      const response = await apiService.crearConsulta(data);
       
-      // Simular envío
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Resetear formulario
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        message: "",
-      });
-      
-      alert("Mensaje enviado correctamente");
+      if (response.success) {
+        toast.success("✅ ¡Mensaje enviado correctamente! Te contactaremos a la brevedad.");
+        // Resetear formulario
+        setFormData({
+          nombrecompleto: "",
+          email: "",
+          telefono: "",
+          mensaje: "",
+        });
+      } else {
+        toast.error(response.message || "Error al enviar el mensaje. Por favor, intenta nuevamente.");
+      }
     } catch (error) {
       console.error("Error al enviar:", error);
-      alert("Error al enviar el mensaje");
+      toast.error("Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -69,108 +106,124 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contacto" className="contact-section">
-      <div className="container">
-        <div className="section-header">
-          <p className="section-tag">Contacto</p>
-          <h2 className="section-title">Hablemos de tu propiedad</h2>
-          <p className="section-description">
-            Acerquenos su inquietud acerca de lo que busca u ofrece.
-          </p>
-        </div>
-
-        <div className="contact-grid">
-          <div className="form-card">
-            <h3 className="form-title">Envianos un mensaje</h3>
-            <form onSubmit={handleSubmit} className="contact-form">
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="name" className="form-label">
-                    Nombre Completo
-                  </label>
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Tu nombre"
-                    value={formData.nombre}
-                    onChange={handleChange}
-                    required
-                    className="form-input"
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="email" className="form-label">
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="tu@email.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="form-input"
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <label htmlFor="phone" className="form-label">
-                  Teléfono
-                </label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="Tu teléfono"
-                  value={formData.telefono}
-                  onChange={handleChange}
-                  className="form-input"
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="message" className="form-label">
-                  Mensaje
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  placeholder="Contanos que estas buscando..."
-                  value={formData.mensaje}
-                  onChange={handleChange}
-                  required
-                  className="form-textarea"
-                />
-              </div>
-              <button
-                type="submit"
-                className="submit-button"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Enviando..." : "Enviar mensaje"}
-              </button>
-            </form>
+    <>
+      <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
+      
+      <section id="contacto" className="contact-section">
+        <div className="container">
+          <div className="section-header">
+            <p className="section-tag">Contacto</p>
+            <h2 className="section-title">Hablemos de tu propiedad</h2>
+            <p className="section-description">
+              Acerquenos su inquietud acerca de lo que busca u ofrece.
+            </p>
           </div>
 
-          <div className="contact-info">
-            <h3 className="info-title">Informacion de contacto</h3>
-            <div className="info-list">
-              {contactInfo.map((item, index) => (
-                <div key={index} className="info-item">
-                  <div className="info-icon-wrapper">
-                    <item.icon className="info-icon" />
+          <div className="contact-grid">
+            <div className="form-card">
+              <h3 className="form-title">Envianos un mensaje</h3>
+              
+              <form onSubmit={handleSubmit} className="contact-form">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="nombrecompleto" className="form-label">
+                      Nombre Completo <span className="required">*</span>
+                    </label>
+                    <input
+                      id="nombrecompleto"
+                      name="nombrecompleto"
+                      type="text"
+                      placeholder="Tu nombre"
+                      value={formData.nombrecompleto}
+                      onChange={handleChange}
+                      required
+                      className="form-input"
+                      disabled={isSubmitting}
+                    />
                   </div>
-                  <div>
-                    <p className="info-label">{item.title}</p>
-                    <p className="info-content">{item.content}</p>
+                  <div className="form-group">
+                    <label htmlFor="email" className="form-label">
+                      Email
+                    </label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    />
                   </div>
                 </div>
-              ))}
+                <div className="form-group">
+                  <label htmlFor="telefono" className="form-label">
+                    Teléfono
+                  </label>
+                  <input
+                    id="telefono"
+                    name="telefono"
+                    type="tel"
+                    placeholder="Tu teléfono"
+                    value={formData.telefono}
+                    onChange={handleChange}
+                    className="form-input"
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="mensaje" className="form-label">
+                    Mensaje <span className="required">*</span>
+                  </label>
+                  <textarea
+                    id="mensaje"
+                    name="mensaje"
+                    placeholder="Contanos que estas buscando..."
+                    value={formData.mensaje}
+                    onChange={handleChange}
+                    required
+                    rows={5}
+                    className="form-textarea"
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="submit-button"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="spinner"></span>
+                      Enviando...
+                    </>
+                  ) : (
+                    "Enviar mensaje"
+                  )}
+                </button>
+              </form>
+            </div>
+
+            <div className="contact-info">
+              <h3 className="info-title">Información de contacto</h3>
+              <div className="info-list">
+                {contactInfo.map((item, index) => (
+                  <div key={index} className="info-item">
+                    <div className="info-icon-wrapper">
+                      <item.icon className="info-icon" />
+                    </div>
+                    <div>
+                      <p className="info-label">{item.title}</p>
+                      <p className="info-content">{item.content}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

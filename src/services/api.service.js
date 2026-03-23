@@ -51,7 +51,7 @@ class ApiService {
         }
         
         return data;
-      } catch (parseError) {
+      } catch {
         console.error('Error parsing JSON:', text.substring(0, 200));
         // Si no es JSON pero la petición fue exitosa, devolver éxito
         if (response.ok) {
@@ -410,9 +410,19 @@ class ApiService {
     }
   }
 
-  // Consultas
-  async getConsultas() {
-    return this.request(CONSULTAS_ENDPOINTS.LISTAR, {
+  async crearConsulta(data) {
+    return this.request(CONSULTAS_ENDPOINTS.CREAR, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  async getConsultas(params = '') {
+    const url = params 
+      ? `${CONSULTAS_ENDPOINTS.LISTAR}?${params}`
+      : CONSULTAS_ENDPOINTS.LISTAR;
+      
+    return this.request(url, {
       method: 'GET'
     });
   }

@@ -13,6 +13,7 @@ import PropertiesPage from './pages/PropertiesPage'; // <-- Importar la nueva pÃ
 import TiposCampos from './pages/Admin/Configuracion/TipoCampos';
 import Servicios from './pages/Admin/Configuracion/Servicios';
 import Configuracion from './pages/Admin/Configuracion/Configuracion';
+import ListaConsultas from "./pages/Admin/Consultas/ListaConsultas";
 
 function App() {
   return (
@@ -59,7 +60,7 @@ function App() {
         {/* Rutas de Consultas */}
         <Route path="/admin/consultas" element={
           <ProtectedRoute>
-            <div>Lista de Consultas</div>
+            <ListaConsultas />
           </ProtectedRoute>
         } />
 

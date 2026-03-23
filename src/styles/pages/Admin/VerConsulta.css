@@ -1,0 +1,293 @@
+/* C:\xampp\htdocs\InmobiliariaRural\src\styles\components\Admin\VerConsulta.css */
+
+/* Overlay del modal */
+.ver-consulta-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: ver-consulta-fade-in 0.2s ease;
+}
+
+@keyframes ver-consulta-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal principal */
+.ver-consulta-modal {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: ver-consulta-slide-in 0.3s ease;
+}
+
+@keyframes ver-consulta-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.ver-consulta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+.ver-consulta-header-info {
+  flex: 1;
+}
+
+.ver-consulta-titulo {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.ver-consulta-tipo-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+}
+
+.ver-consulta-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ver-consulta-close:hover {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #ef4444;
+}
+
+/* Body */
+.ver-consulta-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+/* Secciones */
+.ver-consulta-seccion {
+  margin-bottom: 1.5rem;
+}
+
+.ver-consulta-seccion:last-child {
+  margin-bottom: 0;
+}
+
+.ver-consulta-seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 1rem 0;
+}
+
+.ver-consulta-seccion-titulo svg {
+  color: #006A4E;
+}
+
+/* Grid de datos */
+.ver-consulta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.ver-consulta-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ver-consulta-campo label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ver-consulta-campo span {
+  font-size: 0.95rem;
+  color: #1e293b;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.ver-consulta-link {
+  color: #006A4E;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.ver-consulta-link:hover {
+  text-decoration: underline;
+  color: #004d39;
+}
+
+/* Propiedades asociadas */
+.ver-consulta-propiedades {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.ver-consulta-propiedad {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.ver-consulta-propiedad-codigo {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.ver-consulta-propiedad-titulo {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1e293b;
+  flex: 1;
+}
+
+/* Mensaje */
+.ver-consulta-mensaje {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #1e293b;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid #e2e8f0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Footer */
+.ver-consulta-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  background: #f8fafc;
+  border-radius: 0 0 20px 20px;
+}
+
+.ver-consulta-btn-cerrar {
+  padding: 0.6rem 1.5rem;
+  background: #006A4E;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ver-consulta-btn-cerrar:hover {
+  background: #004d39;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 106, 78, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .ver-consulta-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .ver-consulta-header {
+    padding: 1rem;
+  }
+
+  .ver-consulta-body {
+    padding: 1rem;
+  }
+
+  .ver-consulta-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .ver-consulta-titulo {
+    font-size: 1rem;
+  }
+
+  .ver-consulta-propiedad {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .ver-consulta-footer {
+    padding: 1rem;
+  }
+
+  .ver-consulta-btn-cerrar {
+    width: 100%;
+  }
+}
