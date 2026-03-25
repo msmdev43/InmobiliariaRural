@@ -77,11 +77,10 @@ const EditarPropiedad = () => {
           const provincia = prop.ubicacion?.provincia || '';
           const tipoCampoId = prop.tipo_campo?.id || '';
           
-          // Extraer servicios IDs - asegurando que obtenemos los IDs correctamente
+          // Extraer servicios IDs
           let serviciosIds = [];
           if (prop.servicios && Array.isArray(prop.servicios)) {
             serviciosIds = prop.servicios.map(s => {
-              // El servicio puede tener 'id' o 'idservicios'
               return s.id || s.idservicios;
             }).filter(id => id !== undefined);
           }
@@ -121,16 +120,19 @@ const EditarPropiedad = () => {
           setServiciosSeleccionados(serviciosIds);
           console.log('Servicios seleccionados seteados en estado:', serviciosIds);
           
-          // Actualizar imágenes existentes
+          // Actualizar imágenes existentes - ordenadas por el campo 'orden'
           if (prop.imagenes && Array.isArray(prop.imagenes) && prop.imagenes.length > 0) {
-            const imagenesConUrlCompleta = prop.imagenes.map(img => ({
+            // Ordenar imágenes por el campo 'orden' si existe
+            const imagenesOrdenadas = [...prop.imagenes].sort((a, b) => (a.orden || 0) - (b.orden || 0));
+            
+            const imagenesConUrlCompleta = imagenesOrdenadas.map(img => ({
                 ...img,
                 url: img.url.startsWith('http') 
                 ? img.url 
                 : `http://localhost${img.url}`
             }));
             setImagenesExistentes(imagenesConUrlCompleta);
-            console.log('Imágenes existentes:', imagenesConUrlCompleta);
+            console.log('Imágenes existentes ordenadas:', imagenesConUrlCompleta);
           }
         } else {
           toast.error(propiedadResponse.message || 'No se pudo cargar la propiedad');
@@ -206,6 +208,44 @@ const EditarPropiedad = () => {
     setImagenesPreview(prev => prev.filter((_, i) => i !== index));
     setImagenesFiles(prev => prev.filter((_, i) => i !== index));
     toast.info('Imagen eliminada', 2000);
+  };
+
+  // Funciones para reordenar imágenes existentes
+  const moverImagenExistente = (index, direccion) => {
+    if (
+      (direccion === 'up' && index === 0) ||
+      (direccion === 'down' && index === imagenesExistentes.length - 1)
+    ) {
+      return;
+    }
+
+    const nuevoIndex = direccion === 'up' ? index - 1 : index + 1;
+    
+    const nuevasImagenes = [...imagenesExistentes];
+    [nuevasImagenes[index], nuevasImagenes[nuevoIndex]] = [nuevasImagenes[nuevoIndex], nuevasImagenes[index]];
+
+    setImagenesExistentes(nuevasImagenes);
+  };
+
+  // Funciones para reordenar imágenes nuevas
+  const moverImagenNueva = (index, direccion) => {
+    if (
+      (direccion === 'up' && index === 0) ||
+      (direccion === 'down' && index === imagenesFiles.length - 1)
+    ) {
+      return;
+    }
+
+    const nuevoIndex = direccion === 'up' ? index - 1 : index + 1;
+    
+    const nuevasPreviews = [...imagenesPreview];
+    const nuevosFiles = [...imagenesFiles];
+
+    [nuevasPreviews[index], nuevasPreviews[nuevoIndex]] = [nuevasPreviews[nuevoIndex], nuevasPreviews[index]];
+    [nuevosFiles[index], nuevosFiles[nuevoIndex]] = [nuevosFiles[nuevoIndex], nuevosFiles[index]];
+
+    setImagenesPreview(nuevasPreviews);
+    setImagenesFiles(nuevosFiles);
   };
 
   const handleCoordenadasChange = (lat, lng) => {
@@ -306,6 +346,13 @@ const EditarPropiedad = () => {
       const serviciosValidos = serviciosSeleccionados.filter(s => !isNaN(s)).map(Number);
       formDataToSend.append('servicios', JSON.stringify(serviciosValidos));
       console.log('Enviando servicios:', serviciosValidos);
+
+      // Enviar el orden de las imágenes existentes
+      const ordenImagenes = imagenesExistentes.map((img, idx) => ({
+        id: img.id,
+        orden: idx + 1
+      }));
+      formDataToSend.append('orden_imagenes', JSON.stringify(ordenImagenes));
 
       imagenesFiles.forEach((imagen) => {
         formDataToSend.append('imagenes[]', imagen);
@@ -705,11 +752,8 @@ const EditarPropiedad = () => {
             <div className="publicar-servicios-grid-unique">
               {servicios && servicios.length > 0 ? (
                 servicios.map((servicio) => {
-                  // Convertir IDs a número para comparación correcta
                   const servicioId = Number(servicio.id);
                   const estaSeleccionado = serviciosSeleccionados.some(id => Number(id) === servicioId);
-                  
-                  console.log(`Servicio ${servicio.nombre} (ID: ${servicioId}) - Seleccionado: ${estaSeleccionado}`);
                   
                   return (
                     <label key={servicioId} className="publicar-servicio-item-unique">
@@ -757,7 +801,7 @@ const EditarPropiedad = () => {
             )}
           </div>
 
-          {/* SECCIÓN 5: Imágenes */}
+          {/* SECCIÓN 5: Imágenes - CON ORDENAMIENTO */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">5</span>
@@ -765,7 +809,7 @@ const EditarPropiedad = () => {
             </div>
             
             <div className="publicar-imagenes-section-unique">
-              {/* Imágenes existentes */}
+              {/* Imágenes existentes con ordenamiento */}
               {imagenesExistentes.length > 0 && (
                 <div className="publicar-imagenes-existentes-unique">
                   <h4>Imágenes actuales ({imagenesExistentes.length})</h4>
@@ -781,7 +825,26 @@ const EditarPropiedad = () => {
                             e.target.src = '/img/default-propiedad.jpg';
                           }}
                         />
+                        <span className="publicar-preview-order-unique">{index + 1}</span>
                         <div className="publicar-preview-actions-unique">
+                          <button
+                            type="button"
+                            onClick={() => moverImagenExistente(index, 'up')}
+                            disabled={index === 0}
+                            className="publicar-preview-btn-unique publicar-preview-btn-up-unique"
+                            title="Mover arriba"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moverImagenExistente(index, 'down')}
+                            disabled={index === imagenesExistentes.length - 1}
+                            className="publicar-preview-btn-unique publicar-preview-btn-down-unique"
+                            title="Mover abajo"
+                          >
+                            ↓
+                          </button>
                           <button
                             type="button"
                             onClick={() => eliminarImagenExistente(img.id, index)}
@@ -819,25 +882,46 @@ const EditarPropiedad = () => {
                 </label>
               </div>
 
-              {/* Preview de nuevas imágenes */}
+              {/* Preview de nuevas imágenes con ordenamiento */}
               {imagenesPreview.length > 0 && (
-                <div className="publicar-preview-grid-unique">
-                  {imagenesPreview.map((img, index) => (
-                    <div key={index} className="publicar-preview-item-unique">
-                      <img src={img} alt={`Preview ${index}`} className="publicar-preview-img-unique" />
-                      <span className="publicar-preview-order-unique">{index + 1}</span>
-                      <div className="publicar-preview-actions-unique">
-                        <button
-                          type="button"
-                          onClick={() => eliminarImagenNueva(index)}
-                          className="publicar-preview-btn-unique publicar-preview-btn-delete-unique"
-                          title="Eliminar"
-                        >
-                          ×
-                        </button>
+                <div>
+                  <h4>Nuevas imágenes ({imagenesPreview.length})</h4>
+                  <div className="publicar-preview-grid-unique">
+                    {imagenesPreview.map((img, index) => (
+                      <div key={index} className="publicar-preview-item-unique">
+                        <img src={img} alt={`Preview ${index}`} className="publicar-preview-img-unique" />
+                        <span className="publicar-preview-order-unique">{index + 1}</span>
+                        <div className="publicar-preview-actions-unique">
+                          <button
+                            type="button"
+                            onClick={() => moverImagenNueva(index, 'up')}
+                            disabled={index === 0}
+                            className="publicar-preview-btn-unique publicar-preview-btn-up-unique"
+                            title="Mover arriba"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moverImagenNueva(index, 'down')}
+                            disabled={index === imagenesFiles.length - 1}
+                            className="publicar-preview-btn-unique publicar-preview-btn-down-unique"
+                            title="Mover abajo"
+                          >
+                            ↓
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => eliminarImagenNueva(index)}
+                            className="publicar-preview-btn-unique publicar-preview-btn-delete-unique"
+                            title="Eliminar"
+                          >
+                            ×
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
