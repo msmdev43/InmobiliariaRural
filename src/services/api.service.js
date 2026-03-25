@@ -94,6 +94,23 @@ class ApiService {
     }
   }
 
+  async modificarPropiedad(id, formData) {
+    // Para FormData, no usar JSON.stringify
+    const response = await fetch(`${PROPIEDADES_ENDPOINTS.MODIFICAR}?id=${id}`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    });
+    return response.json();
+  }
+
+async eliminarImagen(imagenId, propiedadId) {
+    return this.request(`${PROPIEDADES_ENDPOINTS.ELIMINAR_IMAGEN}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ imagen_id: imagenId, propiedad_id: propiedadId })
+    });
+  }
+
   // Autenticación
   async adminLogin(credentials) {
     return this.request(ADMIN_ENDPOINTS.LOGIN, {
@@ -229,25 +246,8 @@ class ApiService {
   }
 
   async getPropiedadDetalle(id) {
-    try {
-      const response = await this.request(`${PROPIEDADES_ENDPOINTS.DETALLE}?id=${id}`, {
-        method: 'GET'
-      });
-      
-      return response;
-    } catch (error) {
-      console.error('Error en getPropiedadDetalle:', error);
-      return {
-        success: false,
-        message: error.message || 'Error al cargar propiedad'
-      };
-    }
-  }
-
-  async modificarPropiedad(id, data) {
-    return this.request(PROPIEDADES_ENDPOINTS.MODIFICAR, {
-      method: 'PUT',
-      body: JSON.stringify({ id, ...data })
+    return this.request(`${PROPIEDADES_ENDPOINTS.DETALLE}?id=${id}`, {
+      method: 'GET'
     });
   }
 

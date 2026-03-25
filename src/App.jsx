@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Admin/Login";
 import Dashboard from "./pages/Admin/Dashboard";
 import PublicarPropiedad from './pages/Admin/Propiedades/PublicarPropiedad';
+import EditarPropiedad from './pages/Admin/Propiedades/EditarPropiedad';
 import ListaPropiedades from './pages/Admin/Propiedades/ListaPropiedades';
 import VerPropiedad from './pages/Admin/Propiedades/VerPropiedad';
 import VerFicha from './pages/propiedades/VerFicha';
@@ -53,7 +54,7 @@ function App() {
         
         <Route path="/admin/propiedades/editar/:id" element={
           <ProtectedRoute>
-            <PublicarPropiedad />
+            <EditarPropiedad />
           </ProtectedRoute>
         } />
         

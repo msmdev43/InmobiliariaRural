@@ -28,6 +28,7 @@ const API_CONFIG = {
     DETALLE: '/propiedades/obtenerPropiedadDetalle.php',
     ESTADISTICAS: '/propiedades/estadisticas/obtenerEstadisticas.php',
     DESTACADAS: '/propiedades/propiedadesDestacadas.php',
+    ELIMINAR_IMAGEN: '/propiedades/imagenes/eliminarImagenes.php',
   },
   
   // Endpoints de servicios

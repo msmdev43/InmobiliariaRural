@@ -87,6 +87,77 @@ const UbicacionFormateada = ({ ciudad, provincia, zona }) => (
 );
 
 // ============================================================================
+// MODAL DE CONFIRMACIÓN INTERNO
+// ============================================================================
+
+const ModalConfirmacionEliminar = ({ isOpen, onClose, onConfirm, propiedad }) => {
+  // Bloquear scroll cuando el modal está abierto
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [isOpen]);
+
+  // Cerrar con tecla Escape
+  useEffect(() => {
+    if (isOpen) {
+      const handleEsc = (e) => {
+        if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+      window.addEventListener('keydown', handleEsc);
+      return () => window.removeEventListener('keydown', handleEsc);
+    }
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="lista-modal-overlay-unique" onClick={onClose}>
+      <div className="lista-modal-unique" onClick={e => e.stopPropagation()}>
+        <div className="lista-modal-header-unique">
+          <h3 className="lista-modal-title-unique">Confirmar eliminación</h3>
+          <button className="lista-modal-close-unique" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        
+        <div className="lista-modal-body-unique">
+          <p>
+            ¿Estás seguro de dar de baja la propiedad <strong>"{propiedad?.titulo}"</strong>?
+          </p>
+          <p className="lista-modal-info-unique">
+            Código: {propiedad?.codigo}
+          </p>
+          <p className="lista-modal-warning-unique">
+            ⚠️ Esta acción no se puede deshacer. La propiedad quedará oculta del sitio.
+          </p>
+        </div>
+        
+        <div className="lista-modal-footer-unique">
+          <button 
+            className="lista-modal-btn-cancelar-unique" 
+            onClick={onClose}
+          >
+            Cancelar
+          </button>
+          <button 
+            className="lista-modal-btn-confirmar-unique lista-modal-btn-danger-unique"
+            onClick={onConfirm}
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
 // COMPONENTE PRINCIPAL
 // ============================================================================
 
@@ -119,9 +190,12 @@ const ListaPropiedades = () => {
     total_paginas: 0
   });
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
-  const [propiedadSeleccionada, setPropiedadSeleccionada] = useState(null);
-  const [modalEliminar, setModalEliminar] = useState(false);
-  const [accionEliminar, setAccionEliminar] = useState('eliminar'); // eliminar, restaurar, eliminar_permanentemente
+  
+  // Estado para el modal de confirmación
+  const [modalConfirm, setModalConfirm] = useState({
+    isOpen: false,
+    propiedad: null
+  });
 
   useEffect(() => {
     cargarPropiedades();
@@ -131,7 +205,6 @@ const ListaPropiedades = () => {
     try {
       setLoading(true);
       
-      // Construir query params
       const params = new URLSearchParams();
       if (filtros.buscar) params.append('buscar', filtros.buscar);
       if (filtros.tipo_operacion) params.append('tipo_operacion', filtros.tipo_operacion);
@@ -211,33 +284,38 @@ const ListaPropiedades = () => {
     navigate('/admin/publicarPropiedad');
   };
 
-  const handleEliminarClick = (propiedad, accion) => {
-    setPropiedadSeleccionada(propiedad);
-    setAccionEliminar(accion);
-    setModalEliminar(true);
+  // Abrir modal de confirmación para eliminar
+  const handleEliminarClick = (propiedad) => {
+    setModalConfirm({
+      isOpen: true,
+      propiedad: propiedad
+    });
   };
 
+  // Confirmar eliminación (soft delete)
   const handleConfirmarEliminar = async () => {
-    if (!propiedadSeleccionada) return;
+    const { propiedad } = modalConfirm;
+    if (!propiedad) return;
 
     try {
-      const response = await apiService.eliminarPropiedad(
-        propiedadSeleccionada.id, 
-        accionEliminar
-      );
+      const response = await apiService.eliminarPropiedad(propiedad.id, 'eliminar');
       
       if (response.success) {
         toast.success(response.message);
-        setModalEliminar(false);
-        setPropiedadSeleccionada(null);
+        setModalConfirm({ isOpen: false, propiedad: null });
         cargarPropiedades(paginacion.pagina_actual);
       } else {
-        toast.error(response.message || 'Error al ejecutar la acción');
+        toast.error(response.message || 'Error al eliminar la propiedad');
       }
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al conectar con el servidor');
     }
+  };
+
+  // Cerrar modal
+  const handleCerrarModal = () => {
+    setModalConfirm({ isOpen: false, propiedad: null });
   };
 
   if (loading && propiedades.length === 0) {
@@ -256,6 +334,14 @@ const ListaPropiedades = () => {
     <Sidebar>
       <div className="lista-page-unique">
         <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
+        
+        {/* Modal de confirmación */}
+        <ModalConfirmacionEliminar
+          isOpen={modalConfirm.isOpen}
+          onClose={handleCerrarModal}
+          onConfirm={handleConfirmarEliminar}
+          propiedad={modalConfirm.propiedad}
+        />
         
         {/* Header */}
         <div className="lista-header-unique">
@@ -427,7 +513,7 @@ const ListaPropiedades = () => {
           </div>
         )}
 
-        {/* Tabla de propiedades - VERSIÓN MEJORADA */}
+        {/* Tabla de propiedades */}
         {propiedades.length > 0 ? (
           <div className="lista-tabla-container-unique">
             <table className="lista-tabla-unique">
@@ -441,47 +527,41 @@ const ListaPropiedades = () => {
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
-              </thead>
+                </thead>
               <tbody>
                 {propiedades.map(prop => (
                   <tr key={prop.id} className={prop.deleted_at ? 'fila-eliminada' : ''}>
-                    {/* Código */}
                     <td className="columna-codigo">
                       <span className="codigo-texto">{prop.codigo}</span>
                       {prop.destacado && (
                         <span className="destacado-estrella" title="Destacado">★</span>
                       )}
-                    </td>
+                     </td>
 
-                    {/* Tipo (ahora muestra tipo_campo) */}
                     <td className="columna-tipo">
                       <TipoCampoBadge tipo={prop.tipo_campo} />
-                    </td>
+                     </td>
 
-                    {/* Ubicación formateada */}
                     <td className="columna-ubicacion">
                       <UbicacionFormateada 
                         ciudad={prop.ciudad}
                         provincia={prop.provincia}
                         zona={prop.zona}
                       />
-                    </td>
+                     </td>
 
-                    {/* Superficie */}
                     <td className="columna-superficie">
                       <span className="superficie-valor">{prop.superficie}</span>
                       <span className="superficie-unidad">ha</span>
-                    </td>
+                     </td>
 
-                    {/* Precio formateado */}
                     <td className="columna-precio">
                       <PrecioFormateado 
                         precio={prop.precio} 
                         moneda={prop.moneda} 
                       />
-                    </td>
+                     </td>
 
-                    {/* Estado (punto verde) y estadísticas */}
                     <td className="columna-estado">
                       <EstadoIndicador disponible={prop.estado === 'disponible' && !prop.deleted_at} />
                       <div className="estadisticas-mini">
@@ -489,9 +569,8 @@ const ListaPropiedades = () => {
                         <span className="stat-icon" title="Consultas">💬 {prop.consultas}</span>
                         <span className="stat-icon" title="Imágenes">📷 {prop.total_imagenes}</span>
                       </div>
-                    </td>
+                     </td>
 
-                    {/* Acciones en fila */}
                     <td className="columna-acciones">
                       <div className="acciones-fila">
                         <button
@@ -502,7 +581,7 @@ const ListaPropiedades = () => {
                           👁️
                         </button>
                         
-                        {prop.puede_editar && !prop.deleted_at && (
+                        {!prop.deleted_at && (
                           <button
                             onClick={() => handleEditarPropiedad(prop.id)}
                             className="accion-btn accion-editar"
@@ -512,35 +591,16 @@ const ListaPropiedades = () => {
                           </button>
                         )}
                         
-                        {prop.deleted_at ? (
-                          <>
-                            <button
-                              onClick={() => handleEliminarClick(prop, 'restaurar')}
-                              className="accion-btn accion-restaurar"
-                              title="Restaurar"
-                            >
-                              🔄
-                            </button>
-                            <button
-                              onClick={() => handleEliminarClick(prop, 'eliminar_permanentemente')}
-                              className="accion-btn accion-eliminar-perm"
-                              title="Eliminar permanentemente"
-                            >
-                              🗑️
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => handleEliminarClick(prop, 'eliminar')}
-                            className="accion-btn accion-eliminar"
-                            title="Dar de baja"
-                          >
-                            🗑️
-                          </button>
-                        )}
+                        <button
+                          onClick={() => handleEliminarClick(prop)}
+                          className="accion-btn accion-eliminar"
+                          title={prop.deleted_at ? "Eliminar permanentemente" : "Eliminar"}
+                        >
+                          🗑️
+                        </button>
                       </div>
-                    </td>
-                  </tr>
+                     </td>
+                   </tr>
                 ))}
               </tbody>
             </table>
@@ -588,54 +648,6 @@ const ListaPropiedades = () => {
             >
               Siguiente →
             </button>
-          </div>
-        )}
-
-        {/* Modal de confirmación para eliminar/restaurar */}
-        {modalEliminar && propiedadSeleccionada && (
-          <div className="lista-modal-overlay-unique" onClick={() => setModalEliminar(false)}>
-            <div className="lista-modal-unique" onClick={e => e.stopPropagation()}>
-              <div className="lista-modal-header-unique">
-                <h3 className="lista-modal-title-unique">
-                  {accionEliminar === 'eliminar' && 'Confirmar baja'}
-                  {accionEliminar === 'restaurar' && 'Confirmar restauración'}
-                  {accionEliminar === 'eliminar_permanentemente' && 'Confirmar eliminación permanente'}
-                </h3>
-                <button className="lista-modal-close-unique" onClick={() => setModalEliminar(false)}>
-                  ×
-                </button>
-              </div>
-              
-              <div className="lista-modal-body-unique">
-                <p>
-                  {accionEliminar === 'eliminar' && `¿Estás seguro de dar de baja la propiedad "${propiedadSeleccionada.titulo}"?`}
-                  {accionEliminar === 'restaurar' && `¿Restaurar la propiedad "${propiedadSeleccionada.titulo}"?`}
-                  {accionEliminar === 'eliminar_permanentemente' && `⚠️ ¿ELIMINAR PERMANENTEMENTE "${propiedadSeleccionada.titulo}"? Esta acción no se puede deshacer.`}
-                </p>
-                <p className="lista-modal-info-unique">
-                  Código: {propiedadSeleccionada.codigo}
-                </p>
-              </div>
-              
-              <div className="lista-modal-footer-unique">
-                <button 
-                  className="lista-modal-btn-cancelar-unique" 
-                  onClick={() => setModalEliminar(false)}
-                >
-                  Cancelar
-                </button>
-                <button 
-                  className={`lista-modal-btn-confirmar-unique ${
-                    accionEliminar === 'eliminar_permanentemente' ? 'eliminar-perm' : ''
-                  }`}
-                  onClick={handleConfirmarEliminar}
-                >
-                  {accionEliminar === 'eliminar' && 'Dar de baja'}
-                  {accionEliminar === 'restaurar' && 'Restaurar'}
-                  {accionEliminar === 'eliminar_permanentemente' && 'Eliminar permanentemente'}
-                </button>
-              </div>
-            </div>
           </div>
         )}
       </div>
