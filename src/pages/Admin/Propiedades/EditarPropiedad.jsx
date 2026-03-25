@@ -1,4 +1,3 @@
-// C:\xampp\htdocs\InmobiliariaRural\src\pages\Admin\Propiedades\EditarPropiedad.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../../../components/Admin/Sidebar';
@@ -43,7 +42,7 @@ const EditarPropiedad = () => {
     destacado: false
   });
 
-  // Cargar datos de la propiedad - SOLO UNA VEZ
+  // Cargar datos de la propiedad
   useEffect(() => {
     const cargarDatos = async () => {
       try {
@@ -55,8 +54,12 @@ const EditarPropiedad = () => {
           apiService.getServicios()
         ]);
 
-        setTiposCampos(tiposResponse.data || []);
-        setServicios(serviciosResponse.data || []);
+        const tiposData = tiposResponse.data || [];
+        const serviciosData = serviciosResponse.data || [];
+        
+        setTiposCampos(tiposData);
+        setServicios(serviciosData);
+        console.log('Servicios disponibles cargados:', serviciosData);
 
         // Cargar datos de la propiedad
         const propiedadResponse = await apiService.getPropiedadDetalle(id);
@@ -65,8 +68,7 @@ const EditarPropiedad = () => {
         if (propiedadResponse.success && propiedadResponse.data) {
           const prop = propiedadResponse.data;
           console.log('Datos de propiedad:', prop);
-          console.log('Servicios recibidos:', prop.servicios);
-          console.log('Imágenes recibidas:', prop.imagenes);
+          console.log('Servicios de la propiedad:', prop.servicios);
           
           // Extraer datos
           const latitud = prop.ubicacion?.latitud || '';
@@ -75,10 +77,14 @@ const EditarPropiedad = () => {
           const provincia = prop.ubicacion?.provincia || '';
           const tipoCampoId = prop.tipo_campo?.id || '';
           
-          // Extraer servicios IDs
-          const serviciosIds = prop.servicios && Array.isArray(prop.servicios) 
-            ? prop.servicios.map(s => s.id) 
-            : [];
+          // Extraer servicios IDs - asegurando que obtenemos los IDs correctamente
+          let serviciosIds = [];
+          if (prop.servicios && Array.isArray(prop.servicios)) {
+            serviciosIds = prop.servicios.map(s => {
+              // El servicio puede tener 'id' o 'idservicios'
+              return s.id || s.idservicios;
+            }).filter(id => id !== undefined);
+          }
           
           console.log('Servicios IDs extraídos:', serviciosIds);
           
@@ -113,18 +119,18 @@ const EditarPropiedad = () => {
           
           // Actualizar servicios seleccionados
           setServiciosSeleccionados(serviciosIds);
-          console.log('Servicios seleccionados seteados:', serviciosIds);
+          console.log('Servicios seleccionados seteados en estado:', serviciosIds);
           
-          // Actualizar imágenes existentes - asegurando URL completa
+          // Actualizar imágenes existentes
           if (prop.imagenes && Array.isArray(prop.imagenes) && prop.imagenes.length > 0) {
             const imagenesConUrlCompleta = prop.imagenes.map(img => ({
                 ...img,
                 url: img.url.startsWith('http') 
                 ? img.url 
-                : `http://localhost${img.url}` // Asegurar que use localhost sin puerto
+                : `http://localhost${img.url}`
             }));
             setImagenesExistentes(imagenesConUrlCompleta);
-            console.log('Imágenes existentes con URL corregida:', imagenesConUrlCompleta);
+            console.log('Imágenes existentes:', imagenesConUrlCompleta);
           }
         } else {
           toast.error(propiedadResponse.message || 'No se pudo cargar la propiedad');
@@ -299,12 +305,14 @@ const EditarPropiedad = () => {
       
       const serviciosValidos = serviciosSeleccionados.filter(s => !isNaN(s)).map(Number);
       formDataToSend.append('servicios', JSON.stringify(serviciosValidos));
+      console.log('Enviando servicios:', serviciosValidos);
 
       imagenesFiles.forEach((imagen) => {
         formDataToSend.append('imagenes[]', imagen);
       });
 
       const response = await apiService.modificarPropiedad(formData.id, formDataToSend);
+      console.log('Respuesta modificar:', response);
       
       if (response.success) {
         toast.success('¡Propiedad actualizada con éxito!');
@@ -695,32 +703,40 @@ const EditarPropiedad = () => {
             </div>
             
             <div className="publicar-servicios-grid-unique">
-              {servicios.map((servicio) => {
-                const seleccionado = serviciosSeleccionados.includes(servicio.id);
-                
-                return (
-                  <label key={servicio.id} className="publicar-servicio-item-unique">
-                    <input
-                      type="checkbox"
-                      checked={seleccionado}
-                      onChange={() => {
-                        if (seleccionado) {
-                          setServiciosSeleccionados(prev => 
-                            prev.filter(id => id !== servicio.id)
-                          );
-                        } else {
-                          setServiciosSeleccionados(prev => 
-                            [...prev, servicio.id]
-                          );
-                        }
-                      }}
-                      className="publicar-servicio-checkbox-unique"
-                    />
-                    <span className="publicar-servicio-checkmark-unique"></span>
-                    <span className="publicar-servicio-nombre-unique">{servicio.nombre}</span>
-                  </label>
-                );
-              })}
+              {servicios && servicios.length > 0 ? (
+                servicios.map((servicio) => {
+                  // Convertir IDs a número para comparación correcta
+                  const servicioId = Number(servicio.id);
+                  const estaSeleccionado = serviciosSeleccionados.some(id => Number(id) === servicioId);
+                  
+                  console.log(`Servicio ${servicio.nombre} (ID: ${servicioId}) - Seleccionado: ${estaSeleccionado}`);
+                  
+                  return (
+                    <label key={servicioId} className="publicar-servicio-item-unique">
+                      <input
+                        type="checkbox"
+                        checked={estaSeleccionado}
+                        onChange={() => {
+                          if (estaSeleccionado) {
+                            setServiciosSeleccionados(prev => 
+                              prev.filter(id => Number(id) !== servicioId)
+                            );
+                          } else {
+                            setServiciosSeleccionados(prev => 
+                              [...prev, servicioId]
+                            );
+                          }
+                        }}
+                        className="publicar-servicio-checkbox-unique"
+                      />
+                      <span className="publicar-servicio-checkmark-unique"></span>
+                      <span className="publicar-servicio-nombre-unique">{servicio.nombre}</span>
+                    </label>
+                  );
+                })
+              ) : (
+                <p className="publicar-sin-servicios-unique">Cargando servicios...</p>
+              )}
             </div>
             
             {serviciosSeleccionados.length > 0 && (
@@ -730,7 +746,7 @@ const EditarPropiedad = () => {
                 </span>
                 <div className="publicar-servicios-seleccionados-lista-unique">
                   {servicios
-                    .filter(s => serviciosSeleccionados.includes(s.id))
+                    .filter(s => serviciosSeleccionados.some(id => Number(id) === Number(s.id)))
                     .map(s => (
                       <span key={s.id} className="publicar-servicio-seleccionado-item-unique">
                         {s.nombre}
@@ -738,10 +754,6 @@ const EditarPropiedad = () => {
                     ))}
                 </div>
               </div>
-            )}
-            
-            {servicios.length === 0 && (
-              <p className="publicar-sin-servicios-unique">No hay servicios disponibles</p>
             )}
           </div>
 
