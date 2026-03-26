@@ -88,14 +88,14 @@
   }
 }
 
-/* Pantallas muy grandes: 4 columnas (opcional, para aprovechar mejor el espacio) */
+/* Pantallas muy grandes: 4 columnas */
 @media (min-width: 1600px) {
   .properties-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* ===== TARJETA DE PROPIEDAD - MEJORADA ===== */
+/* ===== TARJETA DE PROPIEDAD - CLICKEABLE ===== */
 .property-card {
   overflow: hidden;
   border: 1px solid #e5e7eb;
@@ -107,6 +107,8 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   height: 100%;
   width: 100%;
+  cursor: pointer;
+  position: relative;
 }
 
 .property-card:hover {
@@ -115,17 +117,61 @@
   border-color: rgba(0, 106, 78, 0.2);
 }
 
+/* Efecto de overlay sutil en hover */
+.property-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(0, 106, 78, 0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: 20px;
+  z-index: 1;
+}
+
+.property-card:hover::after {
+  opacity: 1;
+}
+
+/* Indicador visual en el título al hacer hover */
+.property-card:hover .property-title {
+  color: #006A4E;
+  transition: color 0.3s ease;
+}
+
+/* Estado de focus para accesibilidad */
+.property-card:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.3);
+  border-color: #006A4E;
+}
+
+.property-card:focus-visible {
+  outline: 2px solid #006A4E;
+  outline-offset: 2px;
+}
+
+/* Efecto de "presionar" al hacer clic */
+.property-card:active {
+  transform: translateY(-4px) scale(0.98);
+  transition: transform 0.1s ease;
+}
+
 /* ===== IMAGEN - MEJORADA ===== */
 .card-image-container {
   position: relative;
-  aspect-ratio: 16/9; /* Mejor proporción para desktop */
+  aspect-ratio: 16/9;
   overflow: hidden;
   background-color: #f3f4f6;
 }
 
 @media (min-width: 1024px) {
   .card-image-container {
-    aspect-ratio: 4/3; /* Vuelve a 4/3 en desktop */
+    aspect-ratio: 4/3;
   }
 }
 
@@ -157,7 +203,7 @@
   backdrop-filter: blur(4px);
 }
 
-/* ===== CONTENIDO DE LA CARD - OPTIMIZADO ===== */
+/* ===== CONTENIDO DE LA CARD ===== */
 .card-content {
   padding: clamp(1rem, 3vw, 1.5rem);
   display: flex;
@@ -175,6 +221,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.3s ease;
 }
 
 /* Ubicación */
@@ -205,7 +252,7 @@
   word-break: break-word;
 }
 
-/* Características - MEJORADAS */
+/* Características */
 .property-features {
   display: flex;
   align-items: center;
@@ -214,35 +261,39 @@
   flex-wrap: wrap;
 }
 
-.feature-item {
-  display: flex;
+/* ===== CARACTERÍSTICA DE PROPIEDAD - DISEÑO MODERNO ===== */
+.prop-feature-item {
+  display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  background: #f3f4f6;
-  padding: 0.4rem 1rem;
-  border-radius: 30px;
-  transition: all 0.2s ease;
+  gap: 0.6rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 1.2rem;
+  border-radius: 40px;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
-.feature-item:hover {
-  background: #e5e7eb;
+.prop-feature-item:hover {
+  border-color: #006A4E;
+  background: #f0fdf4;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 106, 78, 0.1);
 }
 
 .feature-icon {
-  width: clamp(0.85rem, 2vw, 1rem);
-  height: clamp(0.85rem, 2vw, 1rem);
+  width: 1rem;
+  height: 1rem;
   color: #006A4E;
-  flex-shrink: 0;
 }
 
-.feature-item span {
-  white-space: nowrap;
-  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+.prop-feature-item span {
+  font-size: 0.85rem;
   font-weight: 500;
-  color: #4b5563;
+  color: #374151;
 }
 
-/* Footer - MEJORADO */
+/* Footer */
 .card-footer {
   display: flex;
   align-items: center;
@@ -275,6 +326,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
 }
 
 .view-button:hover {
@@ -289,7 +343,7 @@
   transform: translateY(0);
 }
 
-/* ===== BOTÓN VER TODAS - MEJORADO ===== */
+/* ===== BOTÓN VER TODAS ===== */
 .view-all-container {
   text-align: center;
   margin-top: clamp(2rem, 5vw, 4rem);
@@ -346,8 +400,6 @@
 .view-all-button:hover .button-icon {
   transform: translateX(8px);
 }
-
-/* Agregar al final de C:\xampp\htdocs\InmobiliariaRural\src\styles\components\featuredProp.css */
 
 /* ===== LOADING Y ERROR STATES ===== */
 .loading-container,
@@ -444,7 +496,7 @@
     gap: 0.4rem;
   }
   
-  .feature-item {
+  .prop-feature-item {
     padding: 0.3rem 0.8rem;
   }
   
@@ -464,7 +516,7 @@
     font-size: 0.8rem;
   }
   
-  .feature-item span {
+  .prop-feature-item span {
     font-size: 0.7rem;
   }
 }

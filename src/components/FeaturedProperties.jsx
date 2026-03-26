@@ -123,7 +123,19 @@ export default function FeaturedProperties() {
 
         <div className="properties-grid">
           {properties.map((property) => (
-            <div key={property.id} className="property-card">
+            <div 
+              key={property.id} 
+              className="property-card"
+              onClick={() => handleViewMore(property.id)}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleViewMore(property.id);
+                }
+              }}
+            >
               <div className="card-image-container">
                 <img
                   src={property.image}
@@ -149,7 +161,7 @@ export default function FeaturedProperties() {
                 </div>
                 
                 <div className="property-features">
-                  <div className="feature-item">
+                  <div className="prop-feature-item">
                     <Ruler className="feature-icon" />
                     <span>{property.area}</span>
                   </div>
@@ -171,7 +183,10 @@ export default function FeaturedProperties() {
                   </p>
                   <button
                     className="view-button"
-                    onClick={() => handleViewMore(property.id)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Evita que se dispare el click de la tarjeta
+                      handleViewMore(property.id);
+                    }}
                   >
                     Ver más
                   </button>

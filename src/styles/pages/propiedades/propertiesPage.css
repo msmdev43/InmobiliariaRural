@@ -1,48 +1,69 @@
 /* C:\xampp\htdocs\InmobiliariaRural\src\styles\pages\propiedades\propertiesPage.css */
 
+/* Variables */
+:root {
+  --primary: #006A4E;
+  --primary-dark: #004d3a;
+  --primary-light: #00a87e;
+}
+
 /* Properties Page - Estilos específicos */
 .properties-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
-/* Hero Section */
+/* Hero Section - Mejorado */
 .properties-page .page-hero {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
-  padding: 80px 0;
+  padding: 100px 0;
   text-align: center;
   position: relative;
   overflow: hidden;
 }
 
+/* Patrón decorativo de fondo */
 .properties-page .page-hero::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: -50%;
+  left: -10%;
+  width: 120%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 30px 30px;
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+.properties-page .page-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.05)" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,170.7C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
-  background-size: cover;
-  opacity: 0.1;
+  height: 100px;
+  background: linear-gradient(to top, rgba(248, 250, 252, 0.1), transparent);
   pointer-events: none;
 }
 
 .properties-page .page-hero .container {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .properties-page .page-hero h1 {
-  font-size: 3rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   animation: fadeInUp 0.6s ease-out;
 }
 
 .properties-page .page-hero p {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   opacity: 0.95;
   max-width: 600px;
   margin: 0 auto;
@@ -62,17 +83,27 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .properties-page .page-hero {
+    padding: 80px 0;
+  }
+  
+  .properties-page .page-hero h1 {
+    font-size: 3rem;
+  }
+}
+
 @media (max-width: 768px) {
   .properties-page .page-hero {
     padding: 60px 0;
   }
   
   .properties-page .page-hero h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
   
   .properties-page .page-hero p {
-    font-size: 1rem;
+    font-size: 1.1rem;
     padding: 0 1rem;
   }
 }
@@ -83,6 +114,10 @@
   }
   
   .properties-page .page-hero h1 {
-    font-size: 1.75rem;
+    font-size: 2rem;
+  }
+  
+  .properties-page .page-hero p {
+    font-size: 1rem;
   }
 }

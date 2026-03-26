@@ -142,9 +142,6 @@ const VerFicha = () => {
       <div className="vf-container">
         {/* Header con acciones */}
         <div className="vf-header">
-          <button onClick={handleVolver} className="vf-btn-icon" title="Volver">
-            <ArrowLeft size={24} />
-          </button>
           <div className="vf-header-titulo">
             <h1>{propiedad.titulo}</h1>
             <p className="vf-codigo">Código: {propiedad.codigo}</p>
