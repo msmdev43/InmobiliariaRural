@@ -4,9 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../../components/Admin/Sidebar';
 import apiService from '../../../services/api.service';
 import { useToast, ToastContainer } from '../../../components/UI/Toast';
-import MapaUbicacion from '../../../components/UI/MapaUbicacion'; // Nuevo componente
+import MapaUbicacion from '../../../components/UI/MapaUbicacion';
 import '../../../styles/pages/Admin/propiedades/PublicarPropiedad.css';
-// Importar estilos de Leaflet
 import 'leaflet/dist/leaflet.css';
 
 const PublicarPropiedad = () => {
@@ -20,7 +19,7 @@ const PublicarPropiedad = () => {
   const [imagenesFiles, setImagenesFiles] = useState([]);
   const [erroresValidacion, setErroresValidacion] = useState({});
 
-  // Estado para servicios seleccionados (más fácil de manejar)
+  // Estado para servicios seleccionados
   const [serviciosSeleccionados, setServiciosSeleccionados] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -39,6 +38,7 @@ const PublicarPropiedad = () => {
     estado: 'disponible',
     fecha: new Date().toISOString().split('T')[0],
     campos_idtipocampos: '',
+    destacado: false  // ✅ AGREGADO: campo destacado
   });
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const PublicarPropiedad = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;  // ✅ MODIFICADO: agregar type y checked
     
     if (erroresValidacion[name]) {
       setErroresValidacion(prev => ({
@@ -78,7 +78,7 @@ const PublicarPropiedad = () => {
     
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value  // ✅ MODIFICADO: manejar checkbox
     }));
   };
 
@@ -126,7 +126,6 @@ const PublicarPropiedad = () => {
     setImagenesFiles(nuevosFiles);
   };
 
-  // Manejador para cuando se actualizan las coordenadas desde el mapa
   const handleCoordenadasChange = (lat, lng) => {
     setFormData(prev => ({
       ...prev,
@@ -134,7 +133,6 @@ const PublicarPropiedad = () => {
       longitud: lng
     }));
     
-    // Limpiar errores si los había
     if (erroresValidacion.latitud || erroresValidacion.longitud) {
       setErroresValidacion(prev => ({
         ...prev,
@@ -145,11 +143,8 @@ const PublicarPropiedad = () => {
   };
 
   const generarCodigo = () => {
-    const fecha = new Date();
-    const año = fecha.getFullYear();
-    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    const codigo = `CAM-${año}${mes}-${random}`;
+    const codigo = `CAM-${random}`;
     
     setFormData(prev => ({
       ...prev,
@@ -225,15 +220,16 @@ const PublicarPropiedad = () => {
       formDataToSend.append('estado', formData.estado);
       formDataToSend.append('fecha', formData.fecha);
       formDataToSend.append('campos_idtipocampos', formData.campos_idtipocampos);
+      formDataToSend.append('destacado', formData.destacado ? '1' : '0');  // ✅ AGREGADO: enviar destacado
       
       formDataToSend.append('latitud', formData.latitud || 0);
       formDataToSend.append('longitud', formData.longitud || 0);
       
-      // Enviar servicios seleccionados
       const serviciosValidos = serviciosSeleccionados.filter(s => !isNaN(s)).map(Number);
       formDataToSend.append('servicios', JSON.stringify(serviciosValidos));
       
       console.log('Servicios a enviar:', serviciosValidos);
+      console.log('Destacado:', formData.destacado);  // ✅ AGREGADO: log para debug
 
       imagenesFiles.forEach((imagen) => {
         formDataToSend.append('imagenes[]', imagen);
@@ -266,6 +262,7 @@ const PublicarPropiedad = () => {
               estado: 'disponible',
               fecha: new Date().toISOString().split('T')[0],
               campos_idtipocampos: '',
+              destacado: false  // ✅ AGREGADO: resetear destacado
             });
             setServiciosSeleccionados([]);
             setImagenesPreview([]);
@@ -335,7 +332,7 @@ const PublicarPropiedad = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="publicar-form-unique">
-          {/* SECCIÓN 1: Información Básica (igual que antes) */}
+          {/* SECCIÓN 1: Información Básica */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">1</span>
@@ -350,7 +347,7 @@ const PublicarPropiedad = () => {
                   name="codigo"
                   value={formData.codigo}
                   onChange={handleChange}
-                  placeholder="CAM-2026-001"
+                  placeholder="CAM-001"
                   className={`publicar-input-unique ${getErrorClass('codigo')}`}
                 />
                 <small className="publicar-ayuda-unique">Si se deja vacío, se generará automáticamente</small>
@@ -442,10 +439,25 @@ const PublicarPropiedad = () => {
                   <option value="alquilado">Alquilado</option>
                 </select>
               </div>
+
+              {/* ✅ AGREGADO: Campo Destacado */}
+              <div className="publicar-campo-unique">
+                <label className="publicar-label-unique">Destacado</label>
+                <label className="publicar-checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="destacado"
+                    checked={formData.destacado}
+                    onChange={handleChange}
+                  />
+                  <span>Marcar como propiedad destacada</span>
+                </label>
+                <small className="publicar-ayuda-unique">Las propiedades destacadas aparecen primero en el listado</small>
+              </div>
             </div>
           </div>
 
-          {/* SECCIÓN 2: Precio y Descripción (igual que antes) */}
+          {/* SECCIÓN 2: Precio y Descripción */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">2</span>
@@ -502,14 +514,13 @@ const PublicarPropiedad = () => {
             </div>
           </div>
 
-          {/* SECCIÓN 3: Ubicación - NUEVA DISTRIBUCIÓN */}
+          {/* SECCIÓN 3: Ubicación */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">3</span>
               <h2 className="publicar-seccion-heading-unique">Ubicación</h2>
             </div>
             
-            {/* Fila 1: Provincia, Localidad, Zona */}
             <div className="publicar-grid-3columnas-unique">
               <div className="publicar-campo-unique">
                 <label className="publicar-label-unique">
@@ -586,9 +597,7 @@ const PublicarPropiedad = () => {
               </div>
             </div>
 
-            {/* Fila 2: Coordenadas + Mapa */}
             <div className="publicar-fila-mapa-unique">
-              {/* Columna izquierda: Latitud y Longitud */}
               <div className="publicar-coordenadas-columna-unique">
                 <div className="publicar-campo-unique">
                   <label className="publicar-label-unique">
@@ -630,7 +639,6 @@ const PublicarPropiedad = () => {
                   )}
                 </div>
 
-                {/* Info de coordenadas actuales */}
                 {formData.latitud && formData.longitud && (
                   <div className="publicar-coordenadas-preview-unique">
                     <span className="publicar-coordenadas-preview-label-unique">Ubicación seleccionada:</span>
@@ -641,7 +649,6 @@ const PublicarPropiedad = () => {
                 )}
               </div>
 
-              {/* Columna derecha: Mapa */}
               <div className="publicar-mapa-columna-unique">
                 <div className="publicar-mapa-container-unique">
                   <MapaUbicacion 
@@ -654,16 +661,13 @@ const PublicarPropiedad = () => {
             </div>
           </div>
 
-          {/* SECCIÓN 4: Servicios - NUEVO SELECTOR MEJORADO */}
+          {/* SECCIÓN 4: Servicios */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">4</span>
               <h2 className="publicar-seccion-heading-unique">Servicios Disponibles</h2>
             </div>
             
-            
-
-            {/* Grid de servicios */}
             <div className="publicar-servicios-grid-unique">
               {servicios.map((servicio) => {
                 const seleccionado = serviciosSeleccionados.includes(servicio.id);
@@ -693,7 +697,6 @@ const PublicarPropiedad = () => {
               })}
             </div>
             
-            {/* Lista de servicios seleccionados */}
             {serviciosSeleccionados.length > 0 && (
               <div className="publicar-servicios-seleccionados-unique">
                 <span className="publicar-servicios-seleccionados-label-unique">
@@ -703,7 +706,8 @@ const PublicarPropiedad = () => {
                   {servicios
                     .filter(s => serviciosSeleccionados.includes(s.id))
                     .map(s => (
-                      <span key={s.id} className="publicar-servicio-seleccionado-item-unique"> {s.nombre},
+                      <span key={s.id} className="publicar-servicio-seleccionado-item-unique">
+                        {s.nombre}
                       </span>
                     ))}
                 </div>
@@ -715,7 +719,7 @@ const PublicarPropiedad = () => {
             )}
           </div>
 
-          {/* SECCIÓN 5: Imágenes (igual que antes) */}
+          {/* SECCIÓN 5: Imágenes */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">5</span>
