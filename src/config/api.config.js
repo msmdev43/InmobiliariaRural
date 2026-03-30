@@ -16,6 +16,7 @@ const API_CONFIG = {
     CREAR: '/consultas/crearConsulta.php',
     LISTAR: '/consultas/listarConsultas.php',
     ELIMINAR: '/consultas/eliminarConsulta.php',
+    ULTIMAS: '/consultas/ultimasConsultas.php',
   },
   
   // Endpoints de propiedades

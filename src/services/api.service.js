@@ -427,6 +427,18 @@ async eliminarImagen(imagenId, propiedadId) {
     });
   }
 
+  async getUltimasConsultas(limite = 10, tipo = null) {
+    const params = new URLSearchParams();
+    params.append('limite', limite);
+    if (tipo) params.append('tipo', tipo);
+    
+    const url = `${CONSULTAS_ENDPOINTS.ULTIMAS}?${params.toString()}`;
+    
+    return this.request(url, {
+      method: 'GET'
+    });
+  }
+
   async eliminarConsulta(id) {
     return this.request(CONSULTAS_ENDPOINTS.ELIMINAR, {
       method: 'DELETE',

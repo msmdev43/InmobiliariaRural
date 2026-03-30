@@ -3,46 +3,111 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Admin/Sidebar';
 import { useAuth } from '../../context/AuthContext';
+import apiService from '../../services/api.service';
+import { useToast, ToastContainer } from '../../components/UI/Toast';
 import '../../styles/pages/Admin/Dashboard.css';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalPropiedades: 0,
     disponibles: 0,
     vendidas: 0,
-    consultasPendientes: 0
+    consultasHoy: 0
   });
-
   const [ultimasConsultas, setUltimasConsultas] = useState([]);
   const [propiedadesDestacadas, setPropiedadesDestacadas] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setStats({
-        totalPropiedades: 12,
-        disponibles: 8,
-        vendidas: 4,
-        consultasPendientes: 3
-      });
-
-      setUltimasConsultas([
-        { id: 1, nombre: 'Juan Pérez', email: 'juan@email.com', fecha: '2026-01-15', propiedad: 'Campo Los Alamos' },
-        { id: 2, nombre: 'María García', email: 'maria@email.com', fecha: '2026-01-14', propiedad: 'Estancia San Pedro' },
-        { id: 3, nombre: 'Carlos López', email: 'carlos@email.com', fecha: '2026-01-13', propiedad: 'Chacra La Esperanza' },
-      ]);
-
-      setPropiedadesDestacadas([
-        { id: 1, titulo: 'Campo Santa Irene', precio: '$250.000', tipo: 'venta' },
-        { id: 2, titulo: 'Estancia La Ballenera', precio: '$180.000', tipo: 'venta' },
-        { id: 3, titulo: 'Chacra Los Nogales', precio: '$2.500/mes', tipo: 'alquiler' },
-      ]);
-
-      setLoading(false);
-    }, 1000);
+    cargarDatosDashboard();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const cargarDatosDashboard = async () => {
+    try {
+      setLoading(true);
+      
+      // Cargar últimas consultas
+      try {
+        const consultasResponse = await apiService.getUltimasConsultas(5);
+        
+        if (consultasResponse.success) {
+          setUltimasConsultas(consultasResponse.data || []);
+          // Solo guardar las consultas de hoy para la estadística
+          const consultasHoy = consultasResponse.estadisticas?.hoy || 0;
+          setStats(prev => ({ ...prev, consultasHoy }));
+        }
+      } catch (error) {
+        console.error('Error cargando consultas:', error);
+      }
+
+      // Cargar propiedades destacadas
+      try {
+        const destacadasResponse = await apiService.getPropiedadesDestacadas();
+        
+        if (destacadasResponse.success) {
+          setPropiedadesDestacadas(destacadasResponse.data || []);
+        }
+      } catch (error) {
+        console.error('Error cargando propiedades destacadas:', error);
+      }
+
+      // Cargar estadísticas de propiedades
+      try {
+        const propiedadesResponse = await apiService.getPropiedades();
+        
+        if (propiedadesResponse.success) {
+          const props = propiedadesResponse.data || [];
+          setStats(prev => ({
+            ...prev,
+            totalPropiedades: props.length,
+            disponibles: props.filter(p => p.estado === 'disponible' && !p.deleted_at).length,
+            vendidas: props.filter(p => p.estado === 'vendido' || p.estado === 'alquilado').length
+          }));
+        }
+      } catch (error) {
+        console.error('Error cargando propiedades:', error);
+      }
+      
+    } catch (error) {
+      console.error('Error cargando dashboard:', error);
+      toast.error('Error al cargar los datos del dashboard');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para obtener el color del badge según el tipo
+  const getTipoColor = (tipo) => {
+    const colores = {
+      propiedad: '#4CAF50',
+      arrendamiento: '#2196F3',
+      tasacion: '#FF9800',
+      venta: '#9C27B0',
+      soporte: '#F44336'
+    };
+    return colores[tipo] || '#64748b';
+  };
+
+  // Función para obtener el texto del tipo
+  const getTipoTexto = (tipo) => {
+    const textos = {
+      propiedad: '🏠 Propiedad',
+      arrendamiento: '📄 Arrendamiento',
+      tasacion: '💰 Tasación',
+      venta: '🤝 Venta',
+      soporte: '🔧 Soporte'
+    };
+    return textos[tipo] || tipo;
+  };
+
+  // Función para ver detalle de consulta
+  const handleVerConsulta = (consultaId) => {
+    navigate(`/admin/consultas?consulta=${consultaId}`);
+  };
 
   if (loading) {
     return (
@@ -51,6 +116,7 @@ const Dashboard = () => {
           <div className="dashboard-spinner-unique"></div>
           <p className="dashboard-loading-text-unique">Cargando dashboard...</p>
         </div>
+        <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
       </Sidebar>
     );
   }
@@ -58,6 +124,8 @@ const Dashboard = () => {
   return (
     <Sidebar>
       <div className="dashboard-page-unique">
+        <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
+        
         {/* Header */}
         <div className="dashboard-header-unique">
           <div className="dashboard-header-left-unique">
@@ -128,8 +196,8 @@ const Dashboard = () => {
               </svg>
             </div>
             <div className="dashboard-stat-content-unique">
-              <span className="dashboard-stat-label-unique">Consultas Pendientes</span>
-              <span className="dashboard-stat-value-unique">{stats.consultasPendientes}</span>
+              <span className="dashboard-stat-label-unique">Consultas Hoy</span>
+              <span className="dashboard-stat-value-unique">{stats.consultasHoy}</span>
             </div>
           </div>
         </div>
@@ -151,38 +219,71 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="dashboard-card-content-unique">
-              <div className="dashboard-table-container-unique">
-                <table className="dashboard-table-unique">
-                  <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Email</th>
-                      <th>Propiedad</th>
-                      <th>Fecha</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ultimasConsultas.map(consulta => (
-                      <tr key={consulta.id} className="dashboard-table-row-unique">
-                        <td>
-                          <div className="dashboard-contact-info-unique">
-                            <span className="dashboard-contact-name-unique">{consulta.nombre}</span>
-                          </div>
-                        </td>
-                        <td>{consulta.email}</td>
-                        <td>{consulta.propiedad}</td>
-                        <td>{consulta.fecha}</td>
-                        <td>
-                          <button className="dashboard-table-btn-unique">
-                            Ver
-                          </button>
-                        </td>
+              {ultimasConsultas.length > 0 ? (
+                <div className="dashboard-table-container-unique">
+                  <table className="dashboard-table-unique">
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Mensaje</th>
+                        <th>Fecha</th>
+                        <th></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {ultimasConsultas.map(consulta => (
+                        <tr key={consulta.id} className="dashboard-table-row-unique">
+                          <td>
+                            <div className="dashboard-contact-info-unique">
+                              <span className="dashboard-contact-name-unique">{consulta.nombre}</span>
+                              {consulta.email && (
+                                <span className="dashboard-contact-email-unique">{consulta.email}</span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <span 
+                              className="dashboard-consulta-tipo-unique"
+                              style={{ 
+                                backgroundColor: `${consulta.tipo_color}15`,
+                                color: consulta.tipo_color,
+                                border: `1px solid ${consulta.tipo_color}30`
+                              }}
+                            >
+                              {consulta.tipo_texto}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="dashboard-consulta-mensaje-unique" title={consulta.mensaje}>
+                              {consulta.mensaje_corto}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="dashboard-consulta-fecha-unique">
+                              <span className="dashboard-fecha-unique">{consulta.fecha_formateada}</span>
+                              <span className="dashboard-tiempo-unique">{consulta.tiempo_transcurrido}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <button 
+                              className="dashboard-table-btn-unique"
+                              onClick={() => handleVerConsulta(consulta.id)}
+                              title="Ver detalle"
+                            >
+                              Ver
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="dashboard-empty-unique">
+                  <p>No hay consultas recientes</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -192,7 +293,7 @@ const Dashboard = () => {
               <h2 className="dashboard-card-title-unique">Propiedades Destacadas</h2>
               <button 
                 className="dashboard-card-link-unique"
-                onClick={() => navigate('/admin/propiedades')}
+                onClick={() => navigate('/admin/propiedades?destacados=1')}
               >
                 Gestionar
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -201,17 +302,37 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="dashboard-card-content-unique">
-              {propiedadesDestacadas.map(prop => (
-                <div key={prop.id} className="dashboard-property-item-unique">
-                  <div className="dashboard-property-info-unique">
-                    <h3 className="dashboard-property-title-unique">{prop.titulo}</h3>
-                    <span className="dashboard-property-price-unique">{prop.precio}</span>
+              {propiedadesDestacadas.length > 0 ? (
+                propiedadesDestacadas.map(prop => (
+                  <div key={prop.id} className="dashboard-property-item-unique">
+                    <div className="dashboard-property-info-unique">
+                      <h3 className="dashboard-property-title-unique">{prop.titulo}</h3>
+                      <div className="dashboard-property-details-unique">
+                        <span className="dashboard-property-price-unique">
+                          {prop.precio_formateado} {prop.moneda}
+                        </span>
+                        <span className={`dashboard-property-badge-unique dashboard-property-${prop.tipo_operacion}-unique`}>
+                          {prop.tipo_operacion === 'venta' ? 'Venta' : 'Alquiler'}
+                        </span>
+                      </div>
+                    </div>
+                    <button 
+                      className="dashboard-property-view-unique"
+                      onClick={() => navigate(`/admin/propiedades/${prop.id}`)}
+                      title="Ver propiedad"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    </button>
                   </div>
-                  <span className={`dashboard-property-badge-unique dashboard-property-${prop.tipo}-unique`}>
-                    {prop.tipo === 'venta' ? 'Venta' : 'Alquiler'}
-                  </span>
+                ))
+              ) : (
+                <div className="dashboard-empty-unique">
+                  <p>No hay propiedades destacadas</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -242,7 +363,7 @@ const Dashboard = () => {
             </button>
             <button 
               className="dashboard-action-btn-unique"
-              onClick={() => navigate('/admin/configuracion')}
+              onClick={() => navigate('/admin/configuracion/servicios')}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="3" />
