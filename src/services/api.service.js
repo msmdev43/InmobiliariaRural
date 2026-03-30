@@ -104,10 +104,14 @@ class ApiService {
     return response.json();
   }
 
-async eliminarImagen(imagenId, propiedadId) {
-    return this.request(`${PROPIEDADES_ENDPOINTS.ELIMINAR_IMAGEN}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ imagen_id: imagenId, propiedad_id: propiedadId })
+  async eliminarImagen(imagenId, propiedadId) {
+    // Cambiar a POST en lugar de DELETE
+    return this.request(PROPIEDADES_ENDPOINTS.ELIMINAR_IMAGEN, {
+      method: 'POST', // Cambiado de DELETE a POST
+      body: JSON.stringify({ 
+        imagen_id: imagenId, 
+        propiedad_id: propiedadId 
+      })
     });
   }
 
