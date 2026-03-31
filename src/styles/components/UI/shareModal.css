@@ -1,0 +1,304 @@
+/* ==========================================================================
+   SHARE MODAL - ESTILOS PARA COMPARTIR PROPIEDADES
+   ========================================================================== */
+
+/*
+ * TABLA DE CONTENIDOS:
+ * 1. OVERLAY Y CONTENEDOR
+ * 2. HEADER
+ * 3. BODY
+ * 4. INFORMACIÓN DE LA PROPIEDAD
+ * 5. LINK COMPARTIR
+ * 6. OPCIONES DE COMPARTIR
+ * 7. MEDIA QUERIES
+ * ========================================================================== */
+
+/* ==========================================================================
+   1. OVERLAY Y CONTENEDOR
+   ========================================================================== */
+
+.share-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: share-modal-fade-in 0.2s ease;
+}
+
+@keyframes share-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.share-modal-container {
+  background: white;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: share-modal-slide-in 0.3s ease;
+}
+
+@keyframes share-modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   2. HEADER
+   ========================================================================== */
+
+.share-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 24px 24px 0 0;
+}
+
+.share-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.share-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #64748b;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.share-modal-close:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #ef4444;
+}
+
+/* ==========================================================================
+   3. BODY
+   ========================================================================== */
+
+.share-modal-body {
+  padding: 1.5rem;
+}
+
+/* ==========================================================================
+   4. INFORMACIÓN DE LA PROPIEDAD
+   ========================================================================== */
+
+.share-propiedad-info {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.share-propiedad-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.share-propiedad-detalle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.share-propiedad-detalle span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ==========================================================================
+   5. LINK COMPARTIR
+   ========================================================================== */
+
+.share-link-container {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.share-link-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #1e293b;
+  background: #f8fafc;
+  font-family: monospace;
+}
+
+.share-copy-btn {
+  padding: 0.75rem 1.25rem;
+  background: #006A4E;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.share-copy-btn:hover {
+  background: #004d3a;
+  transform: translateY(-1px);
+}
+
+.share-copy-btn.copied {
+  background: #10b981;
+}
+
+/* ==========================================================================
+   6. OPCIONES DE COMPARTIR
+   ========================================================================== */
+
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.share-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.share-option-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* WhatsApp */
+.share-whatsapp {
+  color: #25D366;
+  border-color: #e5e7eb;
+}
+
+.share-whatsapp:hover {
+  background: #25D366;
+  border-color: #25D366;
+  color: white;
+}
+
+.share-whatsapp:hover svg {
+  stroke: white;
+}
+
+/* Email */
+.share-email {
+  color: #EA4335;
+  border-color: #e5e7eb;
+}
+
+.share-email:hover {
+  background: #EA4335;
+  border-color: #EA4335;
+  color: white;
+}
+
+.share-email:hover svg {
+  stroke: white;
+}
+
+/* Más opciones */
+.share-more {
+  color: #64748b;
+  border-color: #e5e7eb;
+}
+
+.share-more:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+/* ==========================================================================
+   7. MEDIA QUERIES
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .share-modal-container {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .share-modal-header {
+    padding: 1.25rem;
+  }
+  
+  .share-modal-body {
+    padding: 1.25rem;
+  }
+  
+  .share-link-container {
+    flex-direction: column;
+  }
+  
+  .share-copy-btn {
+    width: 100%;
+  }
+  
+  .share-option-btn {
+    padding: 0.875rem;
+    font-size: 0.9rem;
+  }
+  
+  .share-option-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}

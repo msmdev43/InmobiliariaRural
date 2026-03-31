@@ -1,0 +1,391 @@
+/* ==========================================================================
+   CONTACT MODAL - ESTILOS PARA FORMULARIO DE CONTACTO
+   ========================================================================== */
+
+/*
+ * TABLA DE CONTENIDOS:
+ * 1. OVERLAY Y CONTENEDOR
+ * 2. HEADER
+ * 3. BODY
+ * 4. INFORMACIÓN DE LA PROPIEDAD
+ * 5. MENSAJES DE ERROR Y ÉXITO
+ * 6. FORMULARIO
+ * 7. BOTONES DE ACCIÓN
+ * 8. MEDIA QUERIES
+ * ========================================================================== */
+
+/* ==========================================================================
+   1. OVERLAY Y CONTENEDOR
+   ========================================================================== */
+
+.contact-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: contact-modal-fade-in 0.2s ease;
+}
+
+@keyframes contact-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.contact-modal-container {
+  background: white;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: contact-modal-slide-in 0.3s ease;
+}
+
+@keyframes contact-modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   2. HEADER
+   ========================================================================== */
+
+.contact-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 24px 24px 0 0;
+}
+
+.contact-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.contact-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #64748b;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.contact-modal-close:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #ef4444;
+}
+
+/* ==========================================================================
+   3. BODY
+   ========================================================================== */
+
+.contact-modal-body {
+  padding: 1.5rem;
+}
+
+/* ==========================================================================
+   4. INFORMACIÓN DE LA PROPIEDAD
+   ========================================================================== */
+
+.contact-propiedad-info {
+  background: #f0fdf4;
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #dcfce7;
+}
+
+.contact-propiedad-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #166534;
+  margin: 0 0 0.25rem 0;
+}
+
+.contact-propiedad-detalle {
+  font-size: 0.8rem;
+  color: #15803d;
+  margin: 0 0 0.25rem 0;
+}
+
+.contact-propiedad-precio {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #006A4E;
+  margin: 0;
+}
+
+/* ==========================================================================
+   5. MENSAJES DE ERROR Y ÉXITO
+   ========================================================================== */
+
+.contact-error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #991b1b;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.contact-error-message span {
+  font-size: 1rem;
+}
+
+/* Estado de éxito */
+.contact-modal-success {
+  text-align: center;
+  padding: 2rem;
+}
+
+.contact-success-icon {
+  width: 64px;
+  height: 64px;
+  background: #dcfce7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 2rem;
+  color: #166534;
+}
+
+.contact-success-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+
+.contact-success-message {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+.contact-success-message strong {
+  color: #006A4E;
+}
+
+.contact-success-btn {
+  background: #006A4E;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 40px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contact-success-btn:hover {
+  background: #004d3a;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   6. FORMULARIO
+   ========================================================================== */
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contact-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.contact-form-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.contact-form-label .required {
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+.contact-form-label .optional {
+  color: #94a3b8;
+  font-weight: 400;
+  font-size: 0.7rem;
+  margin-left: 0.5rem;
+}
+
+.contact-form-input,
+.contact-form-textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.contact-form-input:focus,
+.contact-form-textarea:focus {
+  outline: none;
+  border-color: #006A4E;
+  box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.1);
+}
+
+.contact-form-input:disabled,
+.contact-form-textarea:disabled {
+  background: #f8fafc;
+  cursor: not-allowed;
+}
+
+.contact-form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* ==========================================================================
+   7. BOTONES DE ACCIÓN
+   ========================================================================== */
+
+.contact-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.contact-btn-cancel {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 40px;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contact-btn-cancel:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.contact-btn-submit {
+  padding: 0.75rem 2rem;
+  background: #006A4E;
+  border: none;
+  border-radius: 40px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contact-btn-submit:hover:not(:disabled) {
+  background: #004d3a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 106, 78, 0.2);
+}
+
+.contact-btn-submit:disabled,
+.contact-btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   8. MEDIA QUERIES
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .contact-modal-container {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .contact-modal-header {
+    padding: 1.25rem;
+  }
+  
+  .contact-modal-body {
+    padding: 1.25rem;
+  }
+  
+  .contact-form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .contact-form-actions {
+    flex-direction: column-reverse;
+  }
+  
+  .contact-btn-cancel,
+  .contact-btn-submit {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .contact-propiedad-info {
+    padding: 0.875rem;
+  }
+  
+  .contact-propiedad-titulo {
+    font-size: 0.95rem;
+  }
+  
+  .contact-propiedad-precio {
+    font-size: 1rem;
+  }
+}

@@ -1,6 +1,28 @@
-/* C:\xampp\htdocs\InmobiliariaRural\src\styles\components\propiedades\propertyList.css */
+/* ==========================================================================
+   PROPERTY LIST - ESTILOS ORGANIZADOS
+   ========================================================================== */
 
-/* Variables CSS */
+/*
+ * TABLA DE CONTENIDOS:
+ * 1. VARIABLES CSS
+ * 2. CONTENEDOR PRINCIPAL
+ * 3. LOADING STATE
+ * 4. ERROR STATE
+ * 5. NO RESULTS
+ * 6. RESULTS INFO
+ * 7. VISTA DE LISTA - ESTRUCTURA
+ * 8. COLUMNA DE IMAGEN
+ * 9. COLUMNA DE INFORMACIÓN
+ * 10. BADGES
+ * 11. BOTONES DE ACCIÓN
+ * 12. BOTÓN VER DETALLES
+ * 13. MEDIA QUERIES
+ * ========================================================================== */
+
+/* ==========================================================================
+   1. VARIABLES CSS
+   ========================================================================== */
+
 :root {
   --pl-primary: #006A4E;
   --pl-primary-dark: #004d3a;
@@ -13,23 +35,30 @@
   --pl-card-bg: #ffffff;
   --pl-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --pl-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.1);
+  --pl-transition: all 0.3s ease;
+  --pl-transition-fast: all 0.2s ease;
 }
 
-/* PropertyList Container */
+/* ==========================================================================
+   2. CONTENEDOR PRINCIPAL
+   ========================================================================== */
+
 .pl-property-list-container {
   padding: 40px 0 80px;
   background: var(--pl-background);
   min-height: 100vh;
 }
 
-/* Container para centrar contenido */
 .pl-property-list-container .pl-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
-/* Loading State */
+/* ==========================================================================
+   3. LOADING STATE
+   ========================================================================== */
+
 .pl-property-list-container .pl-loading-container {
   display: flex;
   flex-direction: column;
@@ -57,7 +86,10 @@
   font-size: 1rem;
 }
 
-/* Error State */
+/* ==========================================================================
+   4. ERROR STATE
+   ========================================================================== */
+
 .pl-property-list-container .pl-error-container {
   text-align: center;
   padding: 60px 20px;
@@ -82,7 +114,7 @@
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--pl-transition);
   box-shadow: 0 2px 8px rgba(0, 106, 78, 0.2);
 }
 
@@ -92,7 +124,10 @@
   box-shadow: 0 6px 16px rgba(0, 106, 78, 0.3);
 }
 
-/* No Results */
+/* ==========================================================================
+   5. NO RESULTS
+   ========================================================================== */
+
 .pl-property-list-container .pl-no-results {
   text-align: center;
   padding: 80px 20px;
@@ -107,7 +142,10 @@
   margin-bottom: 20px;
 }
 
-/* Results Info */
+/* ==========================================================================
+   6. RESULTS INFO
+   ========================================================================== */
+
 .pl-property-list-container .pl-results-info {
   margin: 20px 0 30px;
   padding: 12px 0;
@@ -119,7 +157,10 @@
   font-size: 0.95rem;
 }
 
-/* ===== VISTA DE LISTA - ESTILO ZONAPROP ===== */
+/* ==========================================================================
+   7. VISTA DE LISTA - ESTRUCTURA
+   ========================================================================== */
+
 .pl-property-list-container .pl-properties-list-view {
   display: flex;
   flex-direction: column;
@@ -132,7 +173,7 @@
   background: var(--pl-card-bg);
   border-radius: 16px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: var(--pl-transition);
   box-shadow: var(--pl-shadow);
   border: 1px solid var(--pl-border);
   cursor: pointer;
@@ -144,46 +185,25 @@
   border-color: rgba(0, 106, 78, 0.2);
 }
 
-/* Columna de imagen - Fijar altura */
+/* ==========================================================================
+   8. COLUMNA DE IMAGEN
+   ========================================================================== */
+
 .pl-property-list-container .pl-list-item-image {
   position: relative;
   width: 280px;
-  min-width: 280px; /* Evita que se encoja */
-  height: 200px; /* Altura fija */
+  min-width: 280px;
+  height: 200px;
   flex-shrink: 0;
   overflow: hidden;
   background: #f3f4f6;
-}
-
-/* Imagen - object-fit cover para mantener proporción */
-.pl-property-list-container .pl-item-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Recorta la imagen para llenar el contenedor sin deformar */
-  object-position: center; /* Centra la imagen */
-  transition: transform 0.4s ease;
-}
-
-/* Para pantallas medianas */
-@media (max-width: 768px) {
-  .pl-property-list-container .pl-list-item-image {
-    width: 100%;
-    min-width: auto;
-    height: 200px;
-  }
-}
-
-/* Para pantallas pequeñas */
-@media (max-width: 480px) {
-  .pl-property-list-container .pl-list-item-image {
-    height: 180px;
-  }
 }
 
 .pl-property-list-container .pl-item-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform 0.4s ease;
 }
 
@@ -191,43 +211,10 @@
   transform: scale(1.05);
 }
 
-/* Badges en imagen */
-.pl-property-list-container .pl-destacado-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  z-index: 2;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+/* ==========================================================================
+   9. COLUMNA DE INFORMACIÓN
+   ========================================================================== */
 
-.pl-property-list-container .pl-image-count-badge {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  color: white;
-  padding: 4px 10px;
-  border-radius: 30px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: system-ui, -apple-system, sans-serif;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* Columna de información */
 .pl-property-list-container .pl-list-item-info {
   flex: 1;
   padding: 20px;
@@ -256,28 +243,6 @@
 
 .pl-property-list-container .pl-property-list-item:hover .pl-item-title {
   color: var(--pl-primary);
-}
-
-/* Operation badge */
-.pl-property-list-container .pl-operation-badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.pl-property-list-container .pl-operation-venta {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-}
-
-.pl-property-list-container .pl-operation-alquiler {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
 }
 
 /* Ubicación */
@@ -320,8 +285,110 @@
   color: var(--pl-primary);
 }
 
-.pl-property-list-container .pl-feature-item.pl-servicios {
-  background: #eef2ff;
+/* ==========================================================================
+   SERVICIOS - ETIQUETAS (TAGS)
+   ========================================================================== */
+
+/* Contenedor de servicios */
+.pl-property-list-container .pl-servicios-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+/* Etiqueta de servicio individual */
+.pl-property-list-container .pl-servicio-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  background: #f1f5f9;
+  border-radius: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #334155;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border: 1px solid #e2e8f0;
+}
+
+.pl-property-list-container .pl-servicio-tag:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+/* Estilo para el contador de más servicios */
+.pl-property-list-container .pl-servicio-tag.pl-servicio-mas {
+  background: #006A4E;
+  color: white;
+  border-color: #006A4E;
+}
+
+.pl-property-list-container .pl-servicio-tag.pl-servicio-mas:hover {
+  background: #004d3a;
+}
+
+/* Colores variados para servicios */
+.pl-property-list-container .pl-servicio-tag:nth-child(1) {
+  background: #e6f7f0;
+  color: #006A4E;
+}
+
+.pl-property-list-container .pl-servicio-tag:nth-child(2) {
+  background: #fff4e6;
+  color: #b85e00;
+}
+
+.pl-property-list-container .pl-servicio-tag:nth-child(3) {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.pl-property-list-container .pl-servicio-tag:nth-child(4) {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.pl-property-list-container .pl-servicio-tag:nth-child(5) {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.pl-property-list-container .pl-servicio-tag:nth-child(6) {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+/* ==========================================================================
+   RESPONSIVE - SERVICIOS
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .pl-property-list-container .pl-servicio-tag {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+  
+  /* En móviles, mostrar hasta 4 servicios */
+  .pl-property-list-container .pl-servicio-tag:nth-child(n+5) {
+    display: none;
+  }
+  
+  .pl-property-list-container .pl-servicio-tag.pl-servicio-mas {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .pl-property-list-container .pl-servicios-tags {
+    gap: 6px;
+  }
+  
+  .pl-property-list-container .pl-servicio-tag {
+    padding: 3px 8px;
+    font-size: 0.65rem;
+  }
 }
 
 /* Footer del item */
@@ -332,6 +399,8 @@
   margin-top: 8px;
   padding-top: 12px;
   border-top: 1px solid var(--pl-border);
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .pl-property-list-container .pl-item-price {
@@ -346,20 +415,136 @@
   line-height: 1;
 }
 
-/* Botón Ver detalles */
+/* ==========================================================================
+   10. BADGES
+   ========================================================================== */
+
+/* Destacado badge */
+.pl-property-list-container .pl-destacado-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Image count badge */
+.pl-property-list-container .pl-image-count-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 30px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: system-ui, -apple-system, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Operation badge */
+.pl-property-list-container .pl-operation-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pl-property-list-container .pl-operation-venta {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.pl-property-list-container .pl-operation-alquiler {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+}
+
+/* ==========================================================================
+   11. BOTONES DE ACCIÓN
+   ========================================================================== */
+
+.pl-property-list-container .pl-action-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pl-property-list-container .pl-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--pl-transition-fast);
+  border: none;
+  font-family: inherit;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.pl-property-list-container .pl-action-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Botón Compartir */
+.pl-property-list-container .pl-share-btn:hover {
+  background: #e5e7eb;
+  transform: translateY(-2px);
+}
+
+/* Botón Contactar */
+.pl-property-list-container .pl-contact-btn {
+  background: var(--pl-primary);
+  color: white;
+}
+
+.pl-property-list-container .pl-contact-btn:hover {
+  background: var(--pl-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 106, 78, 0.3);
+}
+
+/* ==========================================================================
+   12. BOTÓN VER DETALLES
+   ========================================================================== */
+
 .pl-property-list-container .pl-view-details-btn {
   background: transparent;
   border: 2px solid var(--pl-primary);
   color: var(--pl-primary);
-  padding: 10px 24px;
-  border-radius: 40px;
+  padding: 8px 20px;
+  border-radius: 30px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  transition: var(--pl-transition);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   position: relative;
   z-index: 2;
 }
@@ -372,8 +557,8 @@
 }
 
 .pl-property-list-container .pl-btn-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   transition: transform 0.3s ease;
 }
 
@@ -381,7 +566,19 @@
   transform: translateX(4px);
 }
 
-/* ===== RESPONSIVE ===== */
+/* ==========================================================================
+   13. MEDIA QUERIES
+   ========================================================================== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .pl-property-list-container .pl-list-item-image {
+    width: 240px;
+    min-width: 240px;
+  }
+}
+
+/* Móviles grandes */
 @media (max-width: 768px) {
   .pl-property-list-container {
     padding: 20px 0 60px;
@@ -397,6 +594,7 @@
   
   .pl-property-list-container .pl-list-item-image {
     width: 100%;
+    min-width: auto;
     height: 200px;
   }
   
@@ -421,12 +619,19 @@
     font-size: 1.2rem;
   }
   
+  .pl-property-list-container .pl-action-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .pl-property-list-container .pl-action-btn,
   .pl-property-list-container .pl-view-details-btn {
-    padding: 8px 20px;
-    font-size: 0.85rem;
+    padding: 6px 14px;
+    font-size: 0.75rem;
   }
 }
 
+/* Móviles medianos */
 @media (max-width: 640px) {
   .pl-property-list-container .pl-item-footer {
     flex-direction: column;
@@ -434,9 +639,15 @@
     align-items: stretch;
   }
   
-  .pl-property-list-container .pl-view-details-btn {
+  .pl-property-list-container .pl-action-buttons {
     justify-content: center;
     width: 100%;
+  }
+  
+  .pl-property-list-container .pl-action-btn,
+  .pl-property-list-container .pl-view-details-btn {
+    flex: 1;
+    justify-content: center;
   }
   
   .pl-property-list-container .pl-price-amount {
@@ -453,6 +664,7 @@
   }
 }
 
+/* Móviles pequeños */
 @media (max-width: 480px) {
   .pl-property-list-container .pl-list-item-image {
     height: 180px;
@@ -473,5 +685,15 @@
   .pl-property-list-container .pl-feature-item span {
     font-size: 0.7rem;
   }
+  
+  .pl-property-list-container .pl-action-btn,
+  .pl-property-list-container .pl-view-details-btn {
+    padding: 5px 12px;
+    font-size: 0.7rem;
+  }
+  
+  .pl-property-list-container .pl-action-icon {
+    width: 14px;
+    height: 14px;
+  }
 }
-
