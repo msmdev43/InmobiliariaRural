@@ -53,6 +53,7 @@ export const TIPOS_CAMPOS_ENDPOINTS = {
 export const UTILS_ENDPOINTS = {
   DOLAR: buildUrl(API_CONFIG.UTILS.DOLAR),
   NOTIFICACIONES: buildUrl(API_CONFIG.UTILS.NOTIFICACIONES),
+  WHATSAPP_DIRECTO: buildUrl(API_CONFIG.UTILS.WHATSAPP_DIRECTO),
 };
 
 // Endpoints agrupados para fácil acceso

@@ -462,6 +462,13 @@ class ApiService {
       method: 'GET'
     });
   }
+
+  async enviarWhatsAppDirecto(consultaId) {
+    return this.request(`${UTILS_ENDPOINTS.WHATSAPP_DIRECTO}`, {
+      method: 'POST',
+      body: JSON.stringify({ consulta_id: consultaId })
+    });
+  }
 }
 
 const apiService = new ApiService();

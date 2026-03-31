@@ -52,6 +52,7 @@ const API_CONFIG = {
   UTILS: {
     DOLAR: '/dolar/getDollarRate.php',
     NOTIFICACIONES: '/notificaciones/contarConsultas.php',
+    WHATSAPP_DIRECTO: '/notificaciones/enviarWhatsAppDirecto.php',
   },
   
   // Configuración de fetch
