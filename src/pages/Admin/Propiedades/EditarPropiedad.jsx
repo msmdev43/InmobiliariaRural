@@ -42,6 +42,20 @@ const EditarPropiedad = () => {
     destacado: false
   });
 
+  const formatearPrecio = (precio, moneda) => {
+    if (!precio && precio !== 0) return '';
+    if (isNaN(precio)) return '';
+    
+    const formateado = new Intl.NumberFormat('es-AR').format(precio);
+    
+    switch (moneda) {
+      case 'ARS': return `$ ${formateado}`;
+      case 'USD': return `USD$ ${formateado}`;
+      case 'EUR': return `€ ${formateado}`;
+      default: return `${formateado}`;
+    }
+  };
+
   // Cargar datos de la propiedad
   useEffect(() => {
     const cargarDatos = async () => {
@@ -159,16 +173,23 @@ const EditarPropiedad = () => {
     const { name, value, type, checked } = e.target;
     
     if (erroresValidacion[name]) {
-      setErroresValidacion(prev => ({
-        ...prev,
-        [name]: null
-      }));
+      setErroresValidacion(prev => ({ ...prev, [name]: null }));
     }
     
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+    if (name === 'precio') {
+      // Limpiar el string para obtener solo números
+      const numeros = value.replace(/[^\d]/g, '');
+      const numero = numeros === '' ? 0 : parseFloat(numeros);
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: numero
+      }));
+    } else if (type === 'checkbox') {
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleImagenes = (e) => {
@@ -557,13 +578,11 @@ const EditarPropiedad = () => {
                   Precio <span className="publicar-required-unique">*</span>
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   name="precio"
-                  value={formData.precio}
+                  value={formatearPrecio(formData.precio, formData.moneda)}
                   onChange={handleChange}
                   placeholder="Ej: 250000"
-                  min="0.01"
-                  step="0.01"
                   className={`publicar-input-unique ${getErrorClass('precio')}`}
                 />
                 {erroresValidacion.precio && (

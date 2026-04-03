@@ -9,6 +9,7 @@ const API_CONFIG = {
     LOGOUT: '/admin/logout.php',
     DASHBOARD: '/admin/dashboard.php',
     CHECK_SESSION: '/admin/check_session.php',
+    ESTADISTICAS: '/admin/estadisticasDashboard.php',
   },
   
   // Endpoints de consultas
@@ -30,6 +31,7 @@ const API_CONFIG = {
     ESTADISTICAS: '/propiedades/estadisticas/obtenerEstadisticas.php',
     DESTACADAS: '/propiedades/propiedadesDestacadas.php',
     ELIMINAR_IMAGEN: '/propiedades/imagenes/eliminarImagenes.php',
+    ULTIMAS: '/propiedades/ultimasPropiedades.php',
   },
   
   // Endpoints de servicios

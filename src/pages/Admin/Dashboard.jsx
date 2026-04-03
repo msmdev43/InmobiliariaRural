@@ -5,7 +5,8 @@ import Sidebar from '../../components/Admin/Sidebar';
 import { useAuth } from '../../context/AuthContext';
 import apiService from '../../services/api.service';
 import { useToast, ToastContainer } from '../../components/UI/Toast';
-import UltimasConsultas from '../../components/Admin/ultimasConsultas';
+import UltimasConsultas from '../../components/Admin/UltimasConsultas';
+import UltimasPropiedades from '../../components/Admin/UltimasPropiedades';
 import '../../styles/pages/Admin/Dashboard.css';
 
 const Dashboard = () => {
@@ -14,14 +15,14 @@ const Dashboard = () => {
   const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [loadingConsultas, setLoadingConsultas] = useState(true);
+  const [loadingPropiedades, setLoadingPropiedades] = useState(true);
   const [stats, setStats] = useState({
     totalPropiedades: 0,
-    disponibles: 0,
-    vendidas: 0,
+    propiedadesDestacadas: 0,
     consultasHoy: 0
   });
   const [ultimasConsultas, setUltimasConsultas] = useState([]);
-  const [propiedadesDestacadas, setPropiedadesDestacadas] = useState([]);
+  const [ultimasPropiedades, setUltimasPropiedades] = useState([]);
 
   useEffect(() => {
     cargarDatosDashboard();
@@ -32,6 +33,24 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setLoadingConsultas(true);
+      setLoadingPropiedades(true);
+      
+      // Cargar estadísticas del dashboard
+      try {
+        const estadisticasResponse = await apiService.getEstadisticasDashboard();
+        
+        if (estadisticasResponse.success) {
+          setStats({
+            totalPropiedades: estadisticasResponse.data.totalPropiedades || 0,
+            propiedadesDestacadas: estadisticasResponse.data.propiedadesDestacadas || 0,
+            consultasHoy: estadisticasResponse.data.consultasHoy || 0
+          });
+        } else {
+          console.error('Error en respuesta de estadísticas:', estadisticasResponse.message);
+        }
+      } catch (error) {
+        console.error('Error cargando estadísticas:', error);
+      }
       
       // Cargar últimas consultas
       try {
@@ -39,42 +58,32 @@ const Dashboard = () => {
         
         if (consultasResponse.success) {
           setUltimasConsultas(consultasResponse.data || []);
-          // Solo guardar las consultas de hoy para la estadística
-          const consultasHoy = consultasResponse.estadisticas?.hoy || 0;
-          setStats(prev => ({ ...prev, consultasHoy }));
+        } else {
+          console.error('Error en respuesta de consultas:', consultasResponse.message);
+          setUltimasConsultas([]);
         }
       } catch (error) {
         console.error('Error cargando consultas:', error);
+        setUltimasConsultas([]);
       } finally {
         setLoadingConsultas(false);
       }
 
-      // Cargar propiedades destacadas
+      // Cargar últimas propiedades
       try {
-        const destacadasResponse = await apiService.getPropiedadesDestacadas();
-        
-        if (destacadasResponse.success) {
-          setPropiedadesDestacadas(destacadasResponse.data || []);
-        }
-      } catch (error) {
-        console.error('Error cargando propiedades destacadas:', error);
-      }
-
-      // Cargar estadísticas de propiedades
-      try {
-        const propiedadesResponse = await apiService.getPropiedades();
+        const propiedadesResponse = await apiService.getUltimasPropiedades(10);
         
         if (propiedadesResponse.success) {
-          const props = propiedadesResponse.data || [];
-          setStats(prev => ({
-            ...prev,
-            totalPropiedades: props.length,
-            disponibles: props.filter(p => p.estado === 'disponible' && !p.deleted_at).length,
-            vendidas: props.filter(p => p.estado === 'vendido' || p.estado === 'alquilado').length
-          }));
+          setUltimasPropiedades(propiedadesResponse.data || []);
+        } else {
+          console.error('Error en respuesta de propiedades:', propiedadesResponse.message);
+          setUltimasPropiedades([]);
         }
       } catch (error) {
         console.error('Error cargando propiedades:', error);
+        setUltimasPropiedades([]);
+      } finally {
+        setLoadingPropiedades(false);
       }
       
     } catch (error) {
@@ -88,6 +97,11 @@ const Dashboard = () => {
   // Función para ver detalle de consulta
   const handleVerConsulta = (consultaId) => {
     navigate(`/admin/consultas?consulta=${consultaId}`);
+  };
+
+  // Función para ver detalle de propiedad
+  const handleVerPropiedad = (propiedadId) => {
+    navigate(`/admin/propiedades/${propiedadId}`);
   };
 
   if (loading) {
@@ -129,8 +143,9 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Tarjetas de estadísticas */}
+        {/* Tarjetas de estadísticas - Solo 3 */}
         <div className="dashboard-stats-grid-unique">
+          {/* Tarjeta 1: Total Propiedades */}
           <div className="dashboard-stat-card-unique">
             <div className="dashboard-stat-icon-unique" style={{ background: 'rgba(0, 106, 78, 0.1)' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#006A4E" strokeWidth="2">
@@ -144,32 +159,20 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Tarjeta 2: Propiedades Destacadas */}
           <div className="dashboard-stat-card-unique">
-            <div className="dashboard-stat-icon-unique" style={{ background: 'rgba(34, 197, 94, 0.1)' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 8v8" />
-                <path d="M8 12h8" />
+            <div className="dashboard-stat-icon-unique" style={{ background: 'rgba(245, 158, 11, 0.1)' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
               </svg>
             </div>
             <div className="dashboard-stat-content-unique">
-              <span className="dashboard-stat-label-unique">Disponibles</span>
-              <span className="dashboard-stat-value-unique">{stats.disponibles}</span>
+              <span className="dashboard-stat-label-unique">Propiedades Destacadas</span>
+              <span className="dashboard-stat-value-unique">{stats.propiedadesDestacadas}</span>
             </div>
           </div>
 
-          <div className="dashboard-stat-card-unique">
-            <div className="dashboard-stat-icon-unique" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </div>
-            <div className="dashboard-stat-content-unique">
-              <span className="dashboard-stat-label-unique">Vendidas/Alquiladas</span>
-              <span className="dashboard-stat-value-unique">{stats.vendidas}</span>
-            </div>
-          </div>
-
+          {/* Tarjeta 3: Consultas Hoy */}
           <div className="dashboard-stat-card-unique">
             <div className="dashboard-stat-icon-unique" style={{ background: 'rgba(249, 115, 22, 0.1)' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
@@ -183,63 +186,21 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Grid principal */}
+        {/* Grid principal - Dos columnas */}
         <div className="dashboard-main-grid-unique">
-          {/* Últimas consultas - Componente separado */}
+          {/* Últimas consultas */}
           <UltimasConsultas 
             consultas={ultimasConsultas}
             loading={loadingConsultas}
             onVerConsulta={handleVerConsulta}
           />
 
-          {/* Propiedades destacadas */}
-          <div className="dashboard-card-unique">
-            <div className="dashboard-card-header-unique">
-              <h2 className="dashboard-card-title-unique">Propiedades Destacadas</h2>
-              <button 
-                className="dashboard-card-link-unique"
-                onClick={() => navigate('/admin/propiedades?destacados=1')}
-              >
-                Gestionar
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            </div>
-            <div className="dashboard-card-content-unique">
-              {propiedadesDestacadas.length > 0 ? (
-                propiedadesDestacadas.map(prop => (
-                  <div key={prop.id} className="dashboard-property-item-unique">
-                    <div className="dashboard-property-info-unique">
-                      <h3 className="dashboard-property-title-unique">{prop.titulo}</h3>
-                      <div className="dashboard-property-details-unique">
-                        <span className="dashboard-property-price-unique">
-                          {prop.precio_formateado} {prop.moneda}
-                        </span>
-                        <span className={`dashboard-property-badge-unique dashboard-property-${prop.tipo_operacion}-unique`}>
-                          {prop.tipo_operacion === 'venta' ? 'Venta' : 'Alquiler'}
-                        </span>
-                      </div>
-                    </div>
-                    <button 
-                      className="dashboard-property-view-unique"
-                      onClick={() => navigate(`/admin/propiedades/${prop.id}`)}
-                      title="Ver propiedad"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className="dashboard-empty-unique">
-                  <p>No hay propiedades destacadas</p>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Últimas propiedades */}
+          <UltimasPropiedades 
+            propiedades={ultimasPropiedades}
+            loading={loadingPropiedades}
+            onVerPropiedad={handleVerPropiedad}
+          />
         </div>
 
         {/* Acciones rápidas */}

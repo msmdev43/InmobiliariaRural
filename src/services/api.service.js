@@ -65,6 +65,28 @@ class ApiService {
     }
   }
 
+  async getEstadisticasDashboard() {
+    try {
+      const url = `${ADMIN_ENDPOINTS.ESTADISTICAS}`;
+      
+      const response = await this.request(url, {
+        method: 'GET'
+      });
+      
+      return response;
+    } catch (error) {
+      console.error('Error en getEstadisticasDashboard:', error);
+      return {
+        success: false,
+        data: {
+          totalPropiedades: 0,
+          propiedadesDestacadas: 0,
+          consultasHoy: 0
+        },
+        message: error.message || 'Error al cargar estadísticas'
+      };
+    }
+  }
   // Método específico para crear propiedad (con FormData)
   async crearPropiedad(formData) {
     try {
@@ -378,6 +400,28 @@ class ApiService {
     }
   }
 
+  async getUltimasPropiedades(limite = 10) {
+    try {
+      const params = new URLSearchParams();
+      params.append('limite', limite);
+      
+      const url = `${PROPIEDADES_ENDPOINTS.ULTIMAS}?${params.toString()}`;
+      
+      const response = await this.request(url, {
+        method: 'GET'
+      });
+      
+      return response;
+    } catch (error) {
+      console.error('Error en getUltimasPropiedades:', error);
+      return {
+        success: false,
+        data: [],
+        message: error.message || 'Error al cargar últimas propiedades'
+      };
+    }
+  }
+
   async enviarConsulta(datos) {
     try {
       // Transformar datos para el formato que espera crearConsulta.php
@@ -458,9 +502,33 @@ class ApiService {
   }
 
   async contarConsultasNoLeidas() {
-    return this.request(UTILS_ENDPOINTS.NOTIFICACIONES, {
-      method: 'GET'
-    });
+    try {
+      const response = await this.request(UTILS_ENDPOINTS.NOTIFICACIONES, {
+        method: 'GET'
+      });
+      
+      // Si la respuesta es exitosa y tiene total, devolver el número
+      if (response.success && typeof response.total === 'number') {
+        return response.total;
+      }
+      
+      // Si la respuesta tiene data y es un array, devolver la longitud
+      if (response.success && Array.isArray(response.data)) {
+        return response.data.length;
+      }
+      
+      // Si la respuesta tiene success pero no hay total, devolver 0
+      if (response.success) {
+        return 0;
+      }
+      
+      // Si hay error, devolver 0
+      console.error('Error en contarConsultasNoLeidas:', response.message);
+      return 0;
+    } catch (error) {
+      console.error('Error en contarConsultasNoLeidas:', error);
+      return 0;
+    }
   }
 
   async enviarWhatsAppDirecto(consultaId) {

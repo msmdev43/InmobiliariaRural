@@ -1,15 +1,15 @@
-// C:\xampp\htdocs\InmobiliariaRural\src\components\Admin\UltimasConsultas.jsx
+// C:\xampp\htdocs\InmobiliariaRural\src\components\Admin\UltimasPropiedades.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const UltimasConsultas = ({ consultas, loading, onVerConsulta }) => {
+const UltimasPropiedades = ({ propiedades, loading, onVerPropiedad }) => {
   const navigate = useNavigate();
 
-  const handleVerConsulta = (consultaId) => {
-    if (onVerConsulta) {
-      onVerConsulta(consultaId);
+  const handleVerPropiedad = (propiedadId) => {
+    if (onVerPropiedad) {
+      onVerPropiedad(propiedadId);
     } else {
-      navigate(`/admin/consultas?consulta=${consultaId}`);
+      navigate(`/admin/propiedades/${propiedadId}`);
     }
   };
 
@@ -17,10 +17,10 @@ const UltimasConsultas = ({ consultas, loading, onVerConsulta }) => {
     return (
       <div className="dashboard-card-unique">
         <div className="dashboard-card-header-unique">
-          <h2 className="dashboard-card-title-unique">Últimas Consultas</h2>
+          <h2 className="dashboard-card-title-unique">Últimas Propiedades</h2>
           <button 
             className="dashboard-card-link-unique"
-            onClick={() => navigate('/admin/consultas')}
+            onClick={() => navigate('/admin/propiedades')}
           >
             Ver todas
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -31,7 +31,7 @@ const UltimasConsultas = ({ consultas, loading, onVerConsulta }) => {
         <div className="dashboard-card-content-unique">
           <div className="dashboard-loading-consultas-unique">
             <div className="dashboard-spinner-small-unique"></div>
-            <p>Cargando consultas...</p>
+            <p>Cargando propiedades...</p>
           </div>
         </div>
       </div>
@@ -41,10 +41,10 @@ const UltimasConsultas = ({ consultas, loading, onVerConsulta }) => {
   return (
     <div className="dashboard-card-unique">
       <div className="dashboard-card-header-unique">
-        <h2 className="dashboard-card-title-unique">Últimas Consultas</h2>
+        <h2 className="dashboard-card-title-unique">Últimas Propiedades</h2>
         <button 
           className="dashboard-card-link-unique"
-          onClick={() => navigate('/admin/consultas')}
+          onClick={() => navigate('/admin/propiedades')}
         >
           Ver todas
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -53,50 +53,42 @@ const UltimasConsultas = ({ consultas, loading, onVerConsulta }) => {
         </button>
       </div>
       <div className="dashboard-card-content-unique">
-        {consultas.length > 0 ? (
+        {propiedades.length > 0 ? (
           <div className="dashboard-table-container-unique">
             <table className="dashboard-table-unique">
               <thead>
                 <tr>
-                  <th>Nombre</th>
-                  <th>Tipo</th>
-                  <th>Fecha</th>
+                  <th>Código</th>
+                  <th>Título</th>
+                  <th>Zona</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
-                {consultas.map(consulta => (
-                  <tr key={consulta.id} className="dashboard-table-row-unique">
+                {propiedades.map(prop => (
+                  <tr key={prop.id} className="dashboard-table-row-unique">
                     <td>
-                      <div className="dashboard-contact-info-unique">
-                        <span className="dashboard-contact-name-unique">{consulta.nombre}</span>
-                        {consulta.email && (
-                          <span className="dashboard-contact-email-unique">{consulta.email}</span>
+                      <span className="dashboard-propiedad-codigo-unique">
+                        {prop.codigo}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="dashboard-propiedad-info-unique">
+                        <span className="dashboard-propiedad-titulo-unique">{prop.titulo}</span>
+                        {prop.destacado && (
+                          <span className="dashboard-destacado-badge-unique"> ★</span>
                         )}
                       </div>
                     </td>
                     <td>
-                      <span 
-                        className="dashboard-consulta-tipo-unique"
-                        style={{ 
-                          backgroundColor: `${consulta.tipo_color}15`,
-                          color: consulta.tipo_color,
-                          border: `1px solid ${consulta.tipo_color}30`
-                        }}
-                      >
-                        {consulta.tipo_texto}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="dashboard-consulta-fecha-unique">
-                        <span className="dashboard-fecha-unique">{consulta.fecha_formateada}</span>
-                        <span className="dashboard-tiempo-unique">{consulta.tiempo_transcurrido}</span>
+                      <div className="dashboard-propiedad-ubicacion-unique">
+                        <span>{prop.zona}</span>
                       </div>
                     </td>
                     <td>
                       <button 
                         className="dashboard-table-btn-unique"
-                        onClick={() => handleVerConsulta(consulta.id)}
+                        onClick={() => handleVerPropiedad(prop.id)}
                         title="Ver detalle"
                       >
                         Ver
@@ -109,7 +101,7 @@ const UltimasConsultas = ({ consultas, loading, onVerConsulta }) => {
           </div>
         ) : (
           <div className="dashboard-empty-unique">
-            <p>No hay consultas recientes</p>
+            <p>No hay propiedades cargadas</p>
           </div>
         )}
       </div>
@@ -117,4 +109,4 @@ const UltimasConsultas = ({ consultas, loading, onVerConsulta }) => {
   );
 };
 
-export default UltimasConsultas;
+export default UltimasPropiedades;
