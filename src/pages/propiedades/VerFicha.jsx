@@ -1,7 +1,7 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\pages\propiedades\VerFicha.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Ruler, Home, Maximize, Calendar, Eye, MessageCircle, ArrowLeft, Share2, Heart } from "lucide-react";
+import { MapPin, Ruler, Home, Maximize, Calendar, Eye, MessageCircle, ArrowLeft, Share2 } from "lucide-react";
 import Navbar from '../../components/Header';
 import Footer from '../../components/Footer';
 import apiService from '../../services/api.service';
@@ -16,7 +16,6 @@ const VerFicha = () => {
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
   const [modalImagen, setModalImagen] = useState(false);
   const [mostrarMapa, setMostrarMapa] = useState(false);
-  const [favorito, setFavorito] = useState(false);
 
   const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/uploads/propiedades/default.png';
 
@@ -31,8 +30,14 @@ const VerFicha = () => {
       setLoading(true);
       const response = await apiService.getPropiedadDetalle(id);
       
+      console.log('Respuesta completa de propiedad:', response);
+      
       if (response.success && response.data) {
         const data = response.data;
+        
+        // Log para ver los servicios
+        console.log('Servicios recibidos:', data.servicios);
+        console.log('Total servicios:', data.total_servicios);
         
         // Procesar imágenes
         const imagenesProcesadas = data.imagenes?.map(img => ({
@@ -45,8 +50,18 @@ const VerFicha = () => {
           imagenes: imagenesProcesadas
         });
         
+        // SOLUCIÓN: Si hay imágenes, seleccionar la primera
+        // Si no hay imágenes, crear una imagen por defecto
         if (imagenesProcesadas.length > 0) {
           setImagenSeleccionada(imagenesProcesadas[0]);
+        } else {
+          // Crear una imagen por defecto
+          setImagenSeleccionada({
+            id: 'default',
+            url: DEFAULT_IMAGE,
+            nombre: 'default.png',
+            orden: 0
+          });
         }
       } else {
         console.error('Error al cargar propiedad:', response.message);
@@ -89,19 +104,6 @@ const VerFicha = () => {
     }
   };
 
-  const handleToggleFavorito = () => {
-    setFavorito(!favorito);
-    // Aquí podrías guardar en localStorage o enviar al backend
-    const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
-    if (!favorito) {
-      favoritos.push(propiedad.id);
-    } else {
-      const index = favoritos.indexOf(propiedad.id);
-      if (index > -1) favoritos.splice(index, 1);
-    }
-    localStorage.setItem('favoritos', JSON.stringify(favoritos));
-  };
-
   const handleContactar = () => {
     navigate(`/contacto?propiedad=${propiedad.id}&titulo=${encodeURIComponent(propiedad.titulo)}`);
   };
@@ -136,6 +138,40 @@ const VerFicha = () => {
     );
   }
 
+  // Verificar si tiene servicios - MÁS ROBUSTO
+  const tieneServicios = () => {
+    // Si no hay servicios array
+    if (!propiedad.servicios) return false;
+    // Si no es un array
+    if (!Array.isArray(propiedad.servicios)) return false;
+    // Si está vacío
+    if (propiedad.servicios.length === 0) return false;
+    // Verificar que al menos un servicio tenga nombre válido
+    const tieneServicioValido = propiedad.servicios.some(s => 
+      s && typeof s === 'object' && s.nombre && s.nombre.trim() !== ''
+    );
+    return tieneServicioValido;
+  };
+
+  // Filtrar servicios válidos
+  const obtenerServiciosValidos = () => {
+    if (!propiedad.servicios || !Array.isArray(propiedad.servicios)) return [];
+    return propiedad.servicios.filter(s => 
+      s && typeof s === 'object' && s.nombre && s.nombre.trim() !== ''
+    );
+  };
+
+  const serviciosValidos = obtenerServiciosValidos();
+  const mostrarServicios = tieneServicios();
+
+  // Debug
+  console.log('¿Tiene servicios?', mostrarServicios);
+  console.log('Servicios válidos:', serviciosValidos);
+  console.log('Imagen seleccionada:', imagenSeleccionada);
+
+  // SOLUCIÓN ADICIONAL: Asegurarse de que siempre hay una imagen para mostrar
+  const imagenParaMostrar = imagenSeleccionada?.url || DEFAULT_IMAGE;
+
   return (
     <>
       <Navbar />
@@ -147,13 +183,6 @@ const VerFicha = () => {
             <p className="vf-codigo">Código: {propiedad.codigo}</p>
           </div>
           <div className="vf-header-acciones">
-            <button 
-              onClick={handleToggleFavorito} 
-              className={`vf-btn-icon ${favorito ? 'activo' : ''}`}
-              title={favorito ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-            >
-              <Heart size={24} fill={favorito ? 'currentColor' : 'none'} />
-            </button>
             <button onClick={handleCompartir} className="vf-btn-icon" title="Compartir">
               <Share2 size={24} />
             </button>
@@ -170,7 +199,7 @@ const VerFicha = () => {
                 onClick={() => setModalImagen(true)}
               >
                 <img 
-                  src={imagenSeleccionada?.url || propiedad.imagen_principal}
+                  src={imagenParaMostrar}
                   alt={propiedad.titulo}
                   onError={handleImageError}
                 />
@@ -179,7 +208,8 @@ const VerFicha = () => {
                 )}
               </div>
 
-              {propiedad.imagenes?.length > 1 && (
+              {/* Mostrar miniaturas SOLO si hay imágenes reales */}
+              {propiedad.imagenes && propiedad.imagenes.length > 0 && (
                 <div className="vf-miniaturas">
                   {propiedad.imagenes.map((img) => (
                     <div
@@ -234,7 +264,7 @@ const VerFicha = () => {
                   <MapPin size={20} />
                   <div>
                     <span className="vf-label">Ubicación</span>
-                    <span className="vf-valor">{propiedad.ubicacion?.texto || propiedad.ubicacion?.ciudad}</span>
+                    <span className="vf-valor">{propiedad.ubicacion?.texto || propiedad.ubicacion?.ciudad || propiedad.ciudad || 'No especificada'}</span>
                   </div>
                 </div>
               </div>
@@ -250,13 +280,13 @@ const VerFicha = () => {
               </div>
             </div>
 
-            {/* Servicios */}
-            {propiedad.servicios?.length > 0 && (
+            {/* Servicios - SOLO si tiene servicios válidos */}
+            {mostrarServicios && serviciosValidos.length > 0 && (
               <div className="vf-card">
-                <h3 className="vf-card-titulo">Servicios</h3>
+                <h3 className="vf-card-titulo">Servicios e Infraestructura</h3>
                 <div className="vf-servicios">
-                  {propiedad.servicios.map(servicio => (
-                    <span key={servicio.id} className="vf-servicio-tag">
+                  {serviciosValidos.map((servicio, index) => (
+                    <span key={servicio.id || index} className="vf-servicio-tag">
                       {servicio.nombre}
                     </span>
                   ))}
@@ -310,7 +340,7 @@ const VerFicha = () => {
               </div>
               <div className="vf-estadistica">
                 <Calendar size={16} />
-                <span>Publicado: {propiedad.fecha_publicacion_formateada}</span>
+                <span>Publicado: {propiedad.fecha_publicacion_formateada || propiedad.fecha_formateada || 'Fecha no disponible'}</span>
               </div>
             </div>
           </div>
@@ -322,11 +352,12 @@ const VerFicha = () => {
             <div className="vf-modal" onClick={e => e.stopPropagation()}>
               <button className="vf-modal-cerrar" onClick={() => setModalImagen(false)}>×</button>
               <img 
-                src={imagenSeleccionada?.url || propiedad.imagen_principal}
+                src={imagenParaMostrar}
                 alt={propiedad.titulo}
                 onError={handleImageError}
               />
-              {propiedad.imagenes?.length > 1 && (
+              {/* Mostrar miniaturas en modal SOLO si hay imágenes reales */}
+              {propiedad.imagenes && propiedad.imagenes.length > 0 && (
                 <div className="vf-modal-miniaturas">
                   {propiedad.imagenes.map((img) => (
                     <div

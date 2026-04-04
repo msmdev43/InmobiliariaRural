@@ -1,19 +1,75 @@
-import { Facebook, Instagram, Twitter, Youtube, Send } from "lucide-react";
+// C:\xampp\htdocs\InmobiliariaRural\src\components\Footer.jsx
+import { useState, useEffect } from "react";
+import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import { FaInstagram } from 'react-icons/fa';
+import { useNavigate } from "react-router-dom";
+import apiService from '../services/api.service';
 import "../styles/components/footer.css";
 
 export default function Footer() {
+  const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
+  const [tiposCampos, setTiposCampos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Configuración de categorías (sin IDs fijos)
+  const categoriesConfig = [
+    { label: "Terrenos", tipo_campo_nombre: "terreno" },
+    { label: "Chacras", tipo_campo_nombre: "chacra" },
+    { label: "Campos", tipo_campo_nombre: "campo" },
+    { label: "Estancias", tipo_campo_nombre: "estancia" },
+  ];
+
+  useEffect(() => {
+    obtenerTiposCampos();
+  }, []);
+
+  const obtenerTiposCampos = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.getTiposCampos();
+      console.log('Footer - Tipos de campos:', response);
+      
+      if (response.success && response.data) {
+        // Mapear categorías con IDs reales
+        const categoriasConIds = categoriesConfig.map(cat => {
+          const tipoEncontrado = response.data.find(
+            tipo => tipo.nombre.toLowerCase() === cat.tipo_campo_nombre
+          );
+          return {
+            ...cat,
+            tipo_campo_id: tipoEncontrado ? tipoEncontrado.id : null
+          };
+        });
+        setTiposCampos(categoriasConIds);
+      } else {
+        setTiposCampos(categoriesConfig.map(cat => ({ ...cat, tipo_campo_id: null })));
+      }
+    } catch (error) {
+      console.error('Error obteniendo tipos de campos:', error);
+      setTiposCampos(categoriesConfig.map(cat => ({ ...cat, tipo_campo_id: null })));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCategoryClick = (category) => {
+    if (!category.tipo_campo_id) {
+      console.warn(`No se encontró ID para: ${category.label}`);
+      return;
+    }
+    
+    console.log("Footer - Categoría seleccionada:", category.label, "ID:", category.tipo_campo_id);
+    
+    // Navegar a la página de propiedades con el filtro en la URL
+    navigate(`/propiedades?tipo_campo=${category.tipo_campo_id}`);
+    
+    // Forzar scroll al inicio de la página
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const footerLinks = {
-    propiedades: [
-      { label: "Terrenos", href: "#" },
-      { label: "Chacras", href: "#" },
-      { label: "Campos", href: "#" },
-      { label: "Estancias", href: "#" },
-    ],
     empresa: [
-      //{ label: "Aviso legal", href: "#" },
       { label: "Sobre nosotros", href: "#nosotros" },
       { label: "Servicios", href: "#servicios" },
       { label: "Contacto", href: "#contacto" },
@@ -21,10 +77,10 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook", color: "#1877f2" },
-    { icon: Instagram, href: "#", label: "Instagram", color: "#e4405f" },
-    { icon: Twitter, href: "#", label: "Twitter", color: "#1da1f2" },
-    { icon: Youtube, href: "#", label: "Youtube", color: "#ff0000" },
+    { icon: Facebook, href: "https://facebook.com", label: "Facebook", color: "#1877f2" },
+    { icon: Instagram, href: "https://instagram.com", label: "Instagram", color: "#e4405f" },
+    { icon: Twitter, href: "https://twitter.com", label: "Twitter", color: "#1da1f2" },
+    { icon: Youtube, href: "https://youtube.com", label: "Youtube", color: "#ff0000" },
   ];
 
   return (
@@ -59,6 +115,8 @@ export default function Footer() {
                   <a
                     key={index}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={social.label}
                     className="footer-social-link"
                     style={{ '--social-color': social.color }}
@@ -77,13 +135,37 @@ export default function Footer() {
               <div className="footer-title-underline" />
             </div>
             <ul className="footer-links-list">
-              {footerLinks.propiedades.map((link, index) => (
-                <li key={index} className="footer-link-item">
-                  <a href={link.href} className="footer-link">
-                    {link.label}
-                  </a>
-                </li>
-              ))}
+              {loading ? (
+                // Mostrar skeletons mientras carga
+                <>
+                  <li className="footer-link-item">
+                    <span className="footer-link-button loading">Cargando...</span>
+                  </li>
+                  <li className="footer-link-item">
+                    <span className="footer-link-button loading">Cargando...</span>
+                  </li>
+                  <li className="footer-link-item">
+                    <span className="footer-link-button loading">Cargando...</span>
+                  </li>
+                  <li className="footer-link-item">
+                    <span className="footer-link-button loading">Cargando...</span>
+                  </li>
+                </>
+              ) : (
+                tiposCampos.map((category, index) => (
+                  <li key={index} className="footer-link-item">
+                    <button 
+                      onClick={() => handleCategoryClick(category)}
+                      className="footer-link-button"
+                      disabled={!category.tipo_campo_id}
+                      title={!category.tipo_campo_id ? "Categoría no disponible" : `Ver ${category.label}`}
+                    >
+                      {category.label}
+                      {!category.tipo_campo_id && " (próximamente)"}
+                    </button>
+                  </li>
+                ))
+              )}
             </ul>
           </div>
 

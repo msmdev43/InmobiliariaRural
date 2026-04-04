@@ -422,6 +422,27 @@ class ApiService {
     }
   }
 
+  async getConteosPorTipoCampo() {
+  try {
+    const url = PROPIEDADES_ENDPOINTS.CONTAR_POR_TIPO_CAMPO;
+    console.log('Obteniendo conteos desde:', url);
+    
+    const response = await this.request(url, {
+      method: 'GET'
+    });
+    
+    console.log('Respuesta conteos:', response);
+    return response;
+  } catch (error) {
+    console.error('Error en getConteosPorTipoCampo:', error);
+    return {
+      success: false,
+      data: {},
+      message: error.message || 'Error al cargar conteos'
+    };
+  }
+}
+
   async enviarConsulta(datos) {
     try {
       // Transformar datos para el formato que espera crearConsulta.php

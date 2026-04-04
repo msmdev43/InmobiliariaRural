@@ -38,7 +38,7 @@ const PublicarPropiedad = () => {
     estado: 'disponible',
     fecha: new Date().toISOString().split('T')[0],
     campos_idtipocampos: '',
-    destacado: false  // ✅ AGREGADO: campo destacado
+    destacado: false
   });
 
   const formatearPrecio = (precio, moneda) => {
@@ -90,7 +90,7 @@ const PublicarPropiedad = () => {
     if (name === 'precio') {
       // Limpiar el string para obtener solo números
       const numeros = value.replace(/[^\d]/g, '');
-      const numero = numeros === '' ? 0 : parseFloat(numeros);
+      const numero = numeros === '' ? '' : parseFloat(numeros);
       
       setFormData(prev => ({
         ...prev,
@@ -181,17 +181,19 @@ const PublicarPropiedad = () => {
     if (!formData.titulo?.trim()) nuevosErrores.titulo = 'El título es obligatorio';
     if (!formData.alquilerventa) nuevosErrores.alquilerventa = 'El tipo de operación es obligatorio';
     
-    if (!formData.superficie?.trim()) {
+    // Validar superficie (ahora es número o string vacío)
+    if (!formData.superficie && formData.superficie !== 0) {
       nuevosErrores.superficie = 'La superficie es obligatoria';
-    } else if (Number(formData.superficie) <= 0) {
+    } else if (formData.superficie && Number(formData.superficie) <= 0) {
       nuevosErrores.superficie = 'La superficie debe ser mayor a 0';
     }
     
     if (!formData.zona?.trim()) nuevosErrores.zona = 'La zona es obligatoria';
     
-    if (!formData.precio?.trim()) {
+    // Validar precio (ahora es número o string vacío)
+    if (!formData.precio && formData.precio !== 0) {
       nuevosErrores.precio = 'El precio es obligatorio';
-    } else if (Number(formData.precio) <= 0) {
+    } else if (formData.precio && Number(formData.precio) <= 0) {
       nuevosErrores.precio = 'El precio debe ser mayor a 0';
     }
     
@@ -241,7 +243,7 @@ const PublicarPropiedad = () => {
       formDataToSend.append('estado', formData.estado);
       formDataToSend.append('fecha', formData.fecha);
       formDataToSend.append('campos_idtipocampos', formData.campos_idtipocampos);
-      formDataToSend.append('destacado', formData.destacado ? '1' : '0');  // ✅ AGREGADO: enviar destacado
+      formDataToSend.append('destacado', formData.destacado ? '1' : '0');
       
       formDataToSend.append('latitud', formData.latitud || 0);
       formDataToSend.append('longitud', formData.longitud || 0);
@@ -250,7 +252,7 @@ const PublicarPropiedad = () => {
       formDataToSend.append('servicios', JSON.stringify(serviciosValidos));
       
       console.log('Servicios a enviar:', serviciosValidos);
-      console.log('Destacado:', formData.destacado);  // ✅ AGREGADO: log para debug
+      console.log('Destacado:', formData.destacado);
 
       imagenesFiles.forEach((imagen) => {
         formDataToSend.append('imagenes[]', imagen);
@@ -283,7 +285,7 @@ const PublicarPropiedad = () => {
               estado: 'disponible',
               fecha: new Date().toISOString().split('T')[0],
               campos_idtipocampos: '',
-              destacado: false  // ✅ AGREGADO: resetear destacado
+              destacado: false
             });
             setServiciosSeleccionados([]);
             setImagenesPreview([]);
@@ -461,7 +463,6 @@ const PublicarPropiedad = () => {
                 </select>
               </div>
 
-              {/* ✅ AGREGADO: Campo Destacado */}
               <div className="publicar-campo-unique">
                 <label className="publicar-label-unique">Destacado</label>
                 <label className="publicar-checkbox-label">

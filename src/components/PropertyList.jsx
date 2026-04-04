@@ -1,17 +1,16 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\components\PropertyList.jsx
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import apiService from '../services/api.service';
 import ShareModal from './UI/ShareModal';
 import ContactModal from './UI/ContactModal';
 import "../styles/components/propiedades/propertyList.css";
 
-// Imagen del Hero (puedes cambiarla fácilmente aquí)
+// Imagen del Hero
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80';
-// Para usar imagen local, descomenta la línea de abajo y comenta la de arriba
-// import heroImage from '../assets/images/hero-campo.jpg';
-// const HERO_IMAGE = heroImage;
 
 export default function PropertyList({ showHero = true }) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,31 +28,88 @@ export default function PropertyList({ showHero = true }) {
   const [availableFilters, setAvailableFilters] = useState({
     provincias: [],
     ciudades: [],
-    tipos_campos: [],
+    todosLosTiposCampos: [],
     tipos_operacion: ['venta', 'alquiler']
   });
   
   const [applyingFilters, setApplyingFilters] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
 
   useEffect(() => {
-    cargarFiltrosDisponibles();
-    cargarPropiedades();
+    cargarFiltrosIniciales();
   }, []);
 
-  // Cargar filtros disponibles desde el backend
-  const cargarFiltrosDisponibles = async () => {
+  useEffect(() => {
+    // Leer filtros de la URL cuando se carga el componente o cambian los parámetros
+    const tipoCampoFromUrl = searchParams.get('tipo_campo');
+    const provinciaFromUrl = searchParams.get('provincia');
+    const ciudadFromUrl = searchParams.get('ciudad');
+    const operacionFromUrl = searchParams.get('tipo_operacion');
+    
+    const nuevosFiltros = {};
+    
+    if (tipoCampoFromUrl) nuevosFiltros.tipo_campo = tipoCampoFromUrl;
+    if (provinciaFromUrl) nuevosFiltros.provincia = provinciaFromUrl;
+    if (ciudadFromUrl) nuevosFiltros.ciudad = ciudadFromUrl;
+    if (operacionFromUrl) nuevosFiltros.tipo_operacion = operacionFromUrl;
+    
+    if (Object.keys(nuevosFiltros).length > 0) {
+      setFilters(prev => ({ ...prev, ...nuevosFiltros }));
+      cargarPropiedades({ ...filters, ...nuevosFiltros });
+    } else {
+      cargarPropiedades();
+    }
+  }, [searchParams]);
+
+  // Cargar provincias y tipos de campos
+  const cargarFiltrosIniciales = async () => {
     try {
       const response = await apiService.getPropiedadesPublic({ pagina: 1, por_pagina: 1 });
+      console.log('Filtros iniciales response:', response);
+      
       if (response.success && response.filtros_disponibles) {
-        setAvailableFilters({
+        setAvailableFilters(prev => ({
+          ...prev,
           provincias: response.filtros_disponibles.provincias || [],
-          ciudades: response.filtros_disponibles.ciudades || [],
-          tipos_campos: response.filtros_disponibles.tipos_campos || [],
+          todosLosTiposCampos: response.filtros_disponibles.tipos_campos || [],
           tipos_operacion: response.filtros_disponibles.tipos_operacion || ['venta', 'alquiler']
-        });
+        }));
       }
     } catch (error) {
-      console.error('Error cargando filtros:', error);
+      console.error('Error cargando filtros iniciales:', error);
+    }
+  };
+
+  // Cargar ciudades según la provincia seleccionada
+  const cargarCiudadesPorProvincia = async (provincia) => {
+    if (!provincia) {
+      setAvailableFilters(prev => ({ ...prev, ciudades: [] }));
+      return;
+    }
+
+    setLoadingCities(true);
+    try {
+      const response = await apiService.getPropiedadesPublic({ 
+        provincia: provincia,
+        pagina: 1, 
+        por_pagina: 1 
+      });
+      
+      console.log('Ciudades para provincia', provincia, ':', response.filtros_disponibles?.ciudades);
+      
+      if (response.success && response.filtros_disponibles?.ciudades) {
+        setAvailableFilters(prev => ({
+          ...prev,
+          ciudades: response.filtros_disponibles.ciudades || []
+        }));
+      } else {
+        setAvailableFilters(prev => ({ ...prev, ciudades: [] }));
+      }
+    } catch (error) {
+      console.error('Error cargando ciudades:', error);
+      setAvailableFilters(prev => ({ ...prev, ciudades: [] }));
+    } finally {
+      setLoadingCities(false);
     }
   };
 
@@ -62,7 +118,7 @@ export default function PropertyList({ showHero = true }) {
       setLoading(true);
       const filtros = filtrosAplicados || filters;
       
-      // Construir parámetros de filtro (solo enviar los que tienen valor)
+      // Construir parámetros de filtro
       const params = {
         pagina: 1,
         por_pagina: 12
@@ -73,43 +129,59 @@ export default function PropertyList({ showHero = true }) {
       if (filtros.tipo_campo) params.tipo_campo = filtros.tipo_campo;
       if (filtros.tipo_operacion) params.tipo_operacion = filtros.tipo_operacion;
       
+      console.log('Enviando filtros al backend:', params);
+      
       const response = await apiService.getPropiedadesPublic(params);
-      console.log('Respuesta completa:', response);
+      console.log('Respuesta de propiedades:', response);
       
       if (response.success) {
-        setProperties(response.data);
+        setProperties(response.data || []);
         
-        // Actualizar ciudades disponibles según la provincia seleccionada
-        if (response.filtros_disponibles?.ciudades && response.filtros_disponibles.ciudades.length > 0) {
-          setAvailableFilters(prev => ({
-            ...prev,
-            ciudades: response.filtros_disponibles.ciudades
-          }));
+        // Si se aplicó un filtro de provincia, actualizar ciudades
+        if (filtros.provincia && filtrosAplicados) {
+          await cargarCiudadesPorProvincia(filtros.provincia);
         }
       } else {
-        setError(response.message);
+        setError(response.message || 'Error al cargar propiedades');
+        setProperties([]);
       }
     } catch (error) {
-      console.error('Error:', error);
-      setError('Error de conexión');
+      console.error('Error cargando propiedades:', error);
+      setError('Error de conexión con el servidor');
+      setProperties([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFilterChange = (e) => {
+  const handleFilterChange = async (e) => {
     const { name, value } = e.target;
+    
+    // Actualizar el estado del filtro
     setFilters(prev => ({
       ...prev,
       [name]: value,
-      // Si cambia la provincia, resetear ciudad
       ...(name === 'provincia' && { ciudad: '' })
     }));
+    
+    // Si cambia la provincia, cargar las ciudades correspondientes
+    if (name === 'provincia') {
+      await cargarCiudadesPorProvincia(value);
+    }
   };
 
   const aplicarFiltros = async () => {
     setApplyingFilters(true);
     await cargarPropiedades(filters);
+    
+    // Actualizar URL con los filtros aplicados
+    const newParams = new URLSearchParams();
+    if (filters.tipo_campo) newParams.set('tipo_campo', filters.tipo_campo);
+    if (filters.provincia) newParams.set('provincia', filters.provincia);
+    if (filters.ciudad) newParams.set('ciudad', filters.ciudad);
+    if (filters.tipo_operacion) newParams.set('tipo_operacion', filters.tipo_operacion);
+    setSearchParams(newParams);
+    
     setApplyingFilters(false);
   };
 
@@ -121,7 +193,11 @@ export default function PropertyList({ showHero = true }) {
       tipo_operacion: ''
     };
     setFilters(filtrosVacios);
+    setAvailableFilters(prev => ({ ...prev, ciudades: [] }));
     await cargarPropiedades(filtrosVacios);
+    
+    // Limpiar URL
+    setSearchParams({});
   };
 
   const handleShare = (e, propiedad) => {
@@ -141,6 +217,9 @@ export default function PropertyList({ showHero = true }) {
   const closeContactModal = () => {
     setContactModal({ isOpen: false, propiedad: null });
   };
+
+  // ... el resto del JSX se mantiene igual ...
+  // (desde el return hasta el final, igual que lo tenías)
 
   if (loading && properties.length === 0) {
     return (
@@ -204,7 +283,7 @@ export default function PropertyList({ showHero = true }) {
         <ContactModal propiedad={contactModal.propiedad} onClose={closeContactModal} />
       )}
 
-      {/* Header con imagen de fondo - imagen definida en constante HERO_IMAGE */}
+      {/* Header con imagen de fondo */}
       {showHero && (
         <div 
           className="pl-hero-section"
@@ -220,13 +299,13 @@ export default function PropertyList({ showHero = true }) {
         </div>
       )}
 
-      {/* Barra de filtros fija */}
+      {/* Barra de filtros */}
       <div className="pl-filters-bar">
         <div className="pl-filters-wrapper">
           <div className="pl-filters-grid">
             {/* Filtro por provincia */}
             <div className="pl-filter-group">
-              <label className="pl-filter-label">Ubicación</label>
+              <label className="pl-filter-label">Provincia</label>
               <select
                 name="provincia"
                 value={filters.provincia}
@@ -240,7 +319,7 @@ export default function PropertyList({ showHero = true }) {
               </select>
             </div>
 
-            {/* Filtro por ciudad (dependiente de provincia) */}
+            {/* Filtro por ciudad */}
             <div className="pl-filter-group">
               <label className="pl-filter-label">Ciudad / Localidad</label>
               <select
@@ -248,9 +327,11 @@ export default function PropertyList({ showHero = true }) {
                 value={filters.ciudad}
                 onChange={handleFilterChange}
                 className="pl-filter-select"
-                disabled={!filters.provincia && availableFilters.ciudades.length === 0}
+                disabled={!filters.provincia || loadingCities}
               >
-                <option value="">Todas las ciudades</option>
+                <option value="">
+                  {loadingCities ? 'Cargando ciudades...' : 'Todas las ciudades'}
+                </option>
                 {availableFilters.ciudades.map(ciudad => (
                   <option key={ciudad} value={ciudad}>{ciudad}</option>
                 ))}
@@ -267,7 +348,7 @@ export default function PropertyList({ showHero = true }) {
                 className="pl-filter-select"
               >
                 <option value="">Todos los tipos</option>
-                {availableFilters.tipos_campos.map(tipo => (
+                {availableFilters.todosLosTiposCampos.map(tipo => (
                   <option key={tipo.id || tipo} value={tipo.id || tipo}>
                     {tipo.nombre || tipo}
                   </option>
@@ -289,6 +370,7 @@ export default function PropertyList({ showHero = true }) {
                 <option value="alquiler">Alquiler</option>
               </select>
             </div>
+
             {/* Botones de acción */}
             <div className="pl-filters-actions">
               <button 
@@ -314,7 +396,7 @@ export default function PropertyList({ showHero = true }) {
       <div className="pl-container">
         <div className="pl-results-info">
           <p>
-            {properties.length === 0 
+            {loading ? 'Cargando...' : properties.length === 0 
               ? 'No se encontraron propiedades con los filtros seleccionados'
               : `Mostrando ${properties.length} propiedades disponibles`}
           </p>
@@ -325,7 +407,7 @@ export default function PropertyList({ showHero = true }) {
           )}
         </div>
         
-        {properties.length === 0 && !loading ? (
+        {!loading && properties.length === 0 ? (
           <div className="pl-no-results">
             <svg className="pl-no-results-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" />

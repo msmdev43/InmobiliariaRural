@@ -32,6 +32,7 @@ const API_CONFIG = {
     DESTACADAS: '/propiedades/propiedadesDestacadas.php',
     ELIMINAR_IMAGEN: '/propiedades/imagenes/eliminarImagenes.php',
     ULTIMAS: '/propiedades/ultimasPropiedades.php',
+    CONTAR_POR_TIPO_CAMPO: '/propiedades/contarPorTipoCampo.php', // Nuevo endpoint
   },
   
   // Endpoints de servicios
