@@ -1,4 +1,12 @@
 /* Header.css */
+.nav-desktop:empty {
+  display: none;
+}
+
+.mobile-nav:empty {
+  display: none;
+}
+
 .header {
   position: fixed;
   top: 0;

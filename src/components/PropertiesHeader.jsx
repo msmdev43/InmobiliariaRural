@@ -8,6 +8,7 @@ export default function PropertiesHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
+  // Array vacío para mantener la estructura (no mostrará nada porque está vacío)
   const navLinks = [];
 
   const handleNavClick = () => {
@@ -45,7 +46,7 @@ export default function PropertiesHeader() {
               </div>
             </a>
 
-            {/* Navegación desktop */}
+            {/* Navegación desktop - Se mantiene pero no muestra nada porque navLinks está vacío */}
             <nav className="nav-desktop">
               {navLinks.map((link) => (
                 <a 
@@ -91,6 +92,7 @@ export default function PropertiesHeader() {
         {isMenuOpen && (
           <div className="mobile-menu">
             <nav className="mobile-nav">
+              {/* Los enlaces de navegación (no se muestran porque está vacío) */}
               {navLinks.map((link) => (
                 <a
                   key={link.href}

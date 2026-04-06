@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Ruler, Home, Maximize, Calendar, Eye, MessageCircle, ArrowLeft, Share2 } from "lucide-react";
-import Navbar from '../../components/Header';
+import Navbar from '../../components/PropertiesHeader';
 import Footer from '../../components/Footer';
 import apiService from '../../services/api.service';
 import '../../styles/pages/propiedades/VerFicha.css';
@@ -175,16 +175,18 @@ const VerFicha = () => {
   return (
     <>
       <Navbar />
-      <div className="vf-container">
-        {/* Header con acciones */}
-        <div className="vf-header">
+        <div className="vf-container">
+          {/* Header con acciones */}
+          <div className="vf-header">
           <div className="vf-header-titulo">
             <h1>{propiedad.titulo}</h1>
             <p className="vf-codigo">Código: {propiedad.codigo}</p>
           </div>
+          {/* El botón de compartir se mantiene aquí pero lo bajamos con CSS */}
           <div className="vf-header-acciones">
             <button onClick={handleCompartir} className="vf-btn-icon" title="Compartir">
-              <Share2 size={24} />
+              <Share2 size={22} />
+              <span className="vf-btn-text">Compartir</span>
             </button>
           </div>
         </div>

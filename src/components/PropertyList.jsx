@@ -95,8 +95,6 @@ export default function PropertyList({ showHero = true }) {
         por_pagina: 1 
       });
       
-      console.log('Ciudades para provincia', provincia, ':', response.filtros_disponibles?.ciudades);
-      
       if (response.success && response.filtros_disponibles?.ciudades) {
         setAvailableFilters(prev => ({
           ...prev,
@@ -129,16 +127,21 @@ export default function PropertyList({ showHero = true }) {
       if (filtros.tipo_campo) params.tipo_campo = filtros.tipo_campo;
       if (filtros.tipo_operacion) params.tipo_operacion = filtros.tipo_operacion;
       
-      console.log('Enviando filtros al backend:', params);
-      
       const response = await apiService.getPropiedadesPublic(params);
-      console.log('Respuesta de propiedades:', response);
       
       if (response.success) {
         setProperties(response.data || []);
         
+        // Actualizar URL con los filtros aplicados
+        const newParams = new URLSearchParams();
+        if (filtros.tipo_campo) newParams.set('tipo_campo', filtros.tipo_campo);
+        if (filtros.provincia) newParams.set('provincia', filtros.provincia);
+        if (filtros.ciudad) newParams.set('ciudad', filtros.ciudad);
+        if (filtros.tipo_operacion) newParams.set('tipo_operacion', filtros.tipo_operacion);
+        setSearchParams(newParams);
+        
         // Si se aplicó un filtro de provincia, actualizar ciudades
-        if (filtros.provincia && filtrosAplicados) {
+        if (filtros.provincia) {
           await cargarCiudadesPorProvincia(filtros.provincia);
         }
       } else {
@@ -154,34 +157,32 @@ export default function PropertyList({ showHero = true }) {
     }
   };
 
+  // Función que se ejecuta al cambiar un filtro (aplicación automática)
   const handleFilterChange = async (e) => {
     const { name, value } = e.target;
     
     // Actualizar el estado del filtro
-    setFilters(prev => ({
-      ...prev,
+    const nuevosFiltros = {
+      ...filters,
       [name]: value,
       ...(name === 'provincia' && { ciudad: '' })
-    }));
+    };
+    
+    setFilters(nuevosFiltros);
     
     // Si cambia la provincia, cargar las ciudades correspondientes
     if (name === 'provincia') {
       await cargarCiudadesPorProvincia(value);
     }
+    
+    // Aplicar filtros automáticamente
+    await cargarPropiedades(nuevosFiltros);
   };
 
+  // Función manual para aplicar filtros (por si acaso)
   const aplicarFiltros = async () => {
     setApplyingFilters(true);
     await cargarPropiedades(filters);
-    
-    // Actualizar URL con los filtros aplicados
-    const newParams = new URLSearchParams();
-    if (filters.tipo_campo) newParams.set('tipo_campo', filters.tipo_campo);
-    if (filters.provincia) newParams.set('provincia', filters.provincia);
-    if (filters.ciudad) newParams.set('ciudad', filters.ciudad);
-    if (filters.tipo_operacion) newParams.set('tipo_operacion', filters.tipo_operacion);
-    setSearchParams(newParams);
-    
     setApplyingFilters(false);
   };
 
@@ -195,9 +196,6 @@ export default function PropertyList({ showHero = true }) {
     setFilters(filtrosVacios);
     setAvailableFilters(prev => ({ ...prev, ciudades: [] }));
     await cargarPropiedades(filtrosVacios);
-    
-    // Limpiar URL
-    setSearchParams({});
   };
 
   const handleShare = (e, propiedad) => {
@@ -210,6 +208,12 @@ export default function PropertyList({ showHero = true }) {
     setContactModal({ isOpen: true, propiedad });
   };
 
+  // Función para abrir en nueva pestaña
+  const openInNewTab = (e, propiedadId) => {
+    e.stopPropagation();
+    window.open(`/propiedad/${propiedadId}`, '_blank');
+  };
+
   const closeShareModal = () => {
     setShareModal({ isOpen: false, propiedad: null });
   };
@@ -217,9 +221,6 @@ export default function PropertyList({ showHero = true }) {
   const closeContactModal = () => {
     setContactModal({ isOpen: false, propiedad: null });
   };
-
-  // ... el resto del JSX se mantiene igual ...
-  // (desde el return hasta el final, igual que lo tenías)
 
   if (loading && properties.length === 0) {
     return (
@@ -427,18 +428,13 @@ export default function PropertyList({ showHero = true }) {
                 <div 
                   key={prop.id} 
                   className="pl-property-list-item"
-                  onClick={() => window.location.href = `/propiedad/${prop.id}`}
-                  role="button"
-                  tabIndex={0}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      window.location.href = `/propiedad/${prop.id}`;
-                    }
-                  }}
                 >
-                  {/* Columna de imagen */}
-                  <div className="pl-list-item-image">
+                  {/* Columna de imagen - Clic para abrir en nueva pestaña */}
+                  <div 
+                    className="pl-list-item-image"
+                    onClick={(e) => openInNewTab(e, prop.id)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <img 
                       src={prop.imagen_principal} 
                       alt={prop.titulo}
@@ -458,7 +454,13 @@ export default function PropertyList({ showHero = true }) {
                   {/* Columna de información */}
                   <div className="pl-list-item-info">
                     <div className="pl-item-header">
-                      <h3 className="pl-item-title">{prop.titulo}</h3>
+                      <h3 
+                        className="pl-item-title"
+                        onClick={(e) => openInNewTab(e, prop.id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {prop.titulo}
+                      </h3>
                       <span className={`pl-operation-badge ${prop.tipo_operacion === 'venta' ? 'pl-operation-venta' : 'pl-operation-alquiler'}`}>
                         {prop.tipo_operacion === 'venta' ? 'EN VENTA' : 'EN ALQUILER'}
                       </span>
@@ -528,10 +530,7 @@ export default function PropertyList({ showHero = true }) {
                         </button>
                         <button 
                           className="pl-view-details-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.location.href = `/propiedad/${prop.id}`;
-                          }}
+                          onClick={(e) => openInNewTab(e, prop.id)}
                           title="Ver detalles"
                         >
                           Ver más

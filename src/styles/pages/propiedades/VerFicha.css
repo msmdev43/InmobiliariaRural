@@ -24,7 +24,7 @@
 .vf-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center; /* Cambiado de flex-start a center */
   margin-bottom: 32px;
   padding-bottom: 20px;
   border-bottom: 2px solid var(--border-color);
@@ -54,22 +54,28 @@
   border-radius: 20px;
 }
 
+/* Acciones del header - MODIFICADO */
 .vf-header-acciones {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  align-items: center;
 }
 
+/* Botón compartir - MODIFICADO (más grande y con texto) */
 .vf-btn-icon {
   background: var(--bg-gray);
   border: 1px solid var(--border-color);
   cursor: pointer;
   color: var(--text-secondary);
-  padding: 10px;
-  border-radius: 12px;
+  padding: 10px 18px;
+  border-radius: 40px;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .vf-btn-icon:hover {
@@ -77,6 +83,10 @@
   color: var(--primary-color);
   border-color: var(--primary-color);
   transform: translateY(-2px);
+}
+
+.vf-btn-text {
+  display: inline-block;
 }
 
 /* Grid optimizado */
