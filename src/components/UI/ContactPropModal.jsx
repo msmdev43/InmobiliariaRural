@@ -1,10 +1,10 @@
-// C:\xampp\htdocs\InmobiliariaRural\src\components\UI\ContactGeneralModal.jsx
-import React, { useState, useEffect } from 'react';
+// C:\xampp\htdocs\InmobiliariaRural\src\components\ContactModal.jsx
+import React, { useState } from 'react';
 import apiService from '../../services/api.service';
 import { useToast, ToastContainer } from './Toast';
-import '../../styles/components/UI/contactGeneralModal.css';
+import '../../styles/components/UI/contactModal.css';
 
-const ContactGeneralModal = ({ isOpen, onClose }) => {
+const ContactPropModal = ({ propiedad, onClose }) => {
   const [formData, setFormData] = useState({
     nombrecompleto: '',
     telefono: '',
@@ -13,18 +13,6 @@ const ContactGeneralModal = ({ isOpen, onClose }) => {
   });
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-
-  // Resetear formulario cuando se abre/cierra el modal
-  useEffect(() => {
-    if (!isOpen) {
-      setFormData({
-        nombrecompleto: '',
-        telefono: '',
-        email: '',
-        mensaje: ''
-      });
-    }
-  }, [isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,14 +55,15 @@ const ContactGeneralModal = ({ isOpen, onClose }) => {
         nombrecompleto: formData.nombrecompleto.trim(),
         telefono: formData.telefono.trim(),
         email: formData.email.trim(),
-        mensaje: formData.mensaje.trim(),
-        tipo: 'soporte'
+        mensaje: `Propiedad consultada: ${propiedad.titulo} (Código: ${propiedad.codigo})\n\n${formData.mensaje.trim()}`,
+        tipo: 'propiedad',
+        propiedad_id: propiedad.id
       };
       
       const response = await apiService.crearConsulta(data);
       
       if (response.success) {
-        toast.success('¡Mensaje enviado! Te contactaremos a la brevedad.');
+        toast.success('¡Consulta enviada! Te contactaremos a la brevedad.');
         setTimeout(() => {
           onClose();
         }, 2000);
@@ -89,22 +78,25 @@ const ContactGeneralModal = ({ isOpen, onClose }) => {
     }
   };
 
-  // Si el modal no está abierto, no renderizar nada
-  if (!isOpen) return null;
-
   return (
     <>
       <div className="contact-modal-overlay" onClick={onClose}>
         <div className="contact-modal-container" onClick={e => e.stopPropagation()}>
           <div className="contact-modal-header">
-            <h3 className="contact-modal-title">Contactanos</h3>
+            <h3 className="contact-modal-title">Consultar propiedad</h3>
             <button className="contact-modal-close" onClick={onClose}>×</button>
           </div>
           
           <div className="contact-modal-body">
-            <p className="contact-modal-description">
-              ¿Tenés alguna consulta? Completá el formulario y te contactaremos a la brevedad.
-            </p>
+            <div className="contact-propiedad-info">
+              <h4 className="contact-propiedad-titulo">{propiedad.titulo}</h4>
+              <p className="contact-propiedad-detalle">
+                Código: {propiedad.codigo} | {propiedad.ubicacion}
+              </p>
+              <p className="contact-propiedad-precio">
+                {propiedad.moneda} {propiedad.precio_formateado}
+              </p>
+            </div>
             
             <form onSubmit={handleSubmit} className="contact-form">
               <div className="contact-form-group">
@@ -174,7 +166,7 @@ const ContactGeneralModal = ({ isOpen, onClose }) => {
                   Cancelar
                 </button>
                 <button type="submit" className="contact-btn-submit" disabled={loading}>
-                  {loading ? 'Enviando...' : 'Enviar mensaje'}
+                  {loading ? 'Enviando...' : 'Enviar consulta'}
                 </button>
               </div>
             </form>
@@ -186,4 +178,4 @@ const ContactGeneralModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default ContactGeneralModal;
+export default ContactPropModal;

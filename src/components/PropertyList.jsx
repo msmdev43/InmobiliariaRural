@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import apiService from '../services/api.service';
 import ShareModal from './UI/ShareModal';
-import ContactModal from './UI/ContactModal';
+import ContactModal from './UI/ContactPropModal';
 import "../styles/components/propiedades/propertyList.css";
 
 // Imagen del Hero
