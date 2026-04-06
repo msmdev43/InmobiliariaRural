@@ -10,7 +10,7 @@ import EditarPropiedad from './pages/Admin/Propiedades/EditarPropiedad';
 import ListaPropiedades from './pages/Admin/Propiedades/ListaPropiedades';
 import VerPropiedad from './pages/Admin/Propiedades/VerPropiedad';
 import VerFicha from './pages/propiedades/VerFicha';
-import PropertiesPage from './pages/PropertiesPage'; // <-- Importar la nueva página
+import PropertiesPage from './pages/PropertiesPage';
 import TiposCampos from './pages/Admin/Configuracion/TipoCampos';
 import Servicios from './pages/Admin/Configuracion/Servicios';
 import Configuracion from './pages/Admin/Configuracion/Configuracion';
@@ -22,18 +22,18 @@ function App() {
       <Routes>
         {/* Rutas públicas */}
         <Route path="/" element={<Home />} />
-        <Route path="/propiedades" element={<PropertiesPage />} /> {/* <-- Nueva ruta */}
-        <Route path="/propiedad/:id" element={<VerFicha />} />
+        <Route path="/propiedades" element={<PropertiesPage />} />
+        {/* CAMBIADO: usar codigo en lugar de id */}
+        <Route path="/propiedad/:codigo" element={<VerFicha />} />
         <Route path="/admin/login" element={<Login />} />
         
-        {/* Rutas protegidas */}
+        {/* Rutas protegidas (mantienen id para admin) */}
         <Route path="/admin/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
         } />
         
-        {/* Rutas de Propiedades */}
         <Route path="/admin/propiedades" element={
           <ProtectedRoute>
             <ListaPropiedades />
@@ -58,14 +58,12 @@ function App() {
           </ProtectedRoute>
         } />
         
-        {/* Rutas de Consultas */}
         <Route path="/admin/consultas" element={
           <ProtectedRoute>
             <ListaConsultas />
           </ProtectedRoute>
         } />
 
-        {/* Rutas de Configuración */}
         <Route path="/admin/configuracion" element={
           <ProtectedRoute>
             <Configuracion />

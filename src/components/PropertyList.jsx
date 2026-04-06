@@ -209,9 +209,9 @@ export default function PropertyList({ showHero = true }) {
   };
 
   // Función para abrir en nueva pestaña
-  const openInNewTab = (e, propiedadId) => {
+  const openInNewTab = (e, propiedadCodigo) => {
     e.stopPropagation();
-    window.open(`/propiedad/${propiedadId}`, '_blank');
+    window.open(`/propiedad/${propiedadCodigo}`, '_blank');
   };
 
   const closeShareModal = () => {

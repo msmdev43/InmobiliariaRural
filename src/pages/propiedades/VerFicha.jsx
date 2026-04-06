@@ -92,20 +92,22 @@ const VerFicha = () => {
   };
 
   const handleCompartir = () => {
+    const shareUrl = `${window.location.origin}/propiedad/${propiedad.codigo}`;
+    
     if (navigator.share) {
       navigator.share({
         title: propiedad.titulo,
         text: propiedad.descripcion_corta || propiedad.descripcion,
-        url: window.location.href
+        url: shareUrl
       }).catch(console.error);
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      navigator.clipboard.writeText(shareUrl);
       alert('¡Enlace copiado al portapapeles!');
     }
   };
 
   const handleContactar = () => {
-    navigate(`/contacto?propiedad=${propiedad.id}&titulo=${encodeURIComponent(propiedad.titulo)}`);
+    navigate(`/contacto?propiedad=${propiedad.codigo}&titulo=${encodeURIComponent(propiedad.titulo)}`);
   };
 
   if (loading) {
