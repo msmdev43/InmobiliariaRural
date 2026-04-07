@@ -432,7 +432,7 @@ export default function PropertyList({ showHero = true }) {
                   {/* Columna de imagen - Clic para abrir en nueva pestaña */}
                   <div 
                     className="pl-list-item-image"
-                    onClick={(e) => openInNewTab(e, prop.id)}
+                    onClick={(e) => openInNewTab(e, prop.codigo)}
                     style={{ cursor: 'pointer' }}
                   >
                     <img 
@@ -456,7 +456,7 @@ export default function PropertyList({ showHero = true }) {
                     <div className="pl-item-header">
                       <h3 
                         className="pl-item-title"
-                        onClick={(e) => openInNewTab(e, prop.id)}
+                        onClick={(e) => openInNewTab(e, prop.codigo)}
                         style={{ cursor: 'pointer' }}
                       >
                         {prop.titulo}
@@ -530,10 +530,10 @@ export default function PropertyList({ showHero = true }) {
                         </button>
                         <button 
                           className="pl-view-details-btn"
-                          onClick={(e) => openInNewTab(e, prop.id)}
+                          onClick={(e) => openInNewTab(e, prop.codigo)}  // ✅ usando código
                           title="Ver detalles"
                         >
-                          Ver más
+                          Ver Ficha
                           <svg className="pl-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M5 12h14M12 5l7 7-7 7" />
                           </svg>

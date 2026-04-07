@@ -400,6 +400,22 @@ class ApiService {
     }
   }
 
+  // En api.service.js
+  async getPropiedadPorCodigo(codigo) {
+    try {
+      const response = await this.request(`${PROPIEDADES_ENDPOINTS.DETALLE}?codigo=${encodeURIComponent(codigo)}`, {
+        method: 'GET'
+      });
+      return response;
+    } catch (error) {
+      console.error('Error en getPropiedadPorCodigo:', error);
+      return {
+        success: false,
+        message: error.message || 'Error al cargar la propiedad'
+      };
+    }
+  }
+
   async getUltimasPropiedades(limite = 10) {
     try {
       const params = new URLSearchParams();

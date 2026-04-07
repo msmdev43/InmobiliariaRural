@@ -8,7 +8,7 @@ import apiService from '../../services/api.service';
 import '../../styles/pages/propiedades/VerFicha.css';
 
 const VerFicha = () => {
-  const { id } = useParams();
+  const { codigo } = useParams();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
@@ -19,25 +19,19 @@ const VerFicha = () => {
 
   const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
 
-  useEffect(() => {
-    if (id) {
-      cargarPropiedad();
-    }
-  }, [id]);
-
   const cargarPropiedad = async () => {
     try {
       setLoading(true);
-      const response = await apiService.getPropiedadDetalle(id);
       
-      console.log('Respuesta completa de propiedad:', response);
+      console.log('Buscando propiedad con código:', codigo);
+      
+      // ✅ Buscar directamente por código
+      const response = await apiService.getPropiedadPorCodigo(codigo);
+      
+      console.log('Respuesta:', response);
       
       if (response.success && response.data) {
         const data = response.data;
-        
-        // Log para ver los servicios
-        console.log('Servicios recibidos:', data.servicios);
-        console.log('Total servicios:', data.total_servicios);
         
         // Procesar imágenes
         const imagenesProcesadas = data.imagenes?.map(img => ({
@@ -50,12 +44,10 @@ const VerFicha = () => {
           imagenes: imagenesProcesadas
         });
         
-        // SOLUCIÓN: Si hay imágenes, seleccionar la primera
-        // Si no hay imágenes, crear una imagen por defecto
+        // Seleccionar primera imagen
         if (imagenesProcesadas.length > 0) {
           setImagenSeleccionada(imagenesProcesadas[0]);
         } else {
-          // Crear una imagen por defecto
           setImagenSeleccionada({
             id: 'default',
             url: DEFAULT_IMAGE,
@@ -64,14 +56,24 @@ const VerFicha = () => {
           });
         }
       } else {
-        console.error('Error al cargar propiedad:', response.message);
+        console.error('Propiedad no encontrada:', response.message);
+        // Redirigir a página de propiedades
+        navigate('/propiedades');
       }
     } catch (error) {
       console.error('Error cargando propiedad:', error);
+      navigate('/propiedades');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (codigo) {
+      cargarPropiedad();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codigo]);
 
   const construirUrlCompleta = (url) => {
     if (!url) return DEFAULT_IMAGE;

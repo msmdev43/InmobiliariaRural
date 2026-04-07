@@ -23,11 +23,11 @@ function App() {
         {/* Rutas públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/propiedades" element={<PropertiesPage />} />
-        {/* CAMBIADO: usar codigo en lugar de id */}
+        {/* ✅ USAR :codigo en lugar de :id o :param */}
         <Route path="/propiedad/:codigo" element={<VerFicha />} />
         <Route path="/admin/login" element={<Login />} />
         
-        {/* Rutas protegidas (mantienen id para admin) */}
+        {/* Rutas protegidas - estas mantienen :id para el panel admin */}
         <Route path="/admin/dashboard" element={
           <ProtectedRoute>
             <Dashboard />
