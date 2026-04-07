@@ -568,24 +568,6 @@ class ApiService {
     }
   }
 
-  async getPropiedadPorCodigo(codigo) {
-    try {
-      const url = `${PROPIEDADES_ENDPOINTS.DETALLE}?codigo=${codigo}`;
-      
-      const response = await this.request(url, {
-        method: 'GET'
-      });
-      
-      return response;
-    } catch (error) {
-      console.error('Error en getPropiedadPorCodigo:', error);
-      return {
-        success: false,
-        message: error.message || 'Error al cargar la propiedad'
-      };
-    }
-  }
-
   async enviarWhatsAppDirecto(consultaId) {
     return this.request(`${UTILS_ENDPOINTS.WHATSAPP_DIRECTO}`, {
       method: 'POST',
