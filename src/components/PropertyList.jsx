@@ -439,7 +439,7 @@ export default function PropertyList({ showHero = true }) {
                       src={prop.imagen_principal} 
                       alt={prop.titulo}
                       className="pl-item-image"
-                      onError={(e) => e.target.src = 'http://localhost/BackInmobiliariaRural/uploads/propiedades/default.png'}
+                      onError={(e) => e.target.src = 'http://localhost/BackInmobiliariaRural/admin/default.png'}
                     />
                     {prop.destacado && (
                       <span className="pl-destacado-badge">Destacado</span>

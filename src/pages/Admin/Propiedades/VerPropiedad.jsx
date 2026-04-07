@@ -20,7 +20,7 @@ const VerPropiedad = () => {
   const [accionEliminar, setAccionEliminar] = useState('eliminar');
 
   // URL base para imágenes por defecto
-  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/uploads/propiedades/default.png';
+  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
 
   useEffect(() => {
     cargarPropiedad();

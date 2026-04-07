@@ -10,7 +10,7 @@ export default function FeaturedProperties() {
   const [error, setError] = useState(null);
 
   // URL de la imagen por defecto (ahora como constante)
-  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/uploads/default.png';
+  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
 
   useEffect(() => {
     cargarPropiedadesDestacadas();

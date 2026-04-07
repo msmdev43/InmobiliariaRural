@@ -17,7 +17,7 @@ const VerFicha = () => {
   const [modalImagen, setModalImagen] = useState(false);
   const [mostrarMapa, setMostrarMapa] = useState(false);
 
-  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/uploads/propiedades/default.png';
+  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
 
   useEffect(() => {
     if (id) {
