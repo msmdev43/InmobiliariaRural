@@ -1,5 +1,5 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\components\PropertyList.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import apiService from '../services/api.service';
 import ShareModal from './UI/ShareModal';
@@ -16,6 +16,10 @@ export default function PropertyList({ showHero = true }) {
   const [error, setError] = useState(null);
   const [shareModal, setShareModal] = useState({ isOpen: false, propiedad: null });
   const [contactModal, setContactModal] = useState({ isOpen: false, propiedad: null });
+  
+  // Referencia para la sección de resultados
+  const resultsRef = useRef(null);
+  const filtersBarRef = useRef(null);
   
   // Estados para filtros
   const [filters, setFilters] = useState({
@@ -34,6 +38,28 @@ export default function PropertyList({ showHero = true }) {
   
   const [applyingFilters, setApplyingFilters] = useState(false);
   const [loadingCities, setLoadingCities] = useState(false);
+  
+  // Flag para controlar el scroll inicial
+  const [initialScrollDone, setInitialScrollDone] = useState(false);
+
+  // Función para hacer scroll hasta los resultados
+  const scrollToResults = (behavior = 'smooth', delay = 2000) => {
+    setTimeout(() => {
+      if (resultsRef.current) {
+        const offset = 80; // Offset para dejar espacio (altura de la barra de filtros sticky)
+        const elementPosition = resultsRef.current.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: behavior
+        });
+      } else if (filtersBarRef.current) {
+        // Fallback: scroll hasta la barra de filtros
+        filtersBarRef.current.scrollIntoView({ behavior: behavior, block: 'start' });
+      }
+    }, delay);
+  };
 
   useEffect(() => {
     cargarFiltrosIniciales();
@@ -60,6 +86,14 @@ export default function PropertyList({ showHero = true }) {
       cargarPropiedades();
     }
   }, [searchParams]);
+
+  // Efecto para hacer scroll cuando las propiedades terminan de cargar (solo la primera vez)
+  useEffect(() => {
+    if (!loading && properties.length > 0 && !initialScrollDone && showHero) {
+      scrollToResults('smooth', 2000); // Delay de 2 segundos
+      setInitialScrollDone(true);
+    }
+  }, [loading, properties, initialScrollDone, showHero]);
 
   // Cargar provincias y tipos de campos
   const cargarFiltrosIniciales = async () => {
@@ -177,13 +211,18 @@ export default function PropertyList({ showHero = true }) {
     
     // Aplicar filtros automáticamente
     await cargarPropiedades(nuevosFiltros);
+    
+    // Hacer scroll a resultados después de aplicar filtros con delay de 2 segundos
+    scrollToResults('smooth', 2000);
   };
 
-  // Función manual para aplicar filtros (por si acaso)
+  // Función manual para aplicar filtros
   const aplicarFiltros = async () => {
     setApplyingFilters(true);
     await cargarPropiedades(filters);
     setApplyingFilters(false);
+    // Hacer scroll a resultados después de aplicar filtros con delay de 2 segundos
+    scrollToResults('smooth', 2000);
   };
 
   const limpiarFiltros = async () => {
@@ -196,6 +235,8 @@ export default function PropertyList({ showHero = true }) {
     setFilters(filtrosVacios);
     setAvailableFilters(prev => ({ ...prev, ciudades: [] }));
     await cargarPropiedades(filtrosVacios);
+    // Hacer scroll a resultados después de limpiar filtros con delay de 2 segundos
+    scrollToResults('smooth', 2000);
   };
 
   const handleShare = (e, propiedad) => {
@@ -301,7 +342,7 @@ export default function PropertyList({ showHero = true }) {
       )}
 
       {/* Barra de filtros */}
-      <div className="pl-filters-bar">
+      <div className="pl-filters-bar" ref={filtersBarRef}>
         <div className="pl-filters-wrapper">
           <div className="pl-filters-grid">
             {/* Filtro por provincia */}
@@ -393,8 +434,8 @@ export default function PropertyList({ showHero = true }) {
         </div>
       </div>
 
-      {/* Resultados */}
-      <div className="pl-container">
+      {/* Resultados - Añadimos la referencia aquí */}
+      <div className="pl-container" ref={resultsRef}>
         <div className="pl-results-info">
           <p>
             {loading ? 'Cargando...' : properties.length === 0 
@@ -530,7 +571,7 @@ export default function PropertyList({ showHero = true }) {
                         </button>
                         <button 
                           className="pl-view-details-btn"
-                          onClick={(e) => openInNewTab(e, prop.codigo)}  // ✅ usando código
+                          onClick={(e) => openInNewTab(e, prop.codigo)}
                           title="Ver detalles"
                         >
                           Ver Ficha
