@@ -12,11 +12,13 @@ export default function Footer() {
   const [tiposCampos, setTiposCampos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Configuración de categorías (sin IDs fijos)
+  // Configuración de categorías (incluyendo los 3 tipos de Campos)
   const categoriesConfig = [
     { label: "Terrenos", tipo_campo_nombre: "terreno" },
     { label: "Chacras", tipo_campo_nombre: "chacra" },
-    { label: "Campos", tipo_campo_nombre: "campo" },
+    { label: "Campo Agrícola", tipo_campo_nombre: "campo agricola" },
+    { label: "Campo Ganadero", tipo_campo_nombre: "campo ganadero" },
+    { label: "Campo Mixto", tipo_campo_nombre: "campo mixto" },
     { label: "Estancias", tipo_campo_nombre: "estancia" },
   ];
 
@@ -31,17 +33,24 @@ export default function Footer() {
       console.log('Footer - Tipos de campos:', response);
       
       if (response.success && response.data) {
+        // Crear mapa de nombres a IDs para búsqueda eficiente
+        const mapaTipos = {};
+        response.data.forEach(tipo => {
+          const nombreNormalizado = tipo.nombre.toLowerCase().trim();
+          mapaTipos[nombreNormalizado] = tipo.id;
+        });
+        
         // Mapear categorías con IDs reales
         const categoriasConIds = categoriesConfig.map(cat => {
-          const tipoEncontrado = response.data.find(
-            tipo => tipo.nombre.toLowerCase() === cat.tipo_campo_nombre
-          );
+          const nombreNormalizado = cat.tipo_campo_nombre.toLowerCase().trim();
           return {
             ...cat,
-            tipo_campo_id: tipoEncontrado ? tipoEncontrado.id : null
+            tipo_campo_id: mapaTipos[nombreNormalizado] || null
           };
         });
+        
         setTiposCampos(categoriasConIds);
+        console.log('Footer - Categorías mapeadas:', categoriasConIds);
       } else {
         setTiposCampos(categoriesConfig.map(cat => ({ ...cat, tipo_campo_id: null })));
       }
@@ -77,10 +86,8 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { icon: Facebook, href: "https://facebook.com", label: "Facebook", color: "#1877f2" },
-    { icon: Instagram, href: "https://instagram.com", label: "Instagram", color: "#e4405f" },
-    { icon: Twitter, href: "https://twitter.com", label: "Twitter", color: "#1da1f2" },
-    { icon: Youtube, href: "https://youtube.com", label: "Youtube", color: "#ff0000" },
+    { icon: Facebook, href: "https://www.facebook.com/gustavorbarberini", label: "Facebook", color: "#1877f2" },
+    { icon: Instagram, href: "https://www.instagram.com/inmobiliariabarberini/", label: "Instagram", color: "#e4405f" },
   ];
 
   return (
@@ -150,6 +157,12 @@ export default function Footer() {
                   <li className="footer-link-item">
                     <span className="footer-link-button loading">Cargando...</span>
                   </li>
+                  <li className="footer-link-item">
+                    <span className="footer-link-button loading">Cargando...</span>
+                  </li>
+                  <li className="footer-link-item">
+                    <span className="footer-link-button loading">Cargando...</span>
+                  </li>
                 </>
               ) : (
                 tiposCampos.map((category, index) => (
@@ -161,7 +174,6 @@ export default function Footer() {
                       title={!category.tipo_campo_id ? "Categoría no disponible" : `Ver ${category.label}`}
                     >
                       {category.label}
-                      {!category.tipo_campo_id && " (próximamente)"}
                     </button>
                   </li>
                 ))

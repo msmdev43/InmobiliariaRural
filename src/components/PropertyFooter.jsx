@@ -73,10 +73,8 @@ export default function PropertyFooter() {
   };
 
   const socialLinks = [
-    { icon: Facebook, href: "https://facebook.com", label: "Facebook", color: "#1877f2" },
-    { icon: Instagram, href: "https://instagram.com", label: "Instagram", color: "#e4405f" },
-    { icon: Twitter, href: "https://twitter.com", label: "Twitter", color: "#1da1f2" },
-    { icon: Youtube, href: "https://youtube.com", label: "Youtube", color: "#ff0000" },
+    { icon: Facebook, href: "https://www.facebook.com/gustavorbarberini", label: "Facebook", color: "#1877f2" },
+    { icon: Instagram, href: "https://www.instagram.com/inmobiliariabarberini/", label: "Instagram", color: "#e4405f" },
   ];
 
   return (
