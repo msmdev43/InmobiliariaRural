@@ -1,7 +1,7 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\pages\PropertiesPage.jsx
 import React from 'react';
 import PropertiesHeader from '../components/PropertiesHeader';
-import Footer from '../components/Footer';
+import Footer from '../components/PropertyFooter';
 import PropertyList from '../components/PropertyList';
 import "../styles/pages/propiedades/propertiesPage.css";
 

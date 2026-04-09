@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Ruler, Home, Maximize, Calendar, Eye, MessageCircle, ArrowLeft, Share2 } from "lucide-react";
 import Navbar from '../../components/PropertiesHeader';
-import Footer from '../../components/Footer';
+import Footer from '../../components/PropertyFooter';
 import apiService from '../../services/api.service';
 import '../../styles/pages/propiedades/VerFicha.css';
 
