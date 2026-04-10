@@ -6,6 +6,7 @@ import About from "../components/About";
 import Services from "../components/Services";
 import Contact from "../components/Contact";
 import Footer from "../components/Footer";
+import WhatsappContact from "../components/UI/WhatsappContact";
 import "../styles/globals.css";
 
 function Home() {
@@ -19,6 +20,7 @@ function Home() {
         <About />
         <Services />
         <Contact />
+        <WhatsappContact />
       </main>
       <Footer />
     </div>

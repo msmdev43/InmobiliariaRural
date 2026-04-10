@@ -3,6 +3,7 @@ import React from 'react';
 import PropertiesHeader from '../components/PropertiesHeader';
 import Footer from '../components/PropertyFooter';
 import PropertyList from '../components/PropertyList';
+import WhatsappContact from '../components/UI/WhatsappContact';
 import "../styles/pages/propiedades/propertiesPage.css";
 
 export default function PropertiesPage() {
@@ -10,6 +11,7 @@ export default function PropertiesPage() {
     <>
       <PropertiesHeader />
       <PropertyList />
+      <WhatsappContact />
       <Footer />
     </>
   );
