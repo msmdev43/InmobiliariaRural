@@ -335,7 +335,7 @@ export default function PropertyList({ showHero = true }) {
           <div className="pl-hero-content">
             <h1 className="pl-hero-title">Propiedades Rurales</h1>
             <p className="pl-hero-subtitle">
-              Descubre los mejores campos, estancias y propiedades rurales
+              Descubre las propiedades rurales, chacras, campos y estancias
             </p>
           </div>
         </div>
