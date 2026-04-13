@@ -164,7 +164,8 @@ const PublicarPropiedad = () => {
   };
 
   const generarCodigo = () => {
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    // ✅ Generar código con formato CAM-XXXX (4 dígitos)
+    const random = Math.floor(Math.random() * 9000 + 1000); // Número de 4 dígitos (1000-9999)
     const codigo = `CAM-${random}`;
     
     setFormData(prev => ({
@@ -172,7 +173,7 @@ const PublicarPropiedad = () => {
       codigo: codigo
     }));
     
-    toast.success('Código generado', 2000);
+    toast.success(`Código generado: ${codigo}`, 3000);
   };
 
   const validarFormulario = () => {
@@ -370,7 +371,7 @@ const PublicarPropiedad = () => {
                   name="codigo"
                   value={formData.codigo}
                   onChange={handleChange}
-                  placeholder="CAM-001"
+                  placeholder="CAM-0001"
                   className={`publicar-input-unique ${getErrorClass('codigo')}`}
                 />
                 <small className="publicar-ayuda-unique">Si se deja vacío, se generará automáticamente</small>

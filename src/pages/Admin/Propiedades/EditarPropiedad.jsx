@@ -456,7 +456,7 @@ const EditarPropiedad = () => {
                   name="codigo"
                   value={formData.codigo}
                   onChange={handleChange}
-                  placeholder="CAM-2026-001"
+                  placeholder="CAM-0001"
                   className={`publicar-input-unique ${getErrorClass('codigo')}`}
                   readOnly
                 />
