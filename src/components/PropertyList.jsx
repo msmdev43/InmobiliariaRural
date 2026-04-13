@@ -89,8 +89,14 @@ export default function PropertyList({ showHero = true }) {
 
   // Efecto para hacer scroll cuando las propiedades terminan de cargar (solo la primera vez)
   useEffect(() => {
+    // ✅ Solo hacer scroll si estamos en la página de propiedades (showHero = true)
+    // Y solo la primera vez que se cargan las propiedades
     if (!loading && properties.length > 0 && !initialScrollDone && showHero) {
-      scrollToResults('smooth', 2000); // Delay de 2 segundos
+      // Verificar si estamos en la página de propiedades (no cuando venimos de destacadas)
+      const isPropertiesPage = window.location.pathname === '/propiedades';
+      if (isPropertiesPage) {
+        scrollToResults('smooth', 2000);
+      }
       setInitialScrollDone(true);
     }
   }, [loading, properties, initialScrollDone, showHero]);

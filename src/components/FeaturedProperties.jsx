@@ -1,15 +1,16 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\components\FeaturedProperties.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, Ruler, ArrowRight } from "lucide-react";
 import apiService from '../services/api.service';
 import "../styles/components/featuredProp.css";
 
 export default function FeaturedProperties() {
+  const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // URL de la imagen por defecto (ahora como constante)
   const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
 
   useEffect(() => {
@@ -22,10 +23,13 @@ export default function FeaturedProperties() {
       setError(null);
       
       const response = await apiService.getPropiedadesDestacadas();
-      console.log('Propiedades cargadas:', response); // Debug
+      console.log('Propiedades destacadas:', response);
       
       if (response.success) {
         setProperties(response.data || []);
+        if (response.data.length === 0) {
+          console.log('No hay propiedades destacadas');
+        }
       } else {
         setError(response.message || 'Error al cargar propiedades');
       }
@@ -38,17 +42,22 @@ export default function FeaturedProperties() {
   };
 
   const handleImageError = (e) => {
-    console.log('Error cargando imagen, usando default:', e.target.src);
     e.target.src = DEFAULT_IMAGE;
-    e.target.onerror = null; // Prevenir bucle infinito
+    e.target.onerror = null;
   };
 
-  const handleViewMore = (id) => {
-    window.location.href = `/propiedad/${id}`;
+  // ✅ Función para navegar a la ficha
+  const handleCardClick = (codigo) => {
+    console.log('Navegando a propiedad con código:', codigo);
+    if (codigo) {
+      navigate(`/propiedad/${codigo}`);
+    } else {
+      console.error('No hay código para esta propiedad');
+    }
   };
 
   const handleViewAll = () => {
-    window.location.href = '/propiedades';
+    navigate('/propiedades');
   };
 
   if (loading) {
@@ -82,10 +91,7 @@ export default function FeaturedProperties() {
             </p>
           </div>
           <div className="error-container">
-            <button 
-              className="retry-button"
-              onClick={cargarPropiedadesDestacadas}
-            >
+            <button className="retry-button" onClick={cargarPropiedadesDestacadas}>
               Reintentar
             </button>
           </div>
@@ -126,13 +132,13 @@ export default function FeaturedProperties() {
             <div 
               key={property.id} 
               className="property-card"
-              onClick={() => handleViewMore(property.id)}
+              onClick={() => handleCardClick(property.codigo)} // ✅ Toda la tarjeta es clickeable
               role="button"
               tabIndex={0}
               onKeyPress={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  handleViewMore(property.id);
+                  handleCardClick(property.codigo);
                 }
               }}
             >
@@ -165,27 +171,18 @@ export default function FeaturedProperties() {
                     <Ruler className="feature-icon" />
                     <span>{property.area}</span>
                   </div>
-                  {property.servicios && property.servicios.length > 0 && (
-                    <div className="servicios-preview">
-                      {property.servicios.slice(0, 2).map((servicio, idx) => (
-                        <span key={idx} className="servicio-tag">{servicio}</span>
-                      ))}
-                      {property.servicios.length > 2 && (
-                        <span className="servicio-tag">+{property.servicios.length - 2}</span>
-                      )}
-                    </div>
-                  )}
                 </div>
                 
                 <div className="card-footer">
                   <p className="property-price">
                     {property.moneda} {property.price}
                   </p>
+                  {/* Botón "Ver más" - ahora solo es decorativo pero también navega */}
                   <button
                     className="view-button"
                     onClick={(e) => {
-                      e.stopPropagation(); // Evita que se dispare el click de la tarjeta
-                      handleViewMore(property.id);
+                      e.stopPropagation(); // Evita doble navegación
+                      handleCardClick(property.codigo);
                     }}
                   >
                     Ver más

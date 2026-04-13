@@ -107,7 +107,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   height: 100%;
   width: 100%;
-  cursor: pointer;
+  cursor: pointer; /* ✅ Restaurar cursor pointer */
   position: relative;
 }
 
@@ -116,6 +116,7 @@
   transform: translateY(-8px);
   border-color: rgba(0, 106, 78, 0.2);
 }
+
 
 /* Efecto de overlay sutil en hover */
 .property-card::after {
@@ -160,6 +161,7 @@
   transform: translateY(-4px) scale(0.98);
   transition: transform 0.1s ease;
 }
+
 
 /* ===== IMAGEN - MEJORADA ===== */
 .card-image-container {
@@ -328,6 +330,7 @@
   justify-content: center;
   position: relative;
   z-index: 2;
+  cursor: pointer;
   pointer-events: auto;
 }
 

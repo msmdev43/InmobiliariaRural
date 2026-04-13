@@ -19,13 +19,21 @@ const VerFicha = () => {
 
   const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
 
+  // ✅ FORZAR SCROLL AL INICIO DE LA PÁGINA
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant' // 'auto' o 'instant' para que sea inmediato
+    });
+  }, []); // Solo al montar el componente
+
   const cargarPropiedad = async () => {
     try {
       setLoading(true);
       
       console.log('Buscando propiedad con código:', codigo);
       
-      // ✅ Buscar directamente por código
       const response = await apiService.getPropiedadPorCodigo(codigo);
       
       console.log('Respuesta:', response);
@@ -33,7 +41,6 @@ const VerFicha = () => {
       if (response.success && response.data) {
         const data = response.data;
         
-        // Procesar imágenes
         const imagenesProcesadas = data.imagenes?.map(img => ({
           ...img,
           url: construirUrlCompleta(img.url)
@@ -44,7 +51,6 @@ const VerFicha = () => {
           imagenes: imagenesProcesadas
         });
         
-        // Seleccionar primera imagen
         if (imagenesProcesadas.length > 0) {
           setImagenSeleccionada(imagenesProcesadas[0]);
         } else {
@@ -57,7 +63,6 @@ const VerFicha = () => {
         }
       } else {
         console.error('Propiedad no encontrada:', response.message);
-        // Redirigir a página de propiedades
         navigate('/propiedades');
       }
     } catch (error) {
@@ -72,7 +77,6 @@ const VerFicha = () => {
     if (codigo) {
       cargarPropiedad();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [codigo]);
 
   const construirUrlCompleta = (url) => {
@@ -142,22 +146,16 @@ const VerFicha = () => {
     );
   }
 
-  // Verificar si tiene servicios - MÁS ROBUSTO
   const tieneServicios = () => {
-    // Si no hay servicios array
     if (!propiedad.servicios) return false;
-    // Si no es un array
     if (!Array.isArray(propiedad.servicios)) return false;
-    // Si está vacío
     if (propiedad.servicios.length === 0) return false;
-    // Verificar que al menos un servicio tenga nombre válido
     const tieneServicioValido = propiedad.servicios.some(s => 
       s && typeof s === 'object' && s.nombre && s.nombre.trim() !== ''
     );
     return tieneServicioValido;
   };
 
-  // Filtrar servicios válidos
   const obtenerServiciosValidos = () => {
     if (!propiedad.servicios || !Array.isArray(propiedad.servicios)) return [];
     return propiedad.servicios.filter(s => 
@@ -167,26 +165,17 @@ const VerFicha = () => {
 
   const serviciosValidos = obtenerServiciosValidos();
   const mostrarServicios = tieneServicios();
-
-  // Debug
-  console.log('¿Tiene servicios?', mostrarServicios);
-  console.log('Servicios válidos:', serviciosValidos);
-  console.log('Imagen seleccionada:', imagenSeleccionada);
-
-  // SOLUCIÓN ADICIONAL: Asegurarse de que siempre hay una imagen para mostrar
   const imagenParaMostrar = imagenSeleccionada?.url || DEFAULT_IMAGE;
 
   return (
     <>
       <Navbar />
-        <div className="vf-container">
-          {/* Header con acciones */}
-          <div className="vf-header">
+      <div className="vf-container">
+        <div className="vf-header">
           <div className="vf-header-titulo">
             <h1>{propiedad.titulo}</h1>
             <p className="vf-codigo">Código: {propiedad.codigo}</p>
           </div>
-          {/* El botón de compartir se mantiene aquí pero lo bajamos con CSS */}
           <div className="vf-header-acciones">
             <button onClick={handleCompartir} className="vf-btn-icon" title="Compartir">
               <Share2 size={22} />
@@ -195,9 +184,7 @@ const VerFicha = () => {
           </div>
         </div>
 
-        {/* Grid principal */}
         <div className="vf-grid">
-          {/* Columna izquierda - Galería */}
           <div className="vf-col-izquierda">
             <div className="vf-galeria">
               <div 
@@ -214,7 +201,6 @@ const VerFicha = () => {
                 )}
               </div>
 
-              {/* Mostrar miniaturas SOLO si hay imágenes reales */}
               {propiedad.imagenes && propiedad.imagenes.length > 0 && (
                 <div className="vf-miniaturas">
                   {propiedad.imagenes.map((img) => (
@@ -235,9 +221,8 @@ const VerFicha = () => {
             </div>
           </div>
 
-          {/* Columna derecha - Información */}
           <div className="vf-col-derecha">
-            {/* Precio y tipo de operación */}
+            {/* Resto del contenido igual */}
             <div className="vf-card vf-card-precio">
               <div className="vf-precio">
                 <span className="vf-moneda">{propiedad.moneda}</span>
@@ -248,7 +233,6 @@ const VerFicha = () => {
               </span>
             </div>
 
-            {/* Características principales */}
             <div className="vf-card">
               <h3 className="vf-card-titulo">Características</h3>
               <div className="vf-caracteristicas">
@@ -276,7 +260,6 @@ const VerFicha = () => {
               </div>
             </div>
 
-            {/* Descripción */}
             <div className="vf-card">
               <h3 className="vf-card-titulo">Descripción</h3>
               <div className="vf-descripcion">
@@ -286,7 +269,6 @@ const VerFicha = () => {
               </div>
             </div>
 
-            {/* Servicios - SOLO si tiene servicios válidos */}
             {mostrarServicios && serviciosValidos.length > 0 && (
               <div className="vf-card">
                 <h3 className="vf-card-titulo">Servicios e Infraestructura</h3>
@@ -300,7 +282,6 @@ const VerFicha = () => {
               </div>
             )}
 
-            {/* Mapa */}
             {propiedad.ubicacion?.latitud && propiedad.ubicacion?.longitud && (
               <div className="vf-card">
                 <h3 className="vf-card-titulo">Ubicación</h3>
@@ -330,7 +311,6 @@ const VerFicha = () => {
               </div>
             )}
 
-            {/* Botón de contacto */}
             <div className="vf-card vf-card-contacto">
               <button onClick={handleContactar} className="vf-btn-contacto">
                 <MessageCircle size={20} />
@@ -338,7 +318,6 @@ const VerFicha = () => {
               </button>
             </div>
 
-            {/* Estadísticas */}
             <div className="vf-card vf-card-estadisticas">
               <div className="vf-estadistica">
                 <Eye size={16} />
@@ -352,7 +331,6 @@ const VerFicha = () => {
           </div>
         </div>
 
-        {/* Modal de imagen ampliada */}
         {modalImagen && (
           <div className="vf-modal-overlay" onClick={() => setModalImagen(false)}>
             <div className="vf-modal" onClick={e => e.stopPropagation()}>
@@ -362,7 +340,6 @@ const VerFicha = () => {
                 alt={propiedad.titulo}
                 onError={handleImageError}
               />
-              {/* Mostrar miniaturas en modal SOLO si hay imágenes reales */}
               {propiedad.imagenes && propiedad.imagenes.length > 0 && (
                 <div className="vf-modal-miniaturas">
                   {propiedad.imagenes.map((img) => (

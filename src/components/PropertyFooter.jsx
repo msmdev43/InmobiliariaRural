@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 // C:\xampp\htdocs\InmobiliariaRural\src\components\PropertyFooter.jsx
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 import { FaInstagram } from 'react-icons/fa';
@@ -13,7 +13,7 @@ export default function PropertyFooter() {
   const [tiposCampos, setTiposCampos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Configuración de categorías principales (sin subdivisiones)
+  // Configuración de categorías
   const categoriesConfig = [
     { label: "Terrenos", tipo_campo_nombre: "terreno" },
     { label: "Chacras", tipo_campo_nombre: "chacra" },
@@ -34,18 +34,19 @@ export default function PropertyFooter() {
       console.log('PropertyFooter - Tipos de campos:', response);
       
       if (response.success && response.data) {
-        // Crear mapa de nombres a IDs
         const mapaTipos = {};
         response.data.forEach(tipo => {
           const nombreNormalizado = tipo.nombre.toLowerCase().trim();
           mapaTipos[nombreNormalizado] = tipo.id;
         });
         
-        // Mapear categorías con IDs reales
-        const categoriasConIds = categoriesConfig.map(cat => ({
-          ...cat,
-          tipo_campo_id: mapaTipos[cat.tipo_campo_nombre.toLowerCase()] || null
-        }));
+        const categoriasConIds = categoriesConfig.map(cat => {
+          const nombreNormalizado = cat.tipo_campo_nombre.toLowerCase().trim();
+          return {
+            ...cat,
+            tipo_campo_id: mapaTipos[nombreNormalizado] || null
+          };
+        });
         
         setTiposCampos(categoriasConIds);
         console.log('PropertyFooter - Categorías mapeadas:', categoriasConIds);
@@ -79,11 +80,9 @@ export default function PropertyFooter() {
 
   return (
     <footer className="property-footer-wrapper">
-      {/* Efecto de luz decorativo */}
       <div className="property-footer-light-effect" />
       
       <div className="property-footer-container">
-        {/* Grid principal */}
         <div className="property-footer-grid">
           {/* Sección de marca */}
           <div className="property-footer-brand">
@@ -96,12 +95,10 @@ export default function PropertyFooter() {
               Eficacia y transparencia en la búsqueda de propiedades rurales
             </p>
             
-            {/* Badge de experiencia */}
             <span className="property-footer-badge">
               ✦ 20+ años de experiencia ✦
             </span>
 
-            {/* Redes sociales */}
             <div className="property-footer-social-wrapper">
               <h4 className="property-footer-social-title">Síguenos</h4>
               <div className="property-footer-social-grid">
@@ -122,7 +119,7 @@ export default function PropertyFooter() {
             </div>
           </div>
 
-          {/* Sección Propiedades - Grid de 2 columnas */}
+          {/* Sección Propiedades */}
           <div className="property-footer-properties">
             <div className="property-footer-title-wrapper">
               <h4 className="property-footer-title">Propiedades</h4>
@@ -130,17 +127,7 @@ export default function PropertyFooter() {
             </div>
             <ul className="property-footer-links-grid">
               {loading ? (
-                // Mostrar skeletons mientras carga
                 <>
-                  <li className="property-footer-link-item">
-                    <span className="property-footer-link-button loading">Cargando...</span>
-                  </li>
-                  <li className="property-footer-link-item">
-                    <span className="property-footer-link-button loading">Cargando...</span>
-                  </li>
-                  <li className="property-footer-link-item">
-                    <span className="property-footer-link-button loading">Cargando...</span>
-                  </li>
                   <li className="property-footer-link-item">
                     <span className="property-footer-link-button loading">Cargando...</span>
                   </li>
@@ -154,14 +141,14 @@ export default function PropertyFooter() {
               ) : (
                 tiposCampos.map((category, index) => (
                   <li key={index} className="property-footer-link-item">
-                    <button
+                    <button 
                       onClick={() => handleCategoryClick(category)}
                       className="property-footer-link-button"
                       disabled={!category.tipo_campo_id}
                       title={!category.tipo_campo_id ? "Categoría no disponible" : `Ver ${category.label}`}
                     >
                       {category.label}
-                      {!category.tipo_campo_id && " (próximamente)"}
+                      {/* ✅ ELIMINADO: Ya no muestra "(próximamente)" */}
                     </button>
                   </li>
                 ))
