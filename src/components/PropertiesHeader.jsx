@@ -61,7 +61,7 @@ export default function PropertiesHeader() {
 
             {/* Acciones desktop */}
             <div className="header-actions">
-              <a href="tel:+5492291510406" className="phone-link">
+              <a className="phone-link">
                 <Phone className="phone-icon" />
                 <span>(2291) 510-406</span>
               </a>
@@ -103,8 +103,7 @@ export default function PropertiesHeader() {
                   {link.label}
                 </a>
               ))}
-              <a 
-                href="tel:+5492291510406" 
+              <a
                 className="mobile-nav-link"
                 onClick={handleNavClick}
                 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
