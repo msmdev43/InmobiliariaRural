@@ -209,3 +209,22 @@ CREATE TABLE IF NOT EXISTS `inmorural`.`propiedades_has_servicios` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
+
+INSERT INTO admin (email, password) 
+VALUES ('gustavobarberini@hotmail.com', '$2y$10$UllJvkUOn3zZrilQNEfpwuvYXBQ87S7fo/egIFJnjuRWD1ajBNfFC');
+
+INSERT INTO tipo_campos (nombre) VALUES 
+('Terreno'),
+('Chacra'),
+('Estancia'),
+('Campo Agricola'),
+('Campo Ganadero'),
+('Campo Mixto');
+
+INSERT INTO servicios (nombre) VALUES 
+('Luz'),
+('Internet'),
+('Calle Tierra'),
+('Calle Asfalto'),
+('Molino'),
+('Monte');
