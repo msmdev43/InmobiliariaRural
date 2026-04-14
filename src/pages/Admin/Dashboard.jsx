@@ -5,8 +5,8 @@ import Sidebar from '../../components/Admin/Sidebar';
 import { useAuth } from '../../context/AuthContext';
 import apiService from '../../services/api.service';
 import { useToast, ToastContainer } from '../../components/UI/Toast';
-import UltimasConsultas from '../../components/Admin/ultimasConsultas';
-import UltimasPropiedades from '../../components/Admin/ultimasPropiedades';
+import UltimasConsultas from '../../components/Admin/UltimasConsultas';
+import UltimasPropiedades from '../../components/Admin/UltimasPropiedades';
 import '../../styles/pages/Admin/Dashboard.css';
 
 const Dashboard = () => {
