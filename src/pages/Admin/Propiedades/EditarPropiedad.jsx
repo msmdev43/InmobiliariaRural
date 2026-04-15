@@ -4,8 +4,12 @@ import Sidebar from '../../../components/Admin/Sidebar';
 import apiService from '../../../services/api.service';
 import { useToast, ToastContainer } from '../../../components/UI/Toast';
 import MapaUbicacion from '../../../components/UI/MapaUbicacion';
+import ENDPOINTS from '../../../config/endpoints';
 import '../../../styles/pages/Admin/propiedades/PublicarPropiedad.css';
 import 'leaflet/dist/leaflet.css';
+
+const BASE_URL = ENDPOINTS.BASE_URL;
+const DEFAULT_IMAGE = ENDPOINTS.ADMIN.DEFAULT_IMAGE;
 
 const EditarPropiedad = () => {
   const navigate = useNavigate();
@@ -143,7 +147,7 @@ const EditarPropiedad = () => {
                 ...img,
                 url: img.url.startsWith('http') 
                 ? img.url 
-                : `http://localhost${img.url}`
+                : `${BASE_URL}${img.url}`
             }));
             setImagenesExistentes(imagenesConUrlCompleta);
             console.log('Imágenes existentes ordenadas:', imagenesConUrlCompleta);
@@ -290,6 +294,11 @@ const EditarPropiedad = () => {
       console.error('Error cargando imagen:', url);
       setImageErrors(prev => ({ ...prev, [imgId]: true }));
     }
+  };
+
+    const handleImageLoadError = (e, imgId, url) => {
+    handleImagenError(imgId, url);
+    e.target.src = DEFAULT_IMAGE; 
   };
 
   const validarFormulario = () => {
@@ -839,10 +848,7 @@ const EditarPropiedad = () => {
                           src={img.url} 
                           alt={img.nombre} 
                           className="publicar-preview-img-unique"
-                          onError={(e) => {
-                            handleImagenError(img.id, img.url);
-                            e.target.src = '/img/default-propiedad.jpg';
-                          }}
+                          onError={(e) => handleImageLoadError(e, img.id, img.url)}  
                         />
                         <span className="publicar-preview-order-unique">{index + 1}</span>
                         <div className="publicar-preview-actions-unique">

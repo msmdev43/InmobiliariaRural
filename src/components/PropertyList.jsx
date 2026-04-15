@@ -4,10 +4,13 @@ import { useSearchParams } from 'react-router-dom';
 import apiService from '../services/api.service';
 import ShareModal from './UI/ShareModal';
 import ContactModal from './UI/ContactPropModal';
+import ENDPOINTS from '../config/endpoints';
 import "../styles/components/propiedades/propertyList.css";
 
 // Imagen del Hero
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80';
+
+const DEFAULT_IMAGE = ENDPOINTS.ADMIN.DEFAULT_IMAGE;
 
 export default function PropertyList({ showHero = true }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,6 +19,13 @@ export default function PropertyList({ showHero = true }) {
   const [error, setError] = useState(null);
   const [shareModal, setShareModal] = useState({ isOpen: false, propiedad: null });
   const [contactModal, setContactModal] = useState({ isOpen: false, propiedad: null });
+
+    const handleImageError = (e) => {
+    if (e.target.src !== DEFAULT_IMAGE) {
+      e.target.src = DEFAULT_IMAGE;
+      e.target.onerror = null;
+    }
+  };
   
   // Referencia para la sección de resultados
   const resultsRef = useRef(null);
@@ -486,7 +496,7 @@ export default function PropertyList({ showHero = true }) {
                       src={prop.imagen_principal} 
                       alt={prop.titulo}
                       className="pl-item-image"
-                      onError={(e) => e.target.src = 'http://localhost/BackInmobiliariaRural/admin/default.png'}
+                      onError={handleImageError}  
                     />
                     {prop.destacado && (
                       <span className="pl-destacado-badge">Destacado</span>

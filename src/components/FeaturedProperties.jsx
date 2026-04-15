@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Ruler, ArrowRight } from "lucide-react";
 import apiService from '../services/api.service';
+import ENDPOINTS from '../config/endpoints';
 import "../styles/components/featuredProp.css";
 
 export default function FeaturedProperties() {
@@ -11,7 +12,7 @@ export default function FeaturedProperties() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
+  const DEFAULT_IMAGE = ENDPOINTS.ADMIN.DEFAULT_IMAGE;
 
   useEffect(() => {
     cargarPropiedadesDestacadas();

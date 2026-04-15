@@ -5,7 +5,13 @@ import { MapPin, Ruler, Home, Maximize, Calendar, Eye, MessageCircle, ArrowLeft,
 import Navbar from '../../components/PropertiesHeader';
 import Footer from '../../components/PropertyFooter';
 import apiService from '../../services/api.service';
+import ENDPOINTS from '../../config/endpoints';
+import ImageModal from '../../components/UI/ImageModal'; // ✅ Importar el nuevo modal
 import '../../styles/pages/propiedades/VerFicha.css';
+
+// Usar constantes desde la configuración
+const BASE_URL = ENDPOINTS.BASE_URL;
+const DEFAULT_IMAGE = ENDPOINTS.ADMIN.DEFAULT_IMAGE;
 
 const VerFicha = () => {
   const { codigo } = useParams();
@@ -14,19 +20,18 @@ const VerFicha = () => {
   const [loading, setLoading] = useState(true);
   const [propiedad, setPropiedad] = useState(null);
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
-  const [modalImagen, setModalImagen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false); // ✅ Nuevo estado para el modal
+  const [modalImageIndex, setModalImageIndex] = useState(0); // ✅ Índice de imagen seleccionada
   const [mostrarMapa, setMostrarMapa] = useState(false);
 
-  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
-
-  // ✅ FORZAR SCROLL AL INICIO DE LA PÁGINA
+  // FORZAR SCROLL AL INICIO DE LA PÁGINA
   useEffect(() => {
     window.scrollTo({
       top: 0,
       left: 0,
-      behavior: 'instant' // 'auto' o 'instant' para que sea inmediato
+      behavior: 'instant'
     });
-  }, []); // Solo al montar el componente
+  }, []);
 
   const cargarPropiedad = async () => {
     try {
@@ -79,18 +84,38 @@ const VerFicha = () => {
     }
   }, [codigo]);
 
+  // Función para construir URL completa usando BASE_URL
   const construirUrlCompleta = (url) => {
     if (!url) return DEFAULT_IMAGE;
-    if (url.startsWith('http')) return url;
-    if (url.startsWith('/BackInmobiliariaRural')) {
-      return `http://localhost${url}`;
+    
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
     }
-    return `http://localhost/BackInmobiliariaRural${url}`;
+    
+    let urlLimpia = url;
+    if (urlLimpia.startsWith('/BackInmobiliariaRural')) {
+      urlLimpia = urlLimpia.replace('/BackInmobiliariaRural', '');
+    }
+    
+    if (!urlLimpia.startsWith('/')) {
+      urlLimpia = '/' + urlLimpia;
+    }
+    
+    return `${BASE_URL}${urlLimpia}`;
   };
 
+  // Función para manejar errores de imagen
   const handleImageError = (e) => {
-    e.target.src = DEFAULT_IMAGE;
-    e.target.onerror = null;
+    if (e.target.src !== DEFAULT_IMAGE) {
+      e.target.src = DEFAULT_IMAGE;
+      e.target.onerror = null;
+    }
+  };
+
+  // ✅ Función para abrir el modal con la imagen seleccionada
+  const handleOpenModal = (index = 0) => {
+    setModalImageIndex(index);
+    setModalOpen(true);
   };
 
   const handleVolver = () => {
@@ -187,9 +212,10 @@ const VerFicha = () => {
         <div className="vf-grid">
           <div className="vf-col-izquierda">
             <div className="vf-galeria">
+              {/* ✅ Imagen principal - abre modal en índice 0 */}
               <div 
                 className="vf-imagen-principal"
-                onClick={() => setModalImagen(true)}
+                onClick={() => handleOpenModal(0)}
               >
                 <img 
                   src={imagenParaMostrar}
@@ -201,13 +227,17 @@ const VerFicha = () => {
                 )}
               </div>
 
+              {/* Miniaturas */}
               {propiedad.imagenes && propiedad.imagenes.length > 0 && (
                 <div className="vf-miniaturas">
-                  {propiedad.imagenes.map((img) => (
+                  {propiedad.imagenes.map((img, index) => (
                     <div
                       key={img.id}
                       className={`vf-miniatura ${imagenSeleccionada?.id === img.id ? 'activo' : ''}`}
-                      onClick={() => setImagenSeleccionada(img)}
+                      onClick={() => {
+                        setImagenSeleccionada(img);
+                        handleOpenModal(index); // ✅ Abre modal en el índice de la miniatura
+                      }}
                     >
                       <img 
                         src={img.url}
@@ -222,7 +252,6 @@ const VerFicha = () => {
           </div>
 
           <div className="vf-col-derecha">
-            {/* Resto del contenido igual */}
             <div className="vf-card vf-card-precio">
               <div className="vf-precio">
                 <span className="vf-moneda">{propiedad.moneda}</span>
@@ -331,34 +360,13 @@ const VerFicha = () => {
           </div>
         </div>
 
-        {modalImagen && (
-          <div className="vf-modal-overlay" onClick={() => setModalImagen(false)}>
-            <div className="vf-modal" onClick={e => e.stopPropagation()}>
-              <button className="vf-modal-cerrar" onClick={() => setModalImagen(false)}>×</button>
-              <img 
-                src={imagenParaMostrar}
-                alt={propiedad.titulo}
-                onError={handleImageError}
-              />
-              {propiedad.imagenes && propiedad.imagenes.length > 0 && (
-                <div className="vf-modal-miniaturas">
-                  {propiedad.imagenes.map((img) => (
-                    <div
-                      key={img.id}
-                      className={`vf-modal-miniatura ${imagenSeleccionada?.id === img.id ? 'activo' : ''}`}
-                      onClick={() => setImagenSeleccionada(img)}
-                    >
-                      <img 
-                        src={img.url}
-                        alt={`${propiedad.titulo} - ${img.orden}`}
-                        onError={handleImageError}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+        {/* ✅ Nuevo Modal de imágenes */}
+        {modalOpen && propiedad?.imagenes && propiedad.imagenes.length > 0 && (
+          <ImageModal
+            images={propiedad.imagenes}
+            initialIndex={modalImageIndex}
+            onClose={() => setModalOpen(false)}
+          />
         )}
       </div>
       <Footer />

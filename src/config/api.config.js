@@ -10,6 +10,7 @@ const API_CONFIG = {
     DASHBOARD: '/admin/dashboard.php',
     CHECK_SESSION: '/admin/check_session.php',
     ESTADISTICAS: '/admin/estadisticasDashboard.php',
+     DEFAULT_IMAGE: '/admin/default.png',
   },
   
   // Endpoints de consultas

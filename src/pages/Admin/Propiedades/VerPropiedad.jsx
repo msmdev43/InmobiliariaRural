@@ -4,7 +4,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../../../components/Admin/Sidebar';
 import apiService from '../../../services/api.service';
 import { useToast, ToastContainer } from '../../../components/UI/Toast';
+import ENDPOINTS from '../../../config/endpoints';  // ✅ Importar endpoints
 import '../../../styles/pages/Admin/propiedades/VerPropiedad.css';
+
+// ✅ Usar constantes desde la configuración
+const BASE_URL = ENDPOINTS.BASE_URL;
+const DEFAULT_IMAGE = ENDPOINTS.ADMIN.DEFAULT_IMAGE;
 
 const VerPropiedad = () => {
   const { id } = useParams();
@@ -19,8 +24,7 @@ const VerPropiedad = () => {
   const [modalEliminar, setModalEliminar] = useState(false);
   const [accionEliminar, setAccionEliminar] = useState('eliminar');
 
-  // URL base para imágenes por defecto
-  const DEFAULT_IMAGE = 'http://localhost/BackInmobiliariaRural/admin/default.png';
+  // ✅ Ya no es necesario hardcodear DEFAULT_IMAGE aquí
 
   useEffect(() => {
     cargarPropiedad();
@@ -61,19 +65,26 @@ const VerPropiedad = () => {
     }
   };
 
-  // Función para construir URL completa de imagen
+  // ✅ Función para construir URL completa de imagen usando BASE_URL
   const construirUrlCompleta = (url) => {
     if (!url) return DEFAULT_IMAGE;
     if (url.startsWith('http')) return url;
+    // Si la URL ya comienza con la BASE_URL o tiene el formato correcto
+    if (url.startsWith(BASE_URL)) return url;
+    // Si la URL comienza con /BackInmobiliariaRural
     if (url.startsWith('/BackInmobiliariaRural')) {
-      return `http://localhost${url}`;
+      return `${BASE_URL}${url}`;
     }
-    return `http://localhost/BackInmobiliariaRural${url}`;
+    // Caso general: agregar BASE_URL al inicio
+    return `${BASE_URL}${url}`;
   };
 
+  // ✅ Función para manejar errores de imagen con la imagen por defecto configurada
   const handleImageError = (e) => {
-    e.target.src = DEFAULT_IMAGE;
-    e.target.onerror = null;
+    if (e.target.src !== DEFAULT_IMAGE) {
+      e.target.src = DEFAULT_IMAGE;
+      e.target.onerror = null;
+    }
   };
 
   const handleEditar = () => {
