@@ -5,58 +5,58 @@ const API_CONFIG = {
   
   // Endpoints de admin
   ADMIN: {
-    LOGIN: '/api/admin/login.php',
-    LOGOUT: '/api/admin/logout.php',
-    DASHBOARD: '/api/admin/dashboard.php',
-    CHECK_SESSION: '/api/admin/check_session.php',
-    ESTADISTICAS: '/api/admin/estadisticasDashboard.php',
-     DEFAULT_IMAGE: '/api/admin/default.png',
+    LOGIN: '/BackInmobiliariaRural/admin/login.php',
+    LOGOUT: '/BackInmobiliariaRural/admin/logout.php',
+    DASHBOARD: '/BackInmobiliariaRural/admin/dashboard.php',
+    CHECK_SESSION: '/BackInmobiliariaRural/admin/check_session.php',
+    ESTADISTICAS: '/BackInmobiliariaRural/admin/estadisticasDashboard.php',
+     DEFAULT_IMAGE: '/BackInmobiliariaRural/admin/default.png',
   },
   
   // Endpoints de consultas
   CONSULTAS: {
-    CREAR: '/api/consultas/crearConsulta.php',
-    LISTAR: '/api/consultas/listarConsultas.php',
-    ELIMINAR: '/api/consultas/eliminarConsulta.php',
-    ULTIMAS: '/api/consultas/ultimasConsultas.php',
+    CREAR: '/BackInmobiliariaRural/consultas/crearConsulta.php',
+    LISTAR: '/BackInmobiliariaRural/consultas/listarConsultas.php',
+    ELIMINAR: '/BackInmobiliariaRural/consultas/eliminarConsulta.php',
+    ULTIMAS: '/BackInmobiliariaRural/consultas/ultimasConsultas.php',
   },
   
   // Endpoints de propiedades
   PROPIEDADES: {
-    LISTAR: '/api/propiedades/listarPropiedades.php', // Admin
-    LISTAR_PUBLIC: '/api/propiedades/listarPropiedadesPublic.php', // Público
-    CREAR: '/api/propiedades/crearPropiedad.php',
-    MODIFICAR: '/api/propiedades/modificarPropiedad.php',
-    ELIMINAR: '/api/propiedades/eliminarPropiedad.php',
-    DETALLE: '/api/propiedades/obtenerPropiedadDetalle.php',
-    ESTADISTICAS: '/api/propiedades/estadisticas/obtenerEstadisticas.php',
-    DESTACADAS: '/api/propiedades/propiedadesDestacadas.php',
-    ELIMINAR_IMAGEN: '/api/propiedades/imagenes/eliminarImagenes.php',
-    ULTIMAS: '/api/propiedades/ultimasPropiedades.php',
-    CONTAR_POR_TIPO_CAMPO: '/api/propiedades/contarPorTipoCampo.php', // Nuevo endpoint
+    LISTAR: '/BackInmobiliariaRural/propiedades/listarPropiedades.php', // Admin
+    LISTAR_PUBLIC: '/BackInmobiliariaRural/propiedades/listarPropiedadesPublic.php', // Público
+    CREAR: '/BackInmobiliariaRural/propiedades/crearPropiedad.php',
+    MODIFICAR: '/BackInmobiliariaRural/propiedades/modificarPropiedad.php',
+    ELIMINAR: '/BackInmobiliariaRural/propiedades/eliminarPropiedad.php',
+    DETALLE: '/BackInmobiliariaRural/propiedades/obtenerPropiedadDetalle.php',
+    ESTADISTICAS: '/BackInmobiliariaRural/propiedades/estadisticas/obtenerEstadisticas.php',
+    DESTACADAS: '/BackInmobiliariaRural/propiedades/propiedadesDestacadas.php',
+    ELIMINAR_IMAGEN: '/BackInmobiliariaRural/propiedades/imagenes/eliminarImagenes.php',
+    ULTIMAS: '/BackInmobiliariaRural/propiedades/ultimasPropiedades.php',
+    CONTAR_POR_TIPO_CAMPO: '/BackInmobiliariaRural/propiedades/contarPorTipoCampo.php', // Nuevo endpoint
   },
   
   // Endpoints de servicios
   SERVICIOS: {
-    LISTAR: '/api/servicios/listarServicios.php',
-    CREAR: '/api/servicios/crearServicio.php',
-    MODIFICAR: '/api/servicios/modificarServicio.php',
-    ELIMINAR: '/api/servicios/eliminarServicio.php',
+    LISTAR: '/BackInmobiliariaRural/servicios/listarServicios.php',
+    CREAR: '/BackInmobiliariaRural/servicios/crearServicio.php',
+    MODIFICAR: '/BackInmobiliariaRural/servicios/modificarServicio.php',
+    ELIMINAR: '/BackInmobiliariaRural/servicios/eliminarServicio.php',
   },
   
   // Endpoints de tipos de campos
   TIPOS_CAMPOS: {
-    LISTAR: '/api/tipo_campos/listarTipos.php',
-    CREAR: '/api/tipo_campos/crearTipo.php',
-    MODIFICAR: '/api/tipo_campos/modificarTipo.php',
-    ELIMINAR: '/api/tipo_campos/eliminarTipo.php',
+    LISTAR: '/BackInmobiliariaRural/tipo_campos/listarTipos.php',
+    CREAR: '/BackInmobiliariaRural/tipo_campos/crearTipo.php',
+    MODIFICAR: '/BackInmobiliariaRural/tipo_campos/modificarTipo.php',
+    ELIMINAR: '/BackInmobiliariaRural/tipo_campos/eliminarTipo.php',
   },
   
   // Endpoints de utilidades
   UTILS: {
-    DOLAR: '/api/dolar/getDollarRate.php',
-    NOTIFICACIONES: '/api/notificaciones/contarConsultas.php',
-    WHATSAPP_DIRECTO: '/api/notificaciones/enviarWhatsAppDirecto.php',
+    DOLAR: '/BackInmobiliariaRural/dolar/getDollarRate.php',
+    NOTIFICACIONES: '/BackInmobiliariaRural/notificaciones/contarConsultas.php',
+    WHATSAPP_DIRECTO: '/BackInmobiliariaRural/notificaciones/enviarWhatsAppDirecto.php',
   },
   
   // Configuración de fetch
