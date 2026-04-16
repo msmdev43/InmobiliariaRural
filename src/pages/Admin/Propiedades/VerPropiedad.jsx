@@ -71,8 +71,8 @@ const VerPropiedad = () => {
     if (url.startsWith('http')) return url;
     // Si la URL ya comienza con la BASE_URL o tiene el formato correcto
     if (url.startsWith(BASE_URL)) return url;
-    // Si la URL comienza con /BackInmobiliariaRural
-    if (url.startsWith('/BackInmobiliariaRural')) {
+    // Si la URL comienza con /api
+    if (url.startsWith('/api')) {
       return `${BASE_URL}${url}`;
     }
     // Caso general: agregar BASE_URL al inicio

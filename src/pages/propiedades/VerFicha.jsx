@@ -93,8 +93,8 @@ const VerFicha = () => {
     }
     
     let urlLimpia = url;
-    if (urlLimpia.startsWith('/BackInmobiliariaRural')) {
-      urlLimpia = urlLimpia.replace('/BackInmobiliariaRural', '');
+    if (urlLimpia.startsWith('/api')) {
+      urlLimpia = urlLimpia.replace('/api', '');
     }
     
     if (!urlLimpia.startsWith('/')) {
