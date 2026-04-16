@@ -23,6 +23,7 @@ class ApiService {
       const response = await fetch(endpoint, {
         ...this.defaultOptions,
         ...options,
+        credentials: 'include',
         headers: {
           ...this.defaultOptions.headers,
           ...options.headers
