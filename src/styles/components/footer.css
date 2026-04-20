@@ -515,8 +515,16 @@
     transform: translateX(-50%);
   }
   
+  /* Propiedades centradas - 1 columna */
   .footer-links-list {
     text-align: center;
+  }
+  
+  .footer-link,
+  .footer-link-button {
+    text-align: center;
+    display: block;
+    width: 100%;
   }
   
   .footer-link::before,
@@ -576,8 +584,19 @@
     transform: translateX(-50%);
   }
   
+  /* Propiedades centradas - 2 columnas como en PropertyFooter */
   .footer-links-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 1rem;
     text-align: center;
+  }
+  
+  .footer-link,
+  .footer-link-button {
+    text-align: center;
+    display: block;
+    width: 100%;
   }
   
   .footer-link::before,
@@ -594,15 +613,6 @@
   .cair-card {
     margin-left: auto;
     margin-right: auto;
-  }
-  
-  /* Mostrar en dos columnas los enlaces en móvil grande */
-  .footer-grid > div:nth-child(2),
-  .footer-grid > div:nth-child(3) {
-    display: inline-block;
-    width: 45%;
-    margin: 0 2.5%;
-    vertical-align: top;
   }
 }
 
