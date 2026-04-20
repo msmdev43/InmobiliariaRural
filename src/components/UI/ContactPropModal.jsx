@@ -63,12 +63,15 @@ const ContactPropModal = ({ propiedad, onClose }) => {
       const response = await apiService.crearConsulta(data);
       
       if (response.success) {
-        toast.success('¡Consulta enviada! Te contactaremos a la brevedad.');
+        toast.success('Consulta enviada. Redirigiendo a WhatsApp...');
+
         setTimeout(() => {
-          onClose();
-        }, 2000);
-      } else {
-        toast.error(response.message || 'Error al enviar la consulta');
+          if (response.notificaciones?.whatsapp_url) {
+            window.location.href = response.notificaciones.whatsapp_url;
+          } else {
+            onClose();
+          }
+        }, 1500);
       }
     } catch (err) {
       console.error('Error:', err);
