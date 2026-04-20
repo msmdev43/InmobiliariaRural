@@ -106,8 +106,14 @@ export default function Services() {
       return;
     }
 
-    if (!formData.email.trim() && !formData.telefono.trim()) {
-      toast.error("Debes proporcionar al menos un email o un teléfono");
+    if (!formData.email.trim()) {
+      toast.error("El email es obligatorio");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.telefono.trim()) {
+      toast.error("El teléfono es obligatorio");
       setIsSubmitting(false);
       return;
     }
@@ -136,8 +142,8 @@ export default function Services() {
 
       const data = {
         nombrecompleto: formData.nombrecompleto.trim(),
-        email: formData.email.trim() || null,
-        telefono: formData.telefono.trim() || null,
+        email: formData.email.trim(),
+        telefono: formData.telefono.trim(),
         mensaje: formData.mensaje.trim(),
         tipo: tipo
       };
@@ -147,10 +153,15 @@ export default function Services() {
       const response = await apiService.crearConsulta(data);
       
       if (response.success) {
-        toast.success(`✅ ¡Gracias por tu consulta!\n\nTu consulta sobre ${selectedService?.title} ha sido enviada correctamente. Te contactaremos a la brevedad.`);
-        closeModal();
-      } else {
-        toast.error(response.message || "Error al enviar la consulta. Por favor, intenta nuevamente.");
+        toast.success(`Consulta enviada. Redirigiendo a WhatsApp...`);
+
+        setTimeout(() => {
+          if (response.notificaciones?.whatsapp_url) {
+            window.location.href = response.notificaciones.whatsapp_url;
+          } else {
+            closeModal();
+          }
+        }, 1500);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -241,7 +252,7 @@ export default function Services() {
                 <div className="form-group">
                   <label className="form-label">
                     <Mail className="label-icon" />
-                    Email
+                    Email <span className="required">*</span>
                   </label>
                   <input
                     type="email"
@@ -258,7 +269,7 @@ export default function Services() {
                 <div className="form-group">
                   <label className="form-label">
                     <Phone className="label-icon" />
-                    Teléfono
+                    Teléfono <span className="required">*</span>
                   </label>
                   <input
                     type="tel"

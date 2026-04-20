@@ -56,7 +56,6 @@ const API_CONFIG = {
   UTILS: {
     DOLAR: '/BackInmobiliariaRural/dolar/getDollarRate.php',
     NOTIFICACIONES: '/BackInmobiliariaRural/notificaciones/contarConsultas.php',
-    WHATSAPP_DIRECTO: '/BackInmobiliariaRural/notificaciones/enviarWhatsAppDirecto.php',
   },
   
   // Configuración de fetch

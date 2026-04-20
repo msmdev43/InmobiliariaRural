@@ -27,8 +27,14 @@ export default function Contact() {
       return;
     }
 
-    if (!formData.email.trim() && !formData.telefono.trim()) {
-      toast.error("Debes proporcionar al menos un email o un teléfono");
+    if (!formData.email.trim()) {
+      toast.error("El email es obligatorio");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.telefono.trim()) {
+      toast.error("El teléfono es obligatorio");
       setIsSubmitting(false);
       return;
     }
@@ -49,8 +55,8 @@ export default function Contact() {
       // Preparar datos para el backend
       const data = {
         nombrecompleto: formData.nombrecompleto.trim(),
-        email: formData.email.trim() || null,
-        telefono: formData.telefono.trim() || null,
+        email: formData.email.trim(),
+        telefono: formData.telefono.trim(),
         mensaje: formData.mensaje.trim(),
         tipo: "soporte" // Tipo soporte para consultas generales
       };
@@ -58,16 +64,22 @@ export default function Contact() {
       const response = await apiService.crearConsulta(data);
       
       if (response.success) {
-        toast.success("✅ ¡Mensaje enviado correctamente! Te contactaremos a la brevedad.");
-        // Resetear formulario
-        setFormData({
-          nombrecompleto: "",
-          email: "",
-          telefono: "",
-          mensaje: "",
-        });
+        toast.success("Consulta enviada. Redirigiendo a WhatsApp...");
+
+        setTimeout(() => {
+          if (response.notificaciones?.whatsapp_url) {
+            window.location.href = response.notificaciones.whatsapp_url;
+          } else {
+            setFormData({
+              nombrecompleto: "",
+              email: "",
+              telefono: "",
+              mensaje: "",
+            });
+          }
+        }, 1500);
       } else {
-        toast.error(response.message || "Error al enviar el mensaje. Por favor, intenta nuevamente.");
+        toast.error(response.message || "Error al enviar la consulta. Por favor, intenta nuevamente.");
       }
     } catch (error) {
       console.error("Error al enviar:", error);
@@ -143,7 +155,7 @@ export default function Contact() {
                   </div>
                   <div className="form-group">
                     <label htmlFor="email" className="form-label">
-                      Email
+                      Email <span className="required">*</span>
                     </label>
                     <input
                       id="email"
@@ -159,7 +171,7 @@ export default function Contact() {
                 </div>
                 <div className="form-group">
                   <label htmlFor="telefono" className="form-label">
-                    Teléfono
+                    Teléfono <span className="required">*</span>
                   </label>
                   <input
                     id="telefono"

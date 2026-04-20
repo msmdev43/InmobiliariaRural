@@ -440,59 +440,23 @@ class ApiService {
   }
 
   async getConteosPorTipoCampo() {
-  try {
-    const url = PROPIEDADES_ENDPOINTS.CONTAR_POR_TIPO_CAMPO;
-    console.log('Obteniendo conteos desde:', url);
-    
-    const response = await this.request(url, {
-      method: 'GET'
-    });
-    
-    console.log('Respuesta conteos:', response);
-    return response;
-  } catch (error) {
-    console.error('Error en getConteosPorTipoCampo:', error);
-    return {
-      success: false,
-      data: {},
-      message: error.message || 'Error al cargar conteos'
-    };
-  }
-}
-
-  async enviarConsulta(datos) {
     try {
-      // Transformar datos para el formato que espera crearConsulta.php
-      const payload = {
-        nombrecompleto: datos.name,
-        telefono: datos.phone,
-        email: datos.email,
-        mensaje: datos.message,
-        tipo: 'contacto' // Tipo de consulta para el header
-      };
+      const url = PROPIEDADES_ENDPOINTS.CONTAR_POR_TIPO_CAMPO;
+      console.log('Obteniendo conteos desde:', url);
       
-      console.log('Enviando consulta:', payload);
-      
-      const response = await fetch(CONSULTAS_ENDPOINTS.CREAR, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
+      const response = await this.request(url, {
+        method: 'GET'
       });
       
-      const text = await response.text();
-      console.log('Respuesta crearConsulta:', text);
-      
-      if (!text || text.trim() === '') {
-        throw new Error('Respuesta vacía del servidor');
-      }
-      
-      const data = JSON.parse(text);
-      return data;
+      console.log('Respuesta conteos:', response);
+      return response;
     } catch (error) {
-      console.error('Error enviando consulta:', error);
-      throw error;
+      console.error('Error en getConteosPorTipoCampo:', error);
+      return {
+        success: false,
+        data: {},
+        message: error.message || 'Error al cargar conteos'
+      };
     }
   }
 
@@ -567,13 +531,6 @@ class ApiService {
       console.error('Error en contarConsultasNoLeidas:', error);
       return 0;
     }
-  }
-
-  async enviarWhatsAppDirecto(consultaId) {
-    return this.request(`${UTILS_ENDPOINTS.WHATSAPP_DIRECTO}`, {
-      method: 'POST',
-      body: JSON.stringify({ consulta_id: consultaId })
-    });
   }
 }
 
