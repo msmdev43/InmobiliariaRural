@@ -123,93 +123,71 @@ export default function Services() {
     return errors;
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Usar validación mejorada
+    // Validaciones
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
-      validationErrors.forEach(error => toast.error(error));
-      return;
+        validationErrors.forEach(error => toast.error(error));
+        return;
     }
     
+    // 1. ABRIR WHATSAPP AHORA MISMO (sin esperar)
+    const telefono = "5492291510406"; // Tu número
+    const mensajeWhatsApp = `Hola, me interesa ${selectedService.title}. Mi nombre es ${formData.nombrecompleto}. %0A%0A${formData.mensaje.substring(0, 200)}`;
+    window.open(`https://wa.me/${telefono}?text=${mensajeWhatsApp}`, '_blank');
+    
+    // 2. Enviar consulta al backend en segundo plano
     setIsSubmitting(true);
-
+    
     try {
-      // Mapear el título del servicio al tipo correcto que espera el backend
-      const tipoMapping = {
-        'Tasaciones': 'tasacion',
-        'Ventas': 'venta',
-        'Arrendamientos': 'arrendamiento'
-      };
-
-      const tipo = tipoMapping[selectedService?.title] || 'soporte';
-
-      const data = {
-        nombrecompleto: formData.nombrecompleto.trim(),
-        email: formData.email.trim(),
-        telefono: formData.telefono.trim(),
-        mensaje: formData.mensaje.trim(),
-        tipo: tipo
-      };
-
-      console.log("Enviando consulta:", data);
-
-      const response = await apiService.crearConsulta(data);
-      
-      // Manejar diferentes tipos de respuesta
-      if (response.success) {
-        // Si hay warning (timeout parcial), mostrar mensaje diferente
-        if (response.warning === 'timeout' || response.warning === 'server_timeout') {
-          toast.success("¡Consulta recibida! Te contactaremos a la brevedad.", {
-            duration: 5000
-          });
-          
-          // Cerrar el modal después de 2 segundos
-          setTimeout(() => {
-            closeModal();
-          }, 2000);
+        const tipoMapping = {
+            'Tasaciones': 'tasacion',
+            'Ventas': 'venta',
+            'Arrendamientos': 'arrendamiento'
+        };
+        const tipo = tipoMapping[selectedService?.title] || 'soporte';
+        
+        const data = {
+            nombrecompleto: formData.nombrecompleto.trim(),
+            email: formData.email.trim(),
+            telefono: formData.telefono.trim(),
+            mensaje: formData.mensaje.trim(),
+            tipo: tipo
+        };
+        
+        const response = await apiService.crearConsulta(data);
+        
+        setIsSubmitting(false);
+        
+        if (response.success) {
+            toast.success("✅ Consulta guardada con éxito. Te contactaremos pronto.", {
+                duration: 4000
+            });
         } else {
-          // Respuesta normal exitosa
-          toast.success("¡Consulta enviada con éxito!", {
-            duration: 3000
-          });
-
-          // Redirigir a WhatsApp si está disponible
-          setTimeout(() => {
-            if (response.notificaciones?.whatsapp_url) {
-              // Abrir WhatsApp en nueva pestaña
-              window.open(response.notificaciones.whatsapp_url, '_blank');
-            }
-            closeModal();
-          }, 2000);
+            toast.warning("⚠️ Consulta guardada, pero hubo un pequeño error.", {
+                duration: 4000
+            });
         }
-      } else {
-        // Si el backend dice que no fue exitoso
-        throw new Error(response.message || 'Error al enviar consulta');
-      }
-      
+        
+        // Cerrar el modal DESPUÉS de que el usuario vea el mensaje
+        setTimeout(() => {
+            closeModal();
+        }, 3500);
+        
     } catch (error) {
-      console.error("Error detallado:", error);
-      
-      // Mensaje de error más amigable según el tipo de error
-      let errorMessage = "No pudimos enviar tu consulta. ";
-      
-      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
-        errorMessage += "Verifica tu conexión a internet.";
-      } else if (error.message && error.message.includes('timeout')) {
-        errorMessage = "El servidor está demorando en responder, pero tu consulta ha sido guardada. Te contactaremos pronto.";
-      } else {
-        errorMessage += "Por favor, intenta nuevamente o contactanos directamente por WhatsApp.";
-      }
-      
-      toast.error(errorMessage, {
-        duration: 6000
-      });
-    } finally {
-      setIsSubmitting(false);
+        console.error("Error:", error);
+        setIsSubmitting(false);
+        toast.error("❌ No se pudo guardar, pero ya abrimos WhatsApp.", {
+            duration: 4000
+        });
+        
+        setTimeout(() => {
+            closeModal();
+        }, 3500);
     }
-  };
+};
 
   return (
     <>
