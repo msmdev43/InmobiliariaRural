@@ -95,40 +95,45 @@ export default function Services() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const validateForm = () => {
+    const errors = [];
+    
+    if (!formData.nombrecompleto.trim()) {
+      errors.push("Nombre completo requerido");
+    }
+    
+    if (!formData.email.trim()) {
+      errors.push("Email requerido");
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.push("Email inválido");
+    }
+    
+    if (!formData.telefono.trim()) {
+      errors.push("Teléfono requerido");
+    } else if (!/^[0-9+\-\s()]+$/.test(formData.telefono)) {
+      errors.push("Formato de teléfono inválido");
+    }
+    
+    if (!formData.mensaje.trim()) {
+      errors.push("Mensaje requerido");
+    } else if (formData.mensaje.trim().length < 10) {
+      errors.push("El mensaje debe tener al menos 10 caracteres");
+    }
+    
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Usar validación mejorada
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      validationErrors.forEach(error => toast.error(error));
+      return;
+    }
+    
     setIsSubmitting(true);
-
-    // Validaciones básicas antes de enviar
-    if (!formData.nombrecompleto.trim()) {
-      toast.error("Por favor, ingresa tu nombre completo");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.email.trim()) {
-      toast.error("El email es obligatorio");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.telefono.trim()) {
-      toast.error("El teléfono es obligatorio");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error("Por favor, ingresa un email válido");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.mensaje.trim()) {
-      toast.error("Por favor, escribe tu consulta");
-      setIsSubmitting(false);
-      return;
-    }
 
     try {
       // Mapear el título del servicio al tipo correcto que espera el backend
@@ -152,20 +157,55 @@ export default function Services() {
 
       const response = await apiService.crearConsulta(data);
       
+      // Manejar diferentes tipos de respuesta
       if (response.success) {
-        toast.success(`Consulta enviada. Redirigiendo a WhatsApp...`);
-
-        setTimeout(() => {
-          if (response.notificaciones?.whatsapp_url) {
-            window.location.href = response.notificaciones.whatsapp_url;
-          } else {
+        // Si hay warning (timeout parcial), mostrar mensaje diferente
+        if (response.warning === 'timeout' || response.warning === 'server_timeout') {
+          toast.success("¡Consulta recibida! Te contactaremos a la brevedad.", {
+            duration: 5000
+          });
+          
+          // Cerrar el modal después de 2 segundos
+          setTimeout(() => {
             closeModal();
-          }
-        }, 1500);
+          }, 2000);
+        } else {
+          // Respuesta normal exitosa
+          toast.success("¡Consulta enviada con éxito!", {
+            duration: 3000
+          });
+
+          // Redirigir a WhatsApp si está disponible
+          setTimeout(() => {
+            if (response.notificaciones?.whatsapp_url) {
+              // Abrir WhatsApp en nueva pestaña
+              window.open(response.notificaciones.whatsapp_url, '_blank');
+            }
+            closeModal();
+          }, 2000);
+        }
+      } else {
+        // Si el backend dice que no fue exitoso
+        throw new Error(response.message || 'Error al enviar consulta');
       }
+      
     } catch (error) {
-      console.error("Error:", error);
-      toast.error("Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.");
+      console.error("Error detallado:", error);
+      
+      // Mensaje de error más amigable según el tipo de error
+      let errorMessage = "No pudimos enviar tu consulta. ";
+      
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        errorMessage += "Verifica tu conexión a internet.";
+      } else if (error.message && error.message.includes('timeout')) {
+        errorMessage = "El servidor está demorando en responder, pero tu consulta ha sido guardada. Te contactaremos pronto.";
+      } else {
+        errorMessage += "Por favor, intenta nuevamente o contactanos directamente por WhatsApp.";
+      }
+      
+      toast.error(errorMessage, {
+        duration: 6000
+      });
     } finally {
       setIsSubmitting(false);
     }

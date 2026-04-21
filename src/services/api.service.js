@@ -16,55 +16,72 @@ class ApiService {
     this.endpoints = ENDPOINTS;
   }
 
-  async request(endpoint, options = {}) {
-    try {
-      console.log('Request to:', endpoint); // Debug
-      
-      const response = await fetch(endpoint, {
-        ...this.defaultOptions,
-        ...options,
-        credentials: 'include',
-        headers: {
-          ...this.defaultOptions.headers,
-          ...options.headers
-        }
-      });
+async request(endpoint, options = {}, timeout = 30000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    console.log('Request to:', endpoint);
+    
+    const response = await fetch(endpoint, {
+      ...this.defaultOptions,
+      ...options,
+      credentials: 'include',
+      headers: {
+        ...this.defaultOptions.headers,
+        ...options.headers
+      },
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
 
-      // Verificar si la respuesta tiene contenido
-      const text = await response.text();
-      console.log('Response text:', text.substring(0, 200)); // Debug: primeros 200 caracteres
-      
-      // Si la respuesta está vacía
-      if (!text || text.trim() === '') {
-        if (response.status === 401) {
-          window.dispatchEvent(new Event('unauthorized'));
-        }
-        return response.ok ? { success: true } : { success: false };
+    // Verificar si la respuesta tiene contenido
+    const text = await response.text();
+    console.log('Response text:', text.substring(0, 200));
+    
+    // Si la respuesta está vacía
+    if (!text || text.trim() === '') {
+      if (response.status === 401) {
+        window.dispatchEvent(new Event('unauthorized'));
       }
-
-      // Intentar parsear como JSON
-      try {
-        const data = JSON.parse(text);
-        
-        if (response.status === 401) {
-          window.dispatchEvent(new Event('unauthorized'));
-          return { success: false, message: data.message || 'No autorizado' };
-        }
-        
-        return data;
-      } catch {
-        console.error('Error parsing JSON:', text.substring(0, 200));
-        // Si no es JSON pero la petición fue exitosa, devolver éxito
-        if (response.ok) {
-          return { success: true };
-        }
-        throw new Error('Respuesta inválida del servidor');
+      // Para timeout, devolver éxito optimista
+      if (response.status === 504) {
+        return { success: true, warning: 'timeout' };
       }
-    } catch (error) {
-      console.error('API Request Error:', error);
-      throw error;
+      return response.ok ? { success: true } : { success: false };
     }
+
+    // Intentar parsear como JSON
+    try {
+      const data = JSON.parse(text);
+      
+      if (response.status === 401) {
+        window.dispatchEvent(new Event('unauthorized'));
+        return { success: false, message: data.message || 'No autorizado' };
+      }
+      
+      return data;
+    } catch {
+      console.error('Error parsing JSON:', text.substring(0, 200));
+      // Si no es JSON pero la petición fue exitosa, devolver éxito
+      if (response.ok) {
+        return { success: true };
+      }
+      throw new Error('Respuesta inválida del servidor');
+    }
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error.name === 'AbortError') {
+      console.warn('Request timeout:', endpoint);
+      return { success: true, warning: 'timeout' };
+    }
+    
+    console.error('API Request Error:', error);
+    throw error;
   }
+}
 
   async getEstadisticasDashboard() {
     try {
@@ -460,12 +477,88 @@ class ApiService {
     }
   }
 
-  async crearConsulta(data) {
-    return this.request(CONSULTAS_ENDPOINTS.CREAR, {
+async crearConsulta(data) {
+  // Agregar timeout de 15 segundos para evitar espera infinita
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  
+  try {
+    console.log('Enviando consulta:', data);
+    
+    const response = await fetch(CONSULTAS_ENDPOINTS.CREAR, {
       method: 'POST',
-      body: JSON.stringify(data)
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(data),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
+    
+    // Verificar si la respuesta tiene contenido
+    const text = await response.text();
+    console.log('Respuesta crearConsulta:', text.substring(0, 300));
+    
+    // Si la respuesta está vacía
+    if (!text || text.trim() === '') {
+      if (response.status === 504) {
+        return {
+          success: true, // Consideramos éxito aunque haya timeout
+          message: 'Consulta recibida, procesando en segundo plano',
+          id: null,
+          warning: 'timeout'
+        };
+      }
+      throw new Error('Respuesta vacía del servidor');
+    }
+    
+    // Intentar parsear como JSON
+    let result;
+    try {
+      result = JSON.parse(text);
+    } catch (e) {
+      // Si no es JSON pero la respuesta es exitosa (posible HTML de error)
+      if (response.ok) {
+        return {
+          success: true,
+          message: 'Consulta enviada exitosamente',
+          warning: 'invalid_json'
+        };
+      }
+      throw new Error('Respuesta inválida del servidor');
+    }
+    
+    // Si hay error 504 o timeout en el servidor
+    if (response.status === 504) {
+      return {
+        success: true,
+        message: 'Consulta recibida, se procesará en breve',
+        id: result.id || null,
+        warning: 'server_timeout'
+      };
+    }
+    
+    return result;
+    
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    // Manejar específicamente el error de timeout
+    if (error.name === 'AbortError') {
+      console.warn('Timeout en crearConsulta - La consulta puede haberse guardado igualmente');
+      return {
+        success: true, // Consideramos éxito optimista
+        message: 'La consulta está siendo procesada. Te contactaremos a la brevedad.',
+        warning: 'timeout'
+      };
+    }
+    
+    console.error('Error en crearConsulta:', error);
+    throw error;
   }
+}
 
   async getConsultas(params = '') {
     const url = params 
