@@ -173,29 +173,29 @@ const handleSubmit = async (e) => {
         
         if (response.success) {
             toast.success("✅ Consulta guardada con éxito. Te contactaremos pronto.", {
-                duration: 4000
+                duration: 2000
             });
         } else {
             toast.warning("⚠️ Consulta guardada, pero hubo un pequeño error.", {
-                duration: 4000
+                duration: 2000
             });
         }
         
         // Cerrar el modal DESPUÉS de que el usuario vea el mensaje
         setTimeout(() => {
             closeModal();
-        }, 3500);
+        }, 1500);
         
     } catch (error) {
         console.error("Error:", error);
         setIsSubmitting(false);
         toast.error("❌ No se pudo guardar, pero ya abrimos WhatsApp.", {
-            duration: 4000
+            duration: 2000
         });
         
         setTimeout(() => {
             closeModal();
-        }, 3500);
+        }, 1500);
     }
 };
 

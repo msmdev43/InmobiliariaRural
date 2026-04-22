@@ -41,7 +41,10 @@ export default function Contact() {
       // =========================
       // 2. ENVIAR EMAIL (NO BLOQUEANTE)
       // =========================
-      apiService.enviarEmailConsulta(data)
+      apiService.enviarEmailConsulta({
+        ...data,
+        consulta_id: response.id
+      })
         .then(res => {
           if (!res.success) {
             console.warn("Email no enviado:", res.message);
@@ -54,21 +57,13 @@ export default function Contact() {
       // =========================
       // 3. UX + WHATSAPP
       // =========================
-      toast.success("Consulta enviada. Redirigiendo...");
-
-      setTimeout(() => {
-        if (response.notificaciones?.whatsapp_url) {
-          window.location.href = response.notificaciones.whatsapp_url;
-        } else {
-          setFormData({
-            nombrecompleto: "",
-            email: "",
-            telefono: "",
-            mensaje: "",
-          });
-        }
-      }, 1500);
-
+      toast.success("Consulta enviada correctamente");
+      setFormData({
+        nombrecompleto: "",
+        email: "",
+        telefono: "",
+        mensaje: "",
+      });
     } catch (error) {
       console.error(error);
       toast.error("Error al enviar la consulta");
