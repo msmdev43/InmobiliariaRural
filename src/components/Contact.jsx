@@ -18,58 +18,66 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    try {
-      const data = {
-        nombrecompleto: formData.nombrecompleto.trim(),
-        telefono: formData.telefono.trim(),
-        email: formData.email.trim(),
-        mensaje: formData.mensaje.trim(),
-        tipo: 'soporte' // o propiedad según caso
-      };
-
-      // =========================
-      // 1. GUARDAR EN DB (CRÍTICO)
-      // =========================
-      const response = await apiService.crearConsulta(data);
-
-      if (!response.success) {
-        throw new Error(response.message || "Error al guardar consulta");
-      }
-
-      // =========================
-      // 2. ENVIAR EMAIL (NO BLOQUEANTE)
-      // =========================
-      apiService.enviarEmailConsulta({
-        ...data,
-        consulta_id: response.id
-      })
-        .then(res => {
-          if (!res.success) {
-            console.warn("Email no enviado:", res.message);
-          }
-        })
-        .catch(err => {
-          console.warn("Error email:", err);
-        });
-
-      // =========================
-      // 3. UX + WHATSAPP
-      // =========================
-      toast.success("Consulta enviada correctamente");
-      setFormData({
-        nombrecompleto: "",
-        email: "",
-        telefono: "",
-        mensaje: "",
-      });
-    } catch (error) {
-      console.error(error);
-      toast.error("Error al enviar la consulta");
-    } finally {
-      setIsSubmitting(false);
+    // =========================
+    // VALIDACIÓN BÁSICA
+    // =========================
+    if (!formData.nombrecompleto || !formData.email || !formData.telefono || !formData.mensaje) {
+      toast.error("Completá todos los campos");
+      return;
     }
+
+    // =========================
+    // 1. ABRIR MAIL (INMEDIATO)
+    // =========================
+    const destino = "gustavobarberini@hotmail.com";
+    const asunto = "Consulta desde la web";
+
+    const mensaje = `
+  Nombre: ${formData.nombrecompleto}
+  Email: ${formData.email}
+  Teléfono: ${formData.telefono}
+
+  Mensaje:
+  ${formData.mensaje}
+    `;
+
+    const url = `mailto:${destino}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`;
+
+    window.location.href = url;
+
+    // =========================
+    // 2. GUARDAR EN DB (BACKGROUND)
+    // =========================
+    const data = {
+      nombrecompleto: formData.nombrecompleto.trim(),
+      telefono: formData.telefono.trim(),
+      email: formData.email.trim(),
+      mensaje: formData.mensaje.trim(),
+      tipo: 'soporte'
+    };
+
+    apiService.crearConsulta(data)
+      .then(response => {
+        if (!response.success) {
+          console.warn("No se guardó la consulta:", response.message);
+        }
+      })
+      .catch(err => {
+        console.warn("Error guardando consulta:", err);
+      });
+
+    // =========================
+    // 3. UX
+    // =========================
+    toast.success("Se abrió tu correo para enviar la consulta");
+
+    setFormData({
+      nombrecompleto: "",
+      email: "",
+      telefono: "",
+      mensaje: "",
+    });
   };
 
   const handleChange = (e) => {
