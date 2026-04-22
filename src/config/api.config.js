@@ -19,6 +19,7 @@ const API_CONFIG = {
     LISTAR: '/BackInmobiliariaRural/consultas/listarConsultas.php',
     ELIMINAR: '/BackInmobiliariaRural/consultas/eliminarConsulta.php',
     ULTIMAS: '/BackInmobiliariaRural/consultas/ultimasConsultas.php',
+    SEND: '/BackInmobiliariaRural/consultas/send.php',
   },
   
   // Endpoints de propiedades

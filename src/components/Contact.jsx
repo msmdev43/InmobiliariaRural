@@ -20,70 +20,58 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validaciones
-    if (!formData.nombrecompleto.trim()) {
-      toast.error("Por favor, ingresa tu nombre completo");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.email.trim()) {
-      toast.error("El email es obligatorio");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.telefono.trim()) {
-      toast.error("El teléfono es obligatorio");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error("Por favor, ingresa un email válido");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.mensaje.trim()) {
-      toast.error("Por favor, escribe tu mensaje");
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
-      // Preparar datos para el backend
       const data = {
         nombrecompleto: formData.nombrecompleto.trim(),
-        email: formData.email.trim(),
         telefono: formData.telefono.trim(),
+        email: formData.email.trim(),
         mensaje: formData.mensaje.trim(),
-        tipo: "soporte" // Tipo soporte para consultas generales
+        tipo: 'soporte' // o propiedad según caso
       };
 
+      // =========================
+      // 1. GUARDAR EN DB (CRÍTICO)
+      // =========================
       const response = await apiService.crearConsulta(data);
-      
-      if (response.success) {
-        toast.success("Consulta enviada. Redirigiendo a WhatsApp...");
 
-        setTimeout(() => {
-          if (response.notificaciones?.whatsapp_url) {
-            window.location.href = response.notificaciones.whatsapp_url;
-          } else {
-            setFormData({
-              nombrecompleto: "",
-              email: "",
-              telefono: "",
-              mensaje: "",
-            });
-          }
-        }, 1500);
-      } else {
-        toast.error(response.message || "Error al enviar la consulta. Por favor, intenta nuevamente.");
+      if (!response.success) {
+        throw new Error(response.message || "Error al guardar consulta");
       }
+
+      // =========================
+      // 2. ENVIAR EMAIL (NO BLOQUEANTE)
+      // =========================
+      apiService.enviarEmailConsulta(data)
+        .then(res => {
+          if (!res.success) {
+            console.warn("Email no enviado:", res.message);
+          }
+        })
+        .catch(err => {
+          console.warn("Error email:", err);
+        });
+
+      // =========================
+      // 3. UX + WHATSAPP
+      // =========================
+      toast.success("Consulta enviada. Redirigiendo...");
+
+      setTimeout(() => {
+        if (response.notificaciones?.whatsapp_url) {
+          window.location.href = response.notificaciones.whatsapp_url;
+        } else {
+          setFormData({
+            nombrecompleto: "",
+            email: "",
+            telefono: "",
+            mensaje: "",
+          });
+        }
+      }, 1500);
+
     } catch (error) {
-      console.error("Error al enviar:", error);
-      toast.error("Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.");
+      console.error(error);
+      toast.error("Error al enviar la consulta");
     } finally {
       setIsSubmitting(false);
     }

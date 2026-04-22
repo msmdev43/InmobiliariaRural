@@ -477,88 +477,94 @@ async request(endpoint, options = {}, timeout = 30000) {
     }
   }
 
-async crearConsulta(data) {
-  // Agregar timeout de 15 segundos para evitar espera infinita
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
-  
-  try {
-    console.log('Enviando consulta:', data);
+  async crearConsulta(data) {
+    // Agregar timeout de 15 segundos para evitar espera infinita
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     
-    const response = await fetch(CONSULTAS_ENDPOINTS.CREAR, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    
-    // Verificar si la respuesta tiene contenido
-    const text = await response.text();
-    console.log('Respuesta crearConsulta:', text.substring(0, 300));
-    
-    // Si la respuesta está vacía
-    if (!text || text.trim() === '') {
+    try {
+      console.log('Enviando consulta:', data);
+      
+      const response = await fetch(CONSULTAS_ENDPOINTS.CREAR, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      // Verificar si la respuesta tiene contenido
+      const text = await response.text();
+      console.log('Respuesta crearConsulta:', text.substring(0, 300));
+      
+      // Si la respuesta está vacía
+      if (!text || text.trim() === '') {
+        if (response.status === 504) {
+          return {
+            success: true, // Consideramos éxito aunque haya timeout
+            message: 'Consulta recibida, procesando en segundo plano',
+            id: null,
+            warning: 'timeout'
+          };
+        }
+        throw new Error('Respuesta vacía del servidor');
+      }
+      
+      // Intentar parsear como JSON
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch (e) {
+        if (response.ok) {
+          return {
+            success: true,
+            message: 'Consulta enviada exitosamente',
+            warning: 'invalid_json'
+          };
+        }
+        throw new Error('Respuesta inválida del servidor', e);
+      }
+      
+      // Si hay error 504 o timeout en el servidor
       if (response.status === 504) {
         return {
-          success: true, // Consideramos éxito aunque haya timeout
-          message: 'Consulta recibida, procesando en segundo plano',
-          id: null,
+          success: true,
+          message: 'Consulta recibida, se procesará en breve',
+          id: result.id || null,
+          warning: 'server_timeout'
+        };
+      }
+      
+      return result;
+      
+    } catch (error) {
+      clearTimeout(timeoutId);
+      
+      // Manejar específicamente el error de timeout
+      if (error.name === 'AbortError') {
+        console.warn('Timeout en crearConsulta - La consulta puede haberse guardado igualmente');
+        return {
+          success: true, // Consideramos éxito optimista
+          message: 'La consulta está siendo procesada. Te contactaremos a la brevedad.',
           warning: 'timeout'
         };
       }
-      throw new Error('Respuesta vacía del servidor');
+      
+      console.error('Error en crearConsulta:', error);
+      throw error;
     }
-    
-    // Intentar parsear como JSON
-    let result;
-    try {
-      result = JSON.parse(text);
-    } catch (e) {
-      // Si no es JSON pero la respuesta es exitosa (posible HTML de error)
-      if (response.ok) {
-        return {
-          success: true,
-          message: 'Consulta enviada exitosamente',
-          warning: 'invalid_json'
-        };
-      }
-      throw new Error('Respuesta inválida del servidor');
-    }
-    
-    // Si hay error 504 o timeout en el servidor
-    if (response.status === 504) {
-      return {
-        success: true,
-        message: 'Consulta recibida, se procesará en breve',
-        id: result.id || null,
-        warning: 'server_timeout'
-      };
-    }
-    
-    return result;
-    
-  } catch (error) {
-    clearTimeout(timeoutId);
-    
-    // Manejar específicamente el error de timeout
-    if (error.name === 'AbortError') {
-      console.warn('Timeout en crearConsulta - La consulta puede haberse guardado igualmente');
-      return {
-        success: true, // Consideramos éxito optimista
-        message: 'La consulta está siendo procesada. Te contactaremos a la brevedad.',
-        warning: 'timeout'
-      };
-    }
-    
-    console.error('Error en crearConsulta:', error);
-    throw error;
   }
-}
+
+  async enviarEmailConsulta(data) {
+    return this.request(CONSULTAS_ENDPOINTS.SEND, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
 
   async getConsultas(params = '') {
     const url = params 

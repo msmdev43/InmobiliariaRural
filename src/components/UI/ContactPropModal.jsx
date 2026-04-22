@@ -21,61 +21,55 @@ const ContactPropModal = ({ propiedad, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validaciones
-    if (!formData.nombrecompleto.trim()) {
-      toast.error('Por favor, ingresa tu nombre completo');
-      return;
-    }
-    
-    if (!formData.email.trim()) {
-      toast.error('Por favor, ingresa tu email');
-      return;
-    }
-    
-    if (!formData.telefono.trim()) {
-      toast.error('Por favor, ingresa tu teléfono');
-      return;
-    }
-    
-    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error('Por favor, ingresa un email válido');
-      return;
-    }
-    
-    if (!formData.mensaje.trim()) {
-      toast.error('Por favor, escribe tu mensaje');
-      return;
-    }
-    
     setLoading(true);
-    
+
     try {
       const data = {
         nombrecompleto: formData.nombrecompleto.trim(),
         telefono: formData.telefono.trim(),
         email: formData.email.trim(),
-        mensaje: `Propiedad consultada: ${propiedad.titulo} (Código: ${propiedad.codigo})\n\n${formData.mensaje.trim()}`,
-        tipo: 'propiedad',
-        propiedad_id: propiedad.id
+        mensaje: formData.mensaje.trim(),
+        tipo: 'soporte' // o propiedad según caso
       };
-      
-      const response = await apiService.crearConsulta(data);
-      
-      if (response.success) {
-        toast.success('Consulta enviada. Redirigiendo a WhatsApp...');
 
-        setTimeout(() => {
-          if (response.notificaciones?.whatsapp_url) {
-            window.location.href = response.notificaciones.whatsapp_url;
-          } else {
-            onClose();
-          }
-        }, 1500);
+      // =========================
+      // 1. GUARDAR EN DB (CRÍTICO)
+      // =========================
+      const response = await apiService.crearConsulta(data);
+
+      if (!response.success) {
+        throw new Error(response.message || "Error al guardar consulta");
       }
-    } catch (err) {
-      console.error('Error:', err);
-      toast.error('Error de conexión. Por favor, intenta nuevamente.');
+
+      // =========================
+      // 2. ENVIAR EMAIL (NO BLOQUEANTE)
+      // =========================
+      apiService.enviarEmailConsulta(data)
+        .then(res => {
+          if (!res.success) {
+            console.warn("Email no enviado:", res.message);
+          }
+        })
+        .catch(err => {
+          console.warn("Error email:", err);
+        });
+
+      // =========================
+      // 3. UX + WHATSAPP
+      // =========================
+      toast.success("Consulta enviada. Redirigiendo...");
+
+      setTimeout(() => {
+        if (response.notificaciones?.whatsapp_url) {
+          window.location.href = response.notificaciones.whatsapp_url;
+        } else {
+          onClose?.();
+        }
+      }, 1500);
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al enviar la consulta");
     } finally {
       setLoading(false);
     }

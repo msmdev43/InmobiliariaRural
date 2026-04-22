@@ -1,7 +1,7 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\components\PropertiesHeader.jsx
 import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
-import ContactGeneralModal from "./UI/ContactGeneralModal";
+import ContactPropHeaderModal from "./UI/ContactPropHeaderModal";
 import "../styles/components/header.css";
 
 export default function PropertiesHeader() {
@@ -123,7 +123,7 @@ export default function PropertiesHeader() {
       </header>
 
       {/* Modal de contacto general */}
-      <ContactGeneralModal 
+      <ContactPropHeaderModal 
         isOpen={isContactModalOpen} 
         onClose={closeContactModal} 
       />

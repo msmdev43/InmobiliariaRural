@@ -1,5 +1,5 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\components\Services.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Home, 
   LandPlot, 
@@ -70,12 +70,23 @@ export default function Services() {
   });
   const toast = useToast();
 
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen]);
+
   const openModal = (service) => {
     setSelectedService(service);
     const mensaje = `Consulta sobre: ${service.title}\n\nMe interesa recibir información detallada sobre el servicio de ${service.title.toLowerCase()}. Por favor, contactarme a la brevedad.`;
     setFormData(prev => ({ ...prev, mensaje }));
     setIsModalOpen(true);
-    document.body.style.overflow = 'hidden';
   };
 
   const closeModal = () => {
@@ -87,7 +98,6 @@ export default function Services() {
       telefono: "",
       mensaje: ""
     });
-    document.body.style.overflow = 'unset';
   };
 
   const handleChange = (e) => {
