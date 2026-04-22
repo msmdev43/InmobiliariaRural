@@ -924,3 +924,56 @@
     font-size: 0.65rem;
   }
 }
+
+/* ✅ Estilos para los nuevos botones de WhatsApp y Email */
+.pl-action-btn.pl-whatsapp-btn {
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: white;
+}
+
+.pl-action-btn.pl-whatsapp-btn:hover {
+  background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.pl-action-btn.pl-email-btn {
+  background: linear-gradient(135deg, #EA4335 0%, #C5221F 100%);
+  color: white;
+}
+
+.pl-action-btn.pl-email-btn:hover {
+  background: linear-gradient(135deg, #C5221F 0%, #A50E0E 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(234, 67, 53, 0.3);
+}
+
+/* Ajustes responsivos para los botones */
+@media (max-width: 768px) {
+  .pl-action-buttons {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .pl-action-btn {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .pl-action-btn .pl-action-icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pl-action-btn {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+  }
+  
+  .pl-view-details-btn {
+    padding: 6px 12px;
+    font-size: 0.7rem;
+  }
+}

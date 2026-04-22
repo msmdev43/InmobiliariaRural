@@ -3,7 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import apiService from '../services/api.service';
 import ShareModal from './UI/ShareModal';
-import ContactModal from './UI/ContactPropModal';
+// ✅ Eliminar import de ContactModal
+// import ContactModal from './UI/ContactPropModal';
 import ENDPOINTS from '../config/endpoints';
 import "../styles/components/propiedades/propertyList.css";
 
@@ -18,7 +19,8 @@ export default function PropertyList({ showHero = true }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [shareModal, setShareModal] = useState({ isOpen: false, propiedad: null });
-  const [contactModal, setContactModal] = useState({ isOpen: false, propiedad: null });
+  // ✅ Eliminar estado de contactModal
+  // const [contactModal, setContactModal] = useState({ isOpen: false, propiedad: null });
 
     const handleImageError = (e) => {
     if (e.target.src !== DEFAULT_IMAGE) {
@@ -52,11 +54,17 @@ export default function PropertyList({ showHero = true }) {
   // Flag para controlar el scroll inicial
   const [initialScrollDone, setInitialScrollDone] = useState(false);
 
+  // ✅ Configuración de contacto (reemplazar con datos reales)
+  const CONTACT_CONFIG = {
+    whatsappNumber: "5492291510406", // Reemplazar con número real
+    email: "contacto@inmobiliaria.com" // Reemplazar con email real
+  };
+
   // Función para hacer scroll hasta los resultados
   const scrollToResults = (behavior = 'smooth', delay = 2000) => {
     setTimeout(() => {
       if (resultsRef.current) {
-        const offset = 80; // Offset para dejar espacio (altura de la barra de filtros sticky)
+        const offset = 80;
         const elementPosition = resultsRef.current.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - offset;
         
@@ -65,7 +73,6 @@ export default function PropertyList({ showHero = true }) {
           behavior: behavior
         });
       } else if (filtersBarRef.current) {
-        // Fallback: scroll hasta la barra de filtros
         filtersBarRef.current.scrollIntoView({ behavior: behavior, block: 'start' });
       }
     }, delay);
@@ -76,7 +83,6 @@ export default function PropertyList({ showHero = true }) {
   }, []);
 
   useEffect(() => {
-    // Leer filtros de la URL cuando se carga el componente o cambian los parámetros
     const tipoCampoFromUrl = searchParams.get('tipo_campo');
     const provinciaFromUrl = searchParams.get('provincia');
     const ciudadFromUrl = searchParams.get('ciudad');
@@ -97,12 +103,8 @@ export default function PropertyList({ showHero = true }) {
     }
   }, [searchParams]);
 
-  // Efecto para hacer scroll cuando las propiedades terminan de cargar (solo la primera vez)
   useEffect(() => {
-    // ✅ Solo hacer scroll si estamos en la página de propiedades (showHero = true)
-    // Y solo la primera vez que se cargan las propiedades
     if (!loading && properties.length > 0 && !initialScrollDone && showHero) {
-      // Verificar si estamos en la página de propiedades (no cuando venimos de destacadas)
       const isPropertiesPage = window.location.pathname === '/propiedades';
       if (isPropertiesPage) {
         scrollToResults('smooth', 2000);
@@ -111,7 +113,6 @@ export default function PropertyList({ showHero = true }) {
     }
   }, [loading, properties, initialScrollDone, showHero]);
 
-  // Cargar provincias y tipos de campos
   const cargarFiltrosIniciales = async () => {
     try {
       const response = await apiService.getPropiedadesPublic({ pagina: 1, por_pagina: 1 });
@@ -130,7 +131,6 @@ export default function PropertyList({ showHero = true }) {
     }
   };
 
-  // Cargar ciudades según la provincia seleccionada
   const cargarCiudadesPorProvincia = async (provincia) => {
     if (!provincia) {
       setAvailableFilters(prev => ({ ...prev, ciudades: [] }));
@@ -166,7 +166,6 @@ export default function PropertyList({ showHero = true }) {
       setLoading(true);
       const filtros = filtrosAplicados || filters;
       
-      // Construir parámetros de filtro
       const params = {
         pagina: 1,
         por_pagina: 12
@@ -182,7 +181,6 @@ export default function PropertyList({ showHero = true }) {
       if (response.success) {
         setProperties(response.data || []);
         
-        // Actualizar URL con los filtros aplicados
         const newParams = new URLSearchParams();
         if (filtros.tipo_campo) newParams.set('tipo_campo', filtros.tipo_campo);
         if (filtros.provincia) newParams.set('provincia', filtros.provincia);
@@ -190,7 +188,6 @@ export default function PropertyList({ showHero = true }) {
         if (filtros.tipo_operacion) newParams.set('tipo_operacion', filtros.tipo_operacion);
         setSearchParams(newParams);
         
-        // Si se aplicó un filtro de provincia, actualizar ciudades
         if (filtros.provincia) {
           await cargarCiudadesPorProvincia(filtros.provincia);
         }
@@ -207,11 +204,9 @@ export default function PropertyList({ showHero = true }) {
     }
   };
 
-  // Función que se ejecuta al cambiar un filtro (aplicación automática)
   const handleFilterChange = async (e) => {
     const { name, value } = e.target;
     
-    // Actualizar el estado del filtro
     const nuevosFiltros = {
       ...filters,
       [name]: value,
@@ -220,24 +215,18 @@ export default function PropertyList({ showHero = true }) {
     
     setFilters(nuevosFiltros);
     
-    // Si cambia la provincia, cargar las ciudades correspondientes
     if (name === 'provincia') {
       await cargarCiudadesPorProvincia(value);
     }
     
-    // Aplicar filtros automáticamente
     await cargarPropiedades(nuevosFiltros);
-    
-    // Hacer scroll a resultados después de aplicar filtros con delay de 2 segundos
     scrollToResults('smooth', 2000);
   };
 
-  // Función manual para aplicar filtros
   const aplicarFiltros = async () => {
     setApplyingFilters(true);
     await cargarPropiedades(filters);
     setApplyingFilters(false);
-    // Hacer scroll a resultados después de aplicar filtros con delay de 2 segundos
     scrollToResults('smooth', 2000);
   };
 
@@ -251,7 +240,6 @@ export default function PropertyList({ showHero = true }) {
     setFilters(filtrosVacios);
     setAvailableFilters(prev => ({ ...prev, ciudades: [] }));
     await cargarPropiedades(filtrosVacios);
-    // Hacer scroll a resultados después de limpiar filtros con delay de 2 segundos
     scrollToResults('smooth', 2000);
   };
 
@@ -260,12 +248,28 @@ export default function PropertyList({ showHero = true }) {
     setShareModal({ isOpen: true, propiedad });
   };
 
-  const handleContact = (e, propiedad) => {
+  // ✅ Nuevas funciones de contacto (sin modal)
+  const handleContactarWhatsApp = (e, propiedad) => {
     e.stopPropagation();
-    setContactModal({ isOpen: true, propiedad });
+    const message = `Hola, estoy interesado en la propiedad "${propiedad.titulo}" (Código: ${propiedad.codigo}). ¿Podrían darme más información?`;
+    const whatsappUrl = `https://wa.me/${CONTACT_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
-  // Función para abrir en nueva pestaña
+  const handleContactarEmail = (e, propiedad) => {
+    e.stopPropagation();
+    const subject = `Consulta sobre propiedad: ${propiedad.titulo} (Código: ${propiedad.codigo})`;
+    const body = `Hola, me comunico por la propiedad "${propiedad.titulo}" con código ${propiedad.codigo}. Me gustaría recibir más información.\n\nSaludos cordiales.`;
+    const mailtoUrl = `mailto:${CONTACT_CONFIG.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoUrl, '_blank');
+  };
+
+  // ✅ Eliminar handleContact antiguo
+  // const handleContact = (e, propiedad) => {
+  //   e.stopPropagation();
+  //   setContactModal({ isOpen: true, propiedad });
+  // };
+
   const openInNewTab = (e, propiedadCodigo) => {
     e.stopPropagation();
     window.open(`/propiedad/${propiedadCodigo}`, '_blank');
@@ -275,9 +279,10 @@ export default function PropertyList({ showHero = true }) {
     setShareModal({ isOpen: false, propiedad: null });
   };
 
-  const closeContactModal = () => {
-    setContactModal({ isOpen: false, propiedad: null });
-  };
+  // ✅ Eliminar closeContactModal
+  // const closeContactModal = () => {
+  //   setContactModal({ isOpen: false, propiedad: null });
+  // };
 
   if (loading && properties.length === 0) {
     return (
@@ -333,15 +338,12 @@ export default function PropertyList({ showHero = true }) {
 
   return (
     <div className="pl-property-list-container">
-      {/* Modales */}
+      {/* Solo el modal de compartir */}
       {shareModal.isOpen && shareModal.propiedad && (
         <ShareModal propiedad={shareModal.propiedad} onClose={closeShareModal} />
       )}
-      {contactModal.isOpen && contactModal.propiedad && (
-        <ContactModal propiedad={contactModal.propiedad} onClose={closeContactModal} />
-      )}
+      {/* ✅ Eliminar ContactModal */}
 
-      {/* Header con imagen de fondo */}
       {showHero && (
         <div 
           className="pl-hero-section"
@@ -357,11 +359,9 @@ export default function PropertyList({ showHero = true }) {
         </div>
       )}
 
-      {/* Barra de filtros */}
       <div className="pl-filters-bar" ref={filtersBarRef}>
         <div className="pl-filters-wrapper">
           <div className="pl-filters-grid">
-            {/* Filtro por provincia */}
             <div className="pl-filter-group">
               <label className="pl-filter-label">Provincia</label>
               <select
@@ -377,7 +377,6 @@ export default function PropertyList({ showHero = true }) {
               </select>
             </div>
 
-            {/* Filtro por ciudad */}
             <div className="pl-filter-group">
               <label className="pl-filter-label">Ciudad / Localidad</label>
               <select
@@ -396,7 +395,6 @@ export default function PropertyList({ showHero = true }) {
               </select>
             </div>
 
-            {/* Filtro por tipo de campo */}
             <div className="pl-filter-group">
               <label className="pl-filter-label">Tipo de campo</label>
               <select
@@ -414,7 +412,6 @@ export default function PropertyList({ showHero = true }) {
               </select>
             </div>
 
-            {/* Filtro por tipo de operación */}
             <div className="pl-filter-group">
               <label className="pl-filter-label">Operación</label>
               <select
@@ -429,7 +426,6 @@ export default function PropertyList({ showHero = true }) {
               </select>
             </div>
 
-            {/* Botones de acción */}
             <div className="pl-filters-actions">
               <button 
                 className="pl-filter-btn pl-filter-clear"
@@ -450,7 +446,6 @@ export default function PropertyList({ showHero = true }) {
         </div>
       </div>
 
-      {/* Resultados - Añadimos la referencia aquí */}
       <div className="pl-container" ref={resultsRef}>
         <div className="pl-results-info">
           <p>
@@ -486,7 +481,6 @@ export default function PropertyList({ showHero = true }) {
                   key={prop.id} 
                   className="pl-property-list-item"
                 >
-                  {/* Columna de imagen - Clic para abrir en nueva pestaña */}
                   <div 
                     className="pl-list-item-image"
                     onClick={(e) => openInNewTab(e, prop.codigo)}
@@ -508,7 +502,6 @@ export default function PropertyList({ showHero = true }) {
                     )}
                   </div>
                   
-                  {/* Columna de información */}
                   <div className="pl-list-item-info">
                     <div className="pl-item-header">
                       <h3 
@@ -560,6 +553,7 @@ export default function PropertyList({ showHero = true }) {
                         <span className="pl-price-amount">{prop.moneda} {prop.precio_formateado}</span>
                       </div>
                       
+                      {/* ✅ Botones de contacto rediseñados */}
                       <div className="pl-action-buttons">
                         <button 
                           className="pl-action-btn pl-share-btn"
@@ -575,16 +569,32 @@ export default function PropertyList({ showHero = true }) {
                           </svg>
                           Compartir
                         </button>
+                        
+                        {/* ✅ Botón de WhatsApp */}
                         <button 
-                          className="pl-action-btn pl-contact-btn"
-                          onClick={(e) => handleContact(e, prop)}
-                          title="Contactar por esta propiedad"
+                          className="pl-action-btn pl-whatsapp-btn"
+                          onClick={(e) => handleContactarWhatsApp(e, prop)}
+                          title="Contactar por WhatsApp"
                         >
                           <svg className="pl-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                           </svg>
-                          Contactar
+                          WhatsApp
                         </button>
+                        
+                        {/* ✅ Botón de Email */}
+                        <button 
+                          className="pl-action-btn pl-email-btn"
+                          onClick={(e) => handleContactarEmail(e, prop)}
+                          title="Contactar por Email"
+                        >
+                          <svg className="pl-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                          </svg>
+                          Email
+                        </button>
+                        
                         <button 
                           className="pl-view-details-btn"
                           onClick={(e) => openInNewTab(e, prop.codigo)}

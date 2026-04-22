@@ -1,12 +1,12 @@
 // C:\xampp\htdocs\InmobiliariaRural\src\pages\propiedades\VerFicha.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MapPin, Ruler, Home, Maximize, Calendar, Eye, MessageCircle, ArrowLeft, Share2 } from "lucide-react";
+import { MapPin, Ruler, Home, Maximize, Calendar, Eye, MessageCircle, ArrowLeft, Share2, Mail, Phone } from "lucide-react"; // ✅ Agregar Mail y Phone
 import Navbar from '../../components/PropertiesHeader';
 import Footer from '../../components/PropertyFooter';
 import apiService from '../../services/api.service';
 import ENDPOINTS from '../../config/endpoints';
-import ImageModal from '../../components/UI/ImageModal'; // ✅ Importar el nuevo modal
+import ImageModal from '../../components/UI/ImageModal';
 import '../../styles/pages/propiedades/VerFicha.css';
 
 // Usar constantes desde la configuración
@@ -20,8 +20,8 @@ const VerFicha = () => {
   const [loading, setLoading] = useState(true);
   const [propiedad, setPropiedad] = useState(null);
   const [imagenSeleccionada, setImagenSeleccionada] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false); // ✅ Nuevo estado para el modal
-  const [modalImageIndex, setModalImageIndex] = useState(0); // ✅ Índice de imagen seleccionada
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
   const [mostrarMapa, setMostrarMapa] = useState(false);
 
   // FORZAR SCROLL AL INICIO DE LA PÁGINA
@@ -137,8 +137,22 @@ const VerFicha = () => {
     }
   };
 
-  const handleContactar = () => {
-    navigate(`/contacto?propiedad=${propiedad.codigo}&titulo=${encodeURIComponent(propiedad.titulo)}`);
+  // ✅ Nuevas funciones para contacto
+  const handleContactarWhatsApp = () => {
+    // Número de WhatsApp de la inmobiliaria (cambiar por el número real)
+    const whatsappNumber = "5492291510406"; // Reemplazar con el número real
+    const message = `Hola, estoy interesado en la propiedad "${propiedad.titulo}" (Código: ${propiedad.codigo}). ¿Podrían darme más información?`;
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleContactarEmail = () => {
+    // Email de la inmobiliaria (cambiar por el email real)
+    const email = "gustavobarberini@hotmail.com"; // Reemplazar con el email real
+    const subject = `Consulta sobre propiedad: ${propiedad.titulo} (Código: ${propiedad.codigo})`;
+    const body = `Hola, me comunico por la propiedad "${propiedad.titulo}" con código ${propiedad.codigo}. Me gustaría recibir más información.\n\nSaludos cordiales.`;
+    const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailtoUrl, '_blank');
   };
 
   if (loading) {
@@ -236,7 +250,7 @@ const VerFicha = () => {
                       className={`vf-miniatura ${imagenSeleccionada?.id === img.id ? 'activo' : ''}`}
                       onClick={() => {
                         setImagenSeleccionada(img);
-                        handleOpenModal(index); // ✅ Abre modal en el índice de la miniatura
+                        handleOpenModal(index);
                       }}
                     >
                       <img 
@@ -260,6 +274,20 @@ const VerFicha = () => {
               <span className="vf-tipo-operacion">
                 {propiedad.tipo_operacion === 'alquiler' ? 'EN ALQUILER' : 'EN VENTA'}
               </span>
+            </div>
+
+            <div className="vf-card vf-card-contacto">
+              <h3 className="vf-card-titulo">Contactar por esta propiedad</h3>
+              <div className="vf-botones-contacto">
+                <button onClick={handleContactarWhatsApp} className="vf-btn-whatsapp">
+                  <MessageCircle size={20} />
+                  WhatsApp
+                </button>
+                <button onClick={handleContactarEmail} className="vf-btn-email">
+                  <Mail size={20} />
+                  Email
+                </button>
+              </div>
             </div>
 
             <div className="vf-card">
@@ -339,13 +367,6 @@ const VerFicha = () => {
                 </div>
               </div>
             )}
-
-            <div className="vf-card vf-card-contacto">
-              <button onClick={handleContactar} className="vf-btn-contacto">
-                <MessageCircle size={20} />
-                Contactar por esta propiedad
-              </button>
-            </div>
 
             <div className="vf-card vf-card-estadisticas">
               <div className="vf-estadistica">

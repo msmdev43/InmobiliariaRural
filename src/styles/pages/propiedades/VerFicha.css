@@ -669,3 +669,97 @@
     height: 40px;
   }
 }
+
+.vf-card-contacto {
+  background: linear-gradient(135deg, var(--bg-gray) 0%, #f3f4f6 100%);
+  border: none;
+  padding: 24px;
+}
+
+.vf-card-contacto .vf-card-titulo {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.vf-botones-contacto {
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+}
+
+@media (min-width: 480px) {
+  .vf-botones-contacto {
+    flex-direction: row;
+  }
+}
+
+/* Botón de WhatsApp */
+.vf-btn-whatsapp {
+  flex: 1;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.vf-btn-whatsapp:hover {
+  background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+}
+
+/* Botón de Email */
+.vf-btn-email {
+  flex: 1;
+  background: linear-gradient(135deg, #EA4335 0%, #C5221F 100%);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.vf-btn-email:hover {
+  background: linear-gradient(135deg, #C5221F 0%, #A50E0E 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(234, 67, 53, 0.3);
+}
+
+/* Estilos responsivos adicionales */
+@media (max-width: 480px) {
+  .vf-botones-contacto {
+    flex-direction: column;
+  }
+  
+  .vf-btn-whatsapp,
+  .vf-btn-email {
+    padding: 14px 20px;
+    font-size: 0.9rem;
+  }
+  
+  .vf-btn-whatsapp svg,
+  .vf-btn-email svg {
+    width: 18px;
+    height: 18px;
+  }
+}
