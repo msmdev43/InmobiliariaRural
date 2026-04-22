@@ -562,6 +562,9 @@ async request(endpoint, options = {}, timeout = 30000) {
   async enviarEmailConsulta(data) {
     return this.request(CONSULTAS_ENDPOINTS.SEND, {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(data)
     });
   }
