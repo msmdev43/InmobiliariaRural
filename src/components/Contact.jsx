@@ -19,65 +19,66 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // =========================
-    // VALIDACIÓN BÁSICA
-    // =========================
     if (!formData.nombrecompleto || !formData.email || !formData.telefono || !formData.mensaje) {
       toast.error("Completá todos los campos");
       return;
     }
 
-    // =========================
-    // 1. ABRIR MAIL (INMEDIATO)
-    // =========================
-    const destino = "gustavobarberini@hotmail.com";
-    const asunto = "Consulta desde la web";
+    setIsSubmitting(true);
 
-    const mensaje = `
-  Nombre: ${formData.nombrecompleto}
-  Email: ${formData.email}
-  Teléfono: ${formData.telefono}
-
-  Mensaje:
-  ${formData.mensaje}
-    `;
-
-    const url = `mailto:${destino}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`;
-
-    window.location.href = url;
-
-    // =========================
-    // 2. GUARDAR EN DB (BACKGROUND)
-    // =========================
     const data = {
       nombrecompleto: formData.nombrecompleto.trim(),
       telefono: formData.telefono.trim(),
       email: formData.email.trim(),
       mensaje: formData.mensaje.trim(),
-      tipo: 'soporte'
+      tipo: "soporte"
     };
 
-    apiService.crearConsulta(data)
-      .then(response => {
-        if (!response.success) {
-          console.warn("No se guardó la consulta:", response.message);
-        }
-      })
-      .catch(err => {
-        console.warn("Error guardando consulta:", err);
+    try {
+      // =========================
+      // 1. GUARDAR EN DB (PRIMERO)
+      // =========================
+      const dbResponse = await apiService.crearConsulta(data);
+
+      if (!dbResponse.success) {
+        throw new Error(dbResponse.message || "Error al guardar la consulta");
+      }
+
+      // =========================
+      // 2. ENVIAR EMAIL (OPCIONAL)
+      // =========================
+      try {
+        await apiService.enviarEmailConsulta({
+          nombre: data.nombrecompleto,
+          email: data.email,
+          telefono: data.telefono,
+          mensaje: data.mensaje,
+          tipo: data.tipo,
+          consulta_id: dbResponse.id || null
+        });
+      } catch (emailError) {
+        console.warn("Email falló pero DB OK:", emailError);
+        toast.warning("Consulta guardada, pero no se pudo enviar el email");
+      }
+
+      // =========================
+      // 3. UX OK
+      // =========================
+      toast.success("Consulta enviada correctamente");
+
+      setFormData({
+        nombrecompleto: "",
+        email: "",
+        telefono: "",
+        mensaje: ""
       });
 
-    // =========================
-    // 3. UX
-    // =========================
-    toast.success("Se abrió tu correo para enviar la consulta");
-
-    setFormData({
-      nombrecompleto: "",
-      email: "",
-      telefono: "",
-      mensaje: "",
-    });
+    } catch (error) {
+      console.error("Error en handleSubmit:", error);
+      toast.error("Error al enviar la consulta");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {

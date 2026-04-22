@@ -33,6 +33,12 @@ const ContactPropHeaderModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.nombrecompleto || !formData.email || !formData.telefono || !formData.mensaje) {
+      toast.error("Completá todos los campos");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -41,43 +47,34 @@ const ContactPropHeaderModal = ({ isOpen, onClose }) => {
         telefono: formData.telefono.trim(),
         email: formData.email.trim(),
         mensaje: formData.mensaje.trim(),
-        tipo: 'soporte' // o propiedad según caso
+        tipo: 'soporte'
       };
 
-      // =========================
-      // 1. GUARDAR EN DB (CRÍTICO)
-      // =========================
+      // 1. Guardar en DB
       const response = await apiService.crearConsulta(data);
 
       if (!response.success) {
         throw new Error(response.message || "Error al guardar consulta");
       }
 
-      // =========================
-      // 2. ENVIAR EMAIL (NO BLOQUEANTE)
-      // =========================
-      apiService.enviarEmailConsulta(data)
-        .then(res => {
-          if (!res.success) {
-            console.warn("Email no enviado:", res.message);
-          }
-        })
-        .catch(err => {
-          console.warn("Error email:", err);
+      // 2. Enviar email (CONTROLADO)
+      try {
+        await apiService.enviarEmailConsulta({
+          nombre: data.nombrecompleto,
+          email: data.email,
+          telefono: data.telefono,
+          mensaje: data.mensaje,
+          tipo: data.tipo,
+          consulta_id: response.id || null
         });
+      } catch (err) {
+        console.warn("Email falló:", err);
+        toast.warning("Consulta guardada, pero no se pudo enviar el email");
+      }
 
-      // =========================
-      // 3. UX + WHATSAPP
-      // =========================
-      toast.success("Consulta enviada. Redirigiendo...");
-
-      setTimeout(() => {
-        if (response.notificaciones?.whatsapp_url) {
-          window.location.href = response.notificaciones.whatsapp_url;
-        } else {
-          onClose?.();
-        }
-      }, 1500);
+      // 3. UX
+      toast.success("Consulta enviada correctamente");
+      onClose?.();
 
     } catch (error) {
       console.error(error);
