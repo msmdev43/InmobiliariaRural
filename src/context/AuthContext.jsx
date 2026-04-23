@@ -39,16 +39,11 @@ export const AuthProvider = ({ children }) => {
 
   const checkSession = async () => {
     try {
-      const response = await apiService.checkSession();
-      
-      if (response && response.authenticated) {
-        setAuthenticated(true);
-        // Usar el email de la respuesta del servidor, no un valor fijo
-        setUser({ 
-          email: response.user?.email || response.email || localStorage.getItem('admin_email') || 'Administrador'
-        });
+      const isValid = await apiService.checkSession();
+      setAuthenticated(isValid);
+      if (isValid) {
+        setUser({ email: 'Administrador' });
       } else {
-        setAuthenticated(false);
         setUser(null);
       }
     } catch (error) {
@@ -64,10 +59,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await apiService.adminLogin(credentials);
       if (data.success) {
-        // Guardar email en localStorage como respaldo
-        localStorage.setItem('admin_email', credentials.email);
-        
-        // Establecemos autenticación directamente
+        // Establecemos autenticación directamente sin esperar checkSession
         setAuthenticated(true);
         setUser({ email: credentials.email });
         
@@ -91,8 +83,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Error en logout:', error);
     } finally {
-      // Limpiar localStorage
-      localStorage.removeItem('admin_email');
       setAuthenticated(false);
       setUser(null);
       navigate('/admin/login');
