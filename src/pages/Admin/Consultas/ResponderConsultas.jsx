@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from '../../../components/Admin/Sidebar';
 import apiService from '../../../services/api.service';
 import { useToast, ToastContainer } from '../../../components/UI/Toast';
-import '../../../styles/pages/Admin/Consultas.css';
+import '../../../styles/pages/Admin/responderConsultas.css';
 
 export default function ResponderConsultas() {
   const navigate = useNavigate();
