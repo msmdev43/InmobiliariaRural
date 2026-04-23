@@ -129,6 +129,9 @@ ADD COLUMN `destacado` TINYINT NOT NULL DEFAULT 0 AFTER `fecha`;
 ALTER TABLE `inmorural`.`consultas` 
 ADD COLUMN `tipo` VARCHAR(45) NOT NULL AFTER `mensaje`;
 
+ALTER TABLE `inmorural`.`consultas` 
+ADD COLUMN `respondida` BOOLEAN DEFAULT FALSE AFTER `tipo`;
+
 -- -----------------------------------------------------
 -- Table `inmorural`.`propiedades_has_imagenes`
 -- -----------------------------------------------------

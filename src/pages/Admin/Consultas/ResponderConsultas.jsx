@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import apiService from "../../services/api.service";
+import apiService from '../../../services/api.service';
 import '../../../styles/pages/Admin/Consultas.css';
 
 export default function ResponderConsultas() {
@@ -10,9 +10,6 @@ export default function ResponderConsultas() {
   const [asunto, setAsunto] = useState("");
   const [mensaje, setMensaje] = useState("");
 
-  // =========================
-  // FETCH CONSULTAS
-  // =========================
   useEffect(() => {
     fetchConsultas();
   }, []);
@@ -26,53 +23,52 @@ export default function ResponderConsultas() {
         setConsultas(res.data || []);
       }
     } catch (err) {
-      console.error("Error cargando consultas:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // =========================
-  // SELECCIONAR CONSULTA
-  // =========================
   const handleSelect = (consulta) => {
-    setSelected(consulta);
+    if (consulta.respondida) return;
 
-    // autocompletar asunto opcional
-    setAsunto(`Respuesta a tu consulta`);
+    setSelected(consulta);
+    setAsunto("Respuesta a tu consulta");
     setMensaje("");
   };
 
-  // =========================
-  // ENVIAR RESPUESTA
-  // =========================
   const handleSend = async () => {
-    if (!selected) {
-      alert("Seleccioná una consulta");
-      return;
-    }
+    if (!selected) return alert("Seleccioná una consulta");
 
     if (!asunto || !mensaje) {
-      alert("Completá asunto y mensaje");
-      return;
+      return alert("Completá asunto y mensaje");
     }
 
     try {
       const res = await apiService.enviarEmailConsulta({
         nombre: selected.nombrecompleto,
         email: selected.email,
-        mensaje: mensaje,
         asunto: asunto,
-        consulta_id: selected.idconsultas
+        mensaje: mensaje,
+        consulta_id: selected.idconsultas,
+        propiedad: selected.codigo_propiedad || ""
       });
 
       if (res.success) {
         alert("Respuesta enviada");
+
+        // 🔥 actualizar estado local
+        setConsultas(prev =>
+          prev.map(c =>
+            c.idconsultas === selected.idconsultas
+              ? { ...c, respondida: 1 }
+              : c
+          )
+        );
+
         setSelected(null);
         setAsunto("");
         setMensaje("");
-      } else {
-        alert("Error al enviar");
       }
 
     } catch (err) {
@@ -81,9 +77,18 @@ export default function ResponderConsultas() {
     }
   };
 
-  // =========================
-  // RENDER
-  // =========================
+  const renderEstado = (respondida) => {
+    return respondida ? (
+      <span className="consulta-tipo-badge" style={{ background: "#dcfce7", color: "#166534" }}>
+        ✔ Respondida
+      </span>
+    ) : (
+      <span className="consulta-tipo-badge" style={{ background: "#fef9c3", color: "#854d0e" }}>
+        ⏳ Pendiente
+      </span>
+    );
+  };
+
   return (
     <div className="consultas-page-unique">
 
@@ -92,12 +97,12 @@ export default function ResponderConsultas() {
         <div>
           <h2 className="consultas-title-unique">Responder Consultas</h2>
           <p className="consultas-subtitle-unique">
-            Seleccioná una consulta y respondé por email
+            Gestioná y respondé las consultas de clientes
           </p>
         </div>
       </div>
 
-      {/* FORM RESPUESTA */}
+      {/* FORM */}
       <div className="consultas-filtros-avanzados-unique">
         <div className="consultas-filtros-linea-unique">
 
@@ -107,7 +112,7 @@ export default function ResponderConsultas() {
               className="consultas-filtro-input-unique"
               value={asunto}
               onChange={(e) => setAsunto(e.target.value)}
-              placeholder="Asunto del email"
+              disabled={!selected}
             />
           </div>
 
@@ -117,8 +122,8 @@ export default function ResponderConsultas() {
               className="consultas-filtro-input-unique"
               value={mensaje}
               onChange={(e) => setMensaje(e.target.value)}
-              placeholder="Escribí la respuesta..."
               rows={4}
+              disabled={!selected}
             />
           </div>
 
@@ -126,6 +131,7 @@ export default function ResponderConsultas() {
             <button
               className="consultas-filtros-aplicar-unique"
               onClick={handleSend}
+              disabled={!selected}
             >
               Enviar respuesta
             </button>
@@ -146,6 +152,7 @@ export default function ResponderConsultas() {
                 <th>Email</th>
                 <th>Mensaje</th>
                 <th>Tipo</th>
+                <th>Estado</th>
                 <th>Acción</th>
               </tr>
             </thead>
@@ -153,11 +160,7 @@ export default function ResponderConsultas() {
             <tbody>
               {consultas.map((c) => (
                 <tr key={c.idconsultas}>
-                  <td>
-                    {c.codigo_propiedad || (
-                      <span className="codigo-vacio">—</span>
-                    )}
-                  </td>
+                  <td>{c.codigo_propiedad || "—"}</td>
 
                   <td>{c.nombrecompleto}</td>
 
@@ -173,10 +176,14 @@ export default function ResponderConsultas() {
                     </span>
                   </td>
 
+                  <td>{renderEstado(c.respondida)}</td>
+
                   <td>
                     <button
                       className="accion-btn accion-ver"
                       onClick={() => handleSelect(c)}
+                      disabled={c.respondida}
+                      title={c.respondida ? "Ya respondida" : "Responder"}
                     >
                       ✉️
                     </button>
@@ -188,7 +195,6 @@ export default function ResponderConsultas() {
         )}
       </div>
 
-      {/* SELECCIONADA */}
       {selected && (
         <div style={{ marginTop: "1rem", color: "#006A4E" }}>
           Respondiendo a: <strong>{selected.nombrecompleto}</strong> ({selected.email})
