@@ -6,6 +6,28 @@ import { useToast, ToastContainer } from '../../../components/UI/Toast';
 import VerConsulta from './VerConsulta';
 import '../../../styles/pages/Admin/Consultas.css';
 
+const formatearFechaHoraArgentina = (fechaUTC) => {
+  if (!fechaUTC) return '—';
+  
+  try {
+    const fecha = new Date(fechaUTC);
+    
+    return fecha.toLocaleString('es-AR', {
+      timeZone: 'America/Argentina/Buenos_Aires',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+  } catch (error) {
+    console.error('Error formateando fecha:', error);
+    return fechaUTC;
+  }
+};
+
 // Componente para el badge de tipo de consulta
 const TipoBadge = ({ tipo }) => {
   const tipos = {
@@ -361,7 +383,7 @@ const ListaConsultas = () => {
                      </td>
                     <td className="columna-fecha">
                       <div className="fecha-info">
-                        <span className="fecha-principal">{consulta.fecha_formateada}</span>
+                       <span className="fecha-principal">{formatearFechaHoraArgentina(consulta.fecha || consulta.fecha_creacion || consulta.created_at)}</span>
                       </div>
                     </td>
                     <td className="columna-nombre">
