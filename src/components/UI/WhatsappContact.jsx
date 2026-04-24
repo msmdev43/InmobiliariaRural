@@ -19,7 +19,6 @@ export default function WhatsappContact() {
         className="whatsapp-button"
         onClick={handleClick}
         aria-label="Contactar por WhatsApp"
-        title="Contactar por WhatsApp"
       >
         <div className="whatsapp-icon-wrapper">
           <FaWhatsapp className="whatsapp-icon" />
