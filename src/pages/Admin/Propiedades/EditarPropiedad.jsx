@@ -11,12 +11,121 @@ import 'leaflet/dist/leaflet.css';
 const BASE_URL = ENDPOINTS.BASE_URL;
 const DEFAULT_IMAGE = ENDPOINTS.ADMIN.DEFAULT_IMAGE;
 
+// ==================== FUNCIONES DE COMPRESIÓN ====================
+
+const comprimirImagen = (file) => {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+      resolve(file);
+      return;
+    }
+
+    const esPNG = file.type === 'image/png';
+    const reader = new FileReader();
+    
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 1080;
+        
+        if (width > MAX_WIDTH) {
+          height = (height * MAX_WIDTH) / width;
+          width = MAX_WIDTH;
+        }
+        if (height > MAX_HEIGHT) {
+          width = (width * MAX_HEIGHT) / height;
+          height = MAX_HEIGHT;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        
+        if (esPNG) {
+          ctx.clearRect(0, 0, width, height);
+        }
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        const mimeType = esPNG ? 'image/png' : 'image/jpeg';
+        const quality = esPNG ? 0.9 : 0.8;
+        
+        canvas.toBlob(
+          (blob) => {
+            const extension = esPNG ? '.png' : '.jpg';
+            const newFileName = file.name.replace(/\.[^.]+$/, extension);
+            const compressedFile = new File([blob], newFileName, {
+              type: mimeType,
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          mimeType,
+          quality
+        );
+      };
+      
+      img.onerror = (err) => {
+        console.error('Error loading image:', err);
+        reject(err);
+      };
+    };
+    
+    reader.onerror = (err) => {
+      console.error('Error reading file:', err);
+      reject(err);
+    };
+  });
+};
+
+const procesarImagenes = async (files, onProgress) => {
+  const MAX_SIZE_MB = 10;
+  const imagenesComprimidas = [];
+  
+  console.log(`Iniciando compresión de ${files.length} imágenes`);
+  
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    console.log(`Comprimiendo imagen ${i + 1}/${files.length}: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+    
+    if (onProgress) {
+      onProgress(i + 1, files.length);
+    }
+    
+    const imagenComprimida = await comprimirImagen(file);
+    
+    const sizeMB = imagenComprimida.size / (1024 * 1024);
+    console.log(`Imagen comprimida: ${sizeMB.toFixed(2)}MB (original: ${(file.size / 1024 / 1024).toFixed(2)}MB) - Reducción: ${((1 - sizeMB / (file.size / 1024 / 1024)) * 100).toFixed(1)}%`);
+    
+    if (sizeMB > MAX_SIZE_MB) {
+      throw new Error(`La imagen "${file.name}" aún es muy grande (${sizeMB.toFixed(2)}MB) después de comprimir`);
+    }
+    
+    imagenesComprimidas.push(imagenComprimida);
+  }
+  
+  console.log(`Compresión completada. Total: ${imagenesComprimidas.length} imágenes`);
+  return imagenesComprimidas;
+};
+
+// ==================== COMPONENTE PRINCIPAL ====================
+
 const EditarPropiedad = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const [cargandoDatos, setCargandoDatos] = useState(true);
+  const [comprimiendoImagenes, setComprimiendoImagenes] = useState(false);
+  const [progresoCompresion, setProgresoCompresion] = useState({ actual: 0, total: 0 });
   const [tiposCampos, setTiposCampos] = useState([]);
   const [servicios, setServicios] = useState([]);
   const [imagenesPreview, setImagenesPreview] = useState([]);
@@ -66,7 +175,6 @@ const EditarPropiedad = () => {
       try {
         setCargandoDatos(true);
         
-        // Cargar tipos de campos y servicios en paralelo
         const [tiposResponse, serviciosResponse] = await Promise.all([
           apiService.getTiposCampos(),
           apiService.getServicios()
@@ -79,7 +187,6 @@ const EditarPropiedad = () => {
         setServicios(serviciosData);
         console.log('Servicios disponibles cargados:', serviciosData);
 
-        // Cargar datos de la propiedad
         const propiedadResponse = await apiService.getPropiedadDetalle(id);
         console.log('Respuesta completa:', propiedadResponse);
         
@@ -88,14 +195,12 @@ const EditarPropiedad = () => {
           console.log('Datos de propiedad:', prop);
           console.log('Servicios de la propiedad:', prop.servicios);
           
-          // Extraer datos
           const latitud = prop.ubicacion?.latitud || '';
           const longitud = prop.ubicacion?.longitud || '';
           const ciudad = prop.ubicacion?.ciudad || '';
           const provincia = prop.ubicacion?.provincia || '';
           const tipoCampoId = prop.tipo_campo?.id || '';
           
-          // Extraer servicios IDs
           let serviciosIds = [];
           if (prop.servicios && Array.isArray(prop.servicios)) {
             serviciosIds = prop.servicios.map(s => {
@@ -105,7 +210,6 @@ const EditarPropiedad = () => {
           
           console.log('Servicios IDs extraídos:', serviciosIds);
           
-          // Formatear fecha
           let fechaFormateada = '';
           if (prop.fecha_publicacion) {
             fechaFormateada = prop.fecha_publicacion.split(' ')[0];
@@ -113,7 +217,6 @@ const EditarPropiedad = () => {
             fechaFormateada = prop.fecha.split(' ')[0];
           }
           
-          // Actualizar formData
           setFormData({
             id: prop.id,
             codigo: prop.codigo || '',
@@ -134,13 +237,10 @@ const EditarPropiedad = () => {
             destacado: prop.destacado || false
           });
           
-          // Actualizar servicios seleccionados
           setServiciosSeleccionados(serviciosIds);
           console.log('Servicios seleccionados seteados en estado:', serviciosIds);
           
-          // Actualizar imágenes existentes - ordenadas por el campo 'orden'
           if (prop.imagenes && Array.isArray(prop.imagenes) && prop.imagenes.length > 0) {
-            // Ordenar imágenes por el campo 'orden' si existe
             const imagenesOrdenadas = [...prop.imagenes].sort((a, b) => (a.orden || 0) - (b.orden || 0));
             
             const imagenesConUrlCompleta = imagenesOrdenadas.map(img => ({
@@ -170,7 +270,6 @@ const EditarPropiedad = () => {
     } else {
       navigate('/admin/propiedades');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleChange = (e) => {
@@ -181,7 +280,6 @@ const EditarPropiedad = () => {
     }
     
     if (name === 'precio') {
-      // Limpiar el string para obtener solo números
       const numeros = value.replace(/[^\d]/g, '');
       const numero = numeros === '' ? 0 : parseFloat(numeros);
       
@@ -196,20 +294,48 @@ const EditarPropiedad = () => {
     }
   };
 
-  const handleImagenes = (e) => {
+  const handleImagenes = async (e) => {
     const files = Array.from(e.target.files);
+    
+    console.log('Archivos seleccionados:', files.length);
+    
+    if (files.length === 0) return;
     
     if (imagenesFiles.length + files.length > 10) {
       toast.warning('Máximo 10 imágenes permitidas');
       return;
     }
 
-    const previews = files.map(file => URL.createObjectURL(file));
-    setImagenesPreview(prev => [...prev, ...previews]);
-    setImagenesFiles(prev => [...prev, ...files]);
+    setComprimiendoImagenes(true);
+    setProgresoCompresion({ actual: 0, total: files.length });
     
-    if (files.length > 0) {
-      toast.success(`${files.length} ${files.length === 1 ? 'imagen agregada' : 'imágenes agregadas'} correctamente`, 2000);
+    toast.info(`Comprimiendo ${files.length} imagen(es)...`, 0);
+    
+    try {
+      const imagenesComprimidas = await procesarImagenes(files, (actual, total) => {
+        console.log(`Progreso: ${actual}/${total}`);
+        setProgresoCompresion({ actual, total });
+      });
+      
+      const previews = await Promise.all(
+        imagenesComprimidas.map(file => URL.createObjectURL(file))
+      );
+      
+      setImagenesPreview(prev => [...prev, ...previews]);
+      setImagenesFiles(prev => [...prev, ...imagenesComprimidas]);
+      
+      const totalSizeMB = imagenesComprimidas.reduce((sum, f) => sum + f.size, 0) / (1024 * 1024);
+      
+      toast.success(`${imagenesComprimidas.length} ${imagenesComprimidas.length === 1 ? 'imagen' : 'imágenes'} comprimidas (${totalSizeMB.toFixed(1)}MB total)`, 3000);
+      
+    } catch (error) {
+      console.error('Error comprimiendo imágenes:', error);
+      toast.error(error.message || 'Error al comprimir imágenes');
+      setImagenesPreview([]);
+      setImagenesFiles([]);
+    } finally {
+      setComprimiendoImagenes(false);
+      setProgresoCompresion({ actual: 0, total: 0 });
     }
   };
 
@@ -235,7 +361,6 @@ const EditarPropiedad = () => {
     toast.info('Imagen eliminada', 2000);
   };
 
-  // Funciones para reordenar imágenes existentes
   const moverImagenExistente = (index, direccion) => {
     if (
       (direccion === 'up' && index === 0) ||
@@ -252,7 +377,6 @@ const EditarPropiedad = () => {
     setImagenesExistentes(nuevasImagenes);
   };
 
-  // Funciones para reordenar imágenes nuevas
   const moverImagenNueva = (index, direccion) => {
     if (
       (direccion === 'up' && index === 0) ||
@@ -296,7 +420,7 @@ const EditarPropiedad = () => {
     }
   };
 
-    const handleImageLoadError = (e, imgId, url) => {
+  const handleImageLoadError = (e, imgId, url) => {
     handleImagenError(imgId, url);
     e.target.src = DEFAULT_IMAGE; 
   };
@@ -377,7 +501,6 @@ const EditarPropiedad = () => {
       formDataToSend.append('servicios', JSON.stringify(serviciosValidos));
       console.log('Enviando servicios:', serviciosValidos);
 
-      // Enviar el orden de las imágenes existentes
       const ordenImagenes = imagenesExistentes.map((img, idx) => ({
         id: img.id,
         orden: idx + 1
@@ -829,7 +952,7 @@ const EditarPropiedad = () => {
             )}
           </div>
 
-          {/* SECCIÓN 5: Imágenes - CON ORDENAMIENTO */}
+          {/* SECCIÓN 5: Imágenes - CON COMPRESIÓN Y ORDENAMIENTO */}
           <div className="publicar-seccion-unique">
             <div className="publicar-seccion-titulo-unique">
               <span className="publicar-seccion-numero-unique">5</span>
@@ -885,18 +1008,18 @@ const EditarPropiedad = () => {
                 </div>
               )}
 
-              {/* Subir nuevas imágenes */}
+              {/* Subir nuevas imágenes con compresión */}
               <div className="publicar-upload-section-unique">
                 <h4>Agregar nuevas imágenes</h4>
                 <input
                   type="file"
-                  id="publicar-imagenes-unique"
+                  id="editar-imagenes-unique"
                   multiple
                   accept="image/*"
                   onChange={handleImagenes}
                   className="publicar-file-input-unique"
                 />
-                <label htmlFor="publicar-imagenes-unique" className="publicar-upload-area-unique">
+                <label htmlFor="editar-imagenes-unique" className="publicar-upload-area-unique">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                     <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"></circle>
@@ -906,6 +1029,21 @@ const EditarPropiedad = () => {
                   <span className="publicar-upload-hint-unique">Máximo 10 imágenes (JPG, PNG)</span>
                 </label>
               </div>
+
+              {/* Indicador de compresión */}
+              {comprimiendoImagenes && (
+                <div className="publicar-compresion-indicador-unique">
+                  <div className="publicar-spinner-small-unique"></div>
+                  <span>
+                    Comprimiendo imágenes... 
+                    {progresoCompresion.total > 0 ? (
+                      ` ${progresoCompresion.actual}/${progresoCompresion.total}`
+                    ) : (
+                      ' procesando...'
+                    )}
+                  </span>
+                </div>
+              )}
 
               {/* Preview de nuevas imágenes con ordenamiento */}
               {imagenesPreview.length > 0 && (
@@ -963,7 +1101,7 @@ const EditarPropiedad = () => {
             <button 
               type="submit" 
               className="publicar-btn-publicar-unique"
-              disabled={loading}
+              disabled={loading || comprimiendoImagenes}
             >
               {loading ? (
                 <>
