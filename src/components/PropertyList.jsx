@@ -301,9 +301,22 @@ export default function PropertyList({ showHero = true }) {
                   </div>
                   <div className="pl-item-location"><svg className="pl-location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg><span>{prop.ubicacion}</span></div>
                   <div className="pl-item-features">
-                    <div className="pl-feature-item"><svg className="pl-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-6 9 6-9 6-9-6z" /><path d="M3 15l9 6 9-6" /></svg><span>{prop.superficie} ha</span></div>
+                    <div className="pl-feature-item">
+                      <svg className="pl-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M3 9l9-6 9 6-9 6-9-6z" />
+                        <path d="M3 15l9 6 9-6" />
+                      </svg>
+                      <span>{prop.superficie} ha</span>
+                    </div>
                     {prop.servicios && prop.servicios.length > 0 && (
-                      <div className="pl-servicios-tags">{prop.servicios.slice(0, 6).map((s, idx) => <span key={idx} className="pl-servicio-tag">{s}</span>)}{prop.servicios.length > 6 && <span className="pl-servicio-tag pl-servicio-mas">+{prop.servicios.length - 6}</span>}</div>
+                      <div className="pl-servicios-tags">
+                        {prop.servicios.slice(0, 6).map((s, idx) => (
+                          <span key={idx} className="pl-servicio-tag">{s.nombre}</span>  // ← Cambiado de {s} a {s.nombre}
+                        ))}
+                        {prop.servicios.length > 6 && (
+                          <span className="pl-servicio-tag pl-servicio-mas">+{prop.servicios.length - 6}</span>
+                        )}
+                      </div>
                     )}
                   </div>
                   <div className="pl-item-footer">
