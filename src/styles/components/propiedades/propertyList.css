@@ -977,3 +977,22 @@
     font-size: 0.7rem;
   }
 }
+
+.pl-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; backdrop-filter: blur(4px); }
+.pl-consulta-modal { background: white; border-radius: 16px; padding: 32px; max-width: 520px; width: 100%; box-shadow: 0 20px 40px rgba(0,0,0,0.3); animation: modalIn 0.3s ease; }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.pl-consulta-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.pl-consulta-header h3 { margin: 0; font-size: 1.2rem; }
+.pl-consulta-close { background: none; border: none; cursor: pointer; color: #6b7280; padding: 4px; border-radius: 50%; }
+.pl-consulta-close:hover { background: #f3f4f6; color: #EF4444; }
+.pl-consulta-codigo { color: #6b7280; font-size: 0.85rem; margin: 0 0 20px; }
+.pl-consulta-form { display: flex; flex-direction: column; gap: 16px; }
+.pl-form-group { display: flex; flex-direction: column; gap: 6px; }
+.pl-form-group label { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.pl-form-group input, .pl-form-group textarea { padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 0.9rem; font-family: inherit; }
+.pl-form-group input:focus, .pl-form-group textarea:focus { outline: none; border-color: #006A4E; }
+.pl-form-group textarea { resize: vertical; min-height: 100px; }
+.pl-form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+.pl-btn-cancelar { padding: 10px 20px; border: 1px solid #e5e7eb; border-radius: 10px; background: white; cursor: pointer; }
+.pl-btn-enviar { padding: 10px 24px; border: none; border-radius: 10px; background: #006A4E; color: white; cursor: pointer; font-weight: 600; }
+.pl-btn-enviar:hover { background: #004d3a; }

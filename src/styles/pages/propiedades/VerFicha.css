@@ -24,7 +24,7 @@
 .vf-header {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Cambiado de flex-start a center */
+  align-items: center;
   margin-bottom: 32px;
   padding-bottom: 20px;
   border-bottom: 2px solid var(--border-color);
@@ -54,14 +54,12 @@
   border-radius: 20px;
 }
 
-/* Acciones del header - MODIFICADO */
 .vf-header-acciones {
   display: flex;
   gap: 12px;
   align-items: center;
 }
 
-/* Botón compartir - MODIFICADO (más grande y con texto) */
 .vf-btn-icon {
   background: var(--bg-gray);
   border: 1px solid var(--border-color);
@@ -89,14 +87,12 @@
   display: inline-block;
 }
 
-/* Grid optimizado */
 .vf-grid {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
   gap: 32px;
 }
 
-/* Galería mejorada */
 .vf-galeria {
   position: sticky;
   top: 100px;
@@ -172,7 +168,6 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Cards optimizadas */
 .vf-card {
   background: white;
   border: 1px solid var(--border-color);
@@ -187,7 +182,6 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Card precio mejorada */
 .vf-card-precio {
   background: linear-gradient(135deg, var(--primary-color) 0%, #00382a 100%);
   color: white;
@@ -250,7 +244,6 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Títulos de cards */
 .vf-card-titulo {
   font-size: 1.2rem;
   font-weight: 700;
@@ -271,7 +264,6 @@
   border-radius: 2px;
 }
 
-/* Características en grid mejorado */
 .vf-caracteristicas {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -319,7 +311,6 @@
   color: var(--text-primary);
 }
 
-/* Descripción */
 .vf-descripcion {
   line-height: 1.7;
   color: var(--text-primary);
@@ -334,7 +325,6 @@
   margin-bottom: 0;
 }
 
-/* Servicios mejorados */
 .vf-servicios {
   display: flex;
   flex-wrap: wrap;
@@ -360,7 +350,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* Mapa */
 .vf-mapa {
   display: flex;
   flex-direction: column;
@@ -392,37 +381,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* Botón contacto mejorado */
-.vf-card-contacto {
-  background: linear-gradient(135deg, var(--bg-gray) 0%, #f3f4f6 100%);
-  border: none;
-  padding: 0;
-  overflow: hidden;
-}
-
-.vf-btn-contacto {
-  width: 100%;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-  color: white;
-  border: none;
-  padding: 18px;
-  font-size: 1.05rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.vf-btn-contacto:hover {
-  background: linear-gradient(135deg, var(--primary-dark), #002a1f);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-/* Estadísticas mejoradas */
 .vf-card-estadisticas {
   background: var(--bg-gray);
   display: flex;
@@ -454,19 +412,19 @@
   box-shadow: var(--shadow-sm);
 }
 
-/* Modal mejorado */
 .vf-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 40px;
+  padding: 20px;
+  backdrop-filter: blur(4px);
 }
 
 .vf-modal {
@@ -538,7 +496,6 @@
   object-fit: cover;
 }
 
-/* Loading mejorado */
 .vf-loading {
   min-height: 60vh;
   display: flex;
@@ -557,119 +514,11 @@
   animation: spin 1s linear infinite;
 }
 
-/* Responsive mejorado */
-@media (max-width: 1024px) {
-  .vf-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  
-  .vf-galeria {
-    position: relative;
-    top: 0;
-  }
-  
-  .vf-imagen-principal {
-    height: 400px;
-  }
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-@media (max-width: 768px) {
-  .vf-container {
-    padding: 0 16px;
-    margin: 70px auto 30px;
-  }
-  
-  .vf-header-titulo h1 {
-    font-size: 1.5rem;
-  }
-  
-  .vf-imagen-principal {
-    height: 300px;
-  }
-  
-  .vf-miniaturas {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  
-  .vf-card-precio {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 20px;
-  }
-  
-  .vf-moneda {
-    font-size: 1.2rem;
-  }
-  
-  .vf-valor {
-    font-size: 2.2rem;
-  }
-  
-  .vf-caracteristicas {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .vf-card-estadisticas {
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
-  }
-  
-  .vf-estadistica {
-    justify-content: center;
-  }
-  
-  .vf-modal-miniaturas {
-    bottom: -60px;
-  }
-  
-  .vf-modal-miniatura {
-    width: 50px;
-    height: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  .vf-card-precio {
-    padding: 16px;
-  }
-  
-  .vf-moneda {
-    font-size: 1rem;
-  }
-  
-  .vf-valor {
-    font-size: 1.8rem;
-  }
-  
-  .vf-tipo-operacion {
-    font-size: 0.7rem;
-    padding: 6px 14px;
-  }
-  
-  .vf-card {
-    padding: 16px;
-  }
-  
-  .vf-card-titulo {
-    font-size: 1.1rem;
-    margin-bottom: 16px;
-  }
-  
-  .vf-servicio-tag {
-    padding: 6px 14px;
-    font-size: 0.8rem;
-  }
-  
-  .vf-modal-miniatura {
-    width: 40px;
-    height: 40px;
-  }
-}
-
+/* Botones de contacto */
 .vf-card-contacto {
   background: linear-gradient(135deg, var(--bg-gray) 0%, #f3f4f6 100%);
   border: none;
@@ -693,7 +542,6 @@
   }
 }
 
-/* Botón de WhatsApp */
 .vf-btn-whatsapp {
   flex: 1;
   background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
@@ -719,7 +567,6 @@
   box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
 }
 
-/* Botón de Email */
 .vf-btn-email {
   flex: 1;
   background: linear-gradient(135deg, #EA4335 0%, #C5221F 100%);
@@ -745,21 +592,227 @@
   box-shadow: 0 8px 20px rgba(234, 67, 53, 0.3);
 }
 
-/* Estilos responsivos adicionales */
-@media (max-width: 480px) {
-  .vf-botones-contacto {
+/* ============================================ */
+/* MODAL DE CONSULTA                             */
+/* ============================================ */
+.vf-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.vf-consulta-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.vf-consulta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.vf-consulta-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.vf-consulta-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.vf-consulta-close:hover {
+  background: var(--bg-gray);
+  color: #EF4444;
+}
+
+.vf-consulta-codigo {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0 0 20px 0;
+}
+
+.vf-consulta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vf-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vf-form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vf-form-group input,
+.vf-form-group textarea {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.vf-form-group input:focus,
+.vf-form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 106, 78, 0.1);
+}
+
+.vf-form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.vf-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.vf-btn-cancelar {
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.vf-btn-cancelar:hover {
+  background: var(--bg-gray);
+}
+
+.vf-btn-enviar {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.vf-btn-enviar:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.vf-btn-enviar:disabled,
+.vf-btn-cancelar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .vf-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .vf-galeria {
+    position: relative;
+    top: 0;
+  }
+  .vf-imagen-principal {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .vf-container {
+    padding: 0 16px;
+    margin: 70px auto 30px;
+  }
+  .vf-header-titulo h1 {
+    font-size: 1.5rem;
+  }
+  .vf-imagen-principal {
+    height: 300px;
+  }
+  .vf-miniaturas {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .vf-card-precio {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
   }
-  
+  .vf-moneda { font-size: 1.2rem; }
+  .vf-valor { font-size: 2.2rem; }
+  .vf-caracteristicas {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .vf-card-estadisticas {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .vf-estadistica { justify-content: center; }
+  .vf-modal-miniaturas { bottom: -60px; }
+  .vf-modal-miniatura { width: 50px; height: 50px; }
+  .vf-consulta-modal { padding: 24px; }
+}
+
+@media (max-width: 480px) {
+  .vf-card-precio { padding: 16px; }
+  .vf-moneda { font-size: 1rem; }
+  .vf-valor { font-size: 1.8rem; }
+  .vf-tipo-operacion { font-size: 0.7rem; padding: 6px 14px; }
+  .vf-card { padding: 16px; }
+  .vf-card-titulo { font-size: 1.1rem; margin-bottom: 16px; }
+  .vf-servicio-tag { padding: 6px 14px; font-size: 0.8rem; }
+  .vf-botones-contacto { flex-direction: column; }
   .vf-btn-whatsapp,
-  .vf-btn-email {
-    padding: 14px 20px;
-    font-size: 0.9rem;
-  }
-  
+  .vf-btn-email { padding: 14px 20px; font-size: 0.9rem; }
   .vf-btn-whatsapp svg,
-  .vf-btn-email svg {
-    width: 18px;
-    height: 18px;
-  }
+  .vf-btn-email svg { width: 18px; height: 18px; }
+  .vf-modal-miniatura { width: 40px; height: 40px; }
+  .vf-consulta-modal { padding: 20px; margin: 10px; }
 }
