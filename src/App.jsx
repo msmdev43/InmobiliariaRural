@@ -15,7 +15,6 @@ import TiposCampos from './pages/Admin/Configuracion/TipoCampos';
 import Servicios from './pages/Admin/Configuracion/Servicios';
 import Configuracion from './pages/Admin/Configuracion/Configuracion';
 import ListaConsultas from "./pages/Admin/Consultas/ListaConsultas";
-import ResponderConsultas from "./pages/Admin/Consultas/ResponderConsultas";
 
 function App() {
   return (
@@ -62,12 +61,6 @@ function App() {
         <Route path="/admin/consultas" element={
           <ProtectedRoute>
             <ListaConsultas />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/responder" element={
-          <ProtectedRoute>
-            <ResponderConsultas />
           </ProtectedRoute>
         } />
 
