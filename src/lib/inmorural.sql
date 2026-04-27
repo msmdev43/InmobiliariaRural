@@ -213,9 +213,6 @@ CREATE TABLE IF NOT EXISTS `inmorural`.`propiedades_has_servicios` (
     ON UPDATE NO ACTION
 ) ENGINE = InnoDB;
 
-INSERT INTO admin (email, password) 
-VALUES ('gustavobarberini@hotmail.com', '$2y$10$UllJvkUOn3zZrilQNEfpwuvYXBQ87S7fo/egIFJnjuRWD1ajBNfFC');
-
 INSERT INTO tipo_campos (nombre) VALUES 
 ('Terreno'),
 ('Chacra'),

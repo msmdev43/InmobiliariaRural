@@ -100,7 +100,7 @@ export default function Contact() {
     {
       icon: Mail,
       title: "Email",
-      content: "gustavobarberini@hotmail.com",
+      content: "gustavorbarberini@gmail.com",
     },
     {
       icon: Clock,
